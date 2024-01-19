@@ -1,0 +1,10 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - deployment-fdk-search-service.yaml
+  - service-fdk-search-service.yaml
+images:
+  - name: fdk-search-service
+    newName: eu.gcr.io/digdir-fdk-infra/fdk-search-service
+    newTag: $(GIT_COMMIT_SHA)
