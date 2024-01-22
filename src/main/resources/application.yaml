@@ -38,6 +38,34 @@ spring:
       ack-mode: manual_immediate
 application:
   prop: 1
+  elastic:
+    username: ${ELASTIC_USERNAME}
+    password: ${ELASTIC_PASSWORD}
+    host: ${ELASTIC_HOST}
+    ssl: ${ELASTIC_SSL:true}
+    storePath: ${ELASTIC_KEYSTORE_PATH}
+    storePass: ${ELASTIC_KEYSTORE_PASSWORD}
 ---
 spring:
   config.activate.on-profile: develop
+application:
+  scope: test.scope
+  elastic:
+    username: elastic
+    password: elasticpwd
+    ssl: false
+    storeName: keystore
+    storePass: keystore
+    certPath: path
+---
+spring:
+  config.activate.on-profile: test
+application:
+  scope: test.scope
+  elastic:
+    username: elastic
+    password: elasticpwd
+    ssl: false
+    storeName: keystore
+    storePass: keystore
+    certPath: path

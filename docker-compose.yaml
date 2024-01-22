@@ -1,6 +1,23 @@
 ---
 version: '3.8'
 services:
+  fdk-search-service:
+    image: eu.gcr.io/digdir-fdk-infra/fdk-search-service:test
+    build: .
+    environment:
+      - ELASTIC_USERNAME=elastic
+      - ELASTIC_PASSWORD=elasticpwd
+      - ELASTIC_SSL=false
+      - ELASTIC_HOST=elasticsearch:9200
+      - ELASTIC_KEYSTORE_PATH=keystore.jks
+      - ELASTIC_KEYSTORE_PASSWORD=keystore
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - KAFKA_SCHEMA_REGISTRY=http://schema-registry:8081
+    ports:
+      - '8080:8080'
+    depends_on:
+      - elasticsearch
+      - schema-registry
   zookeeper:
     image: confluentinc/cp-zookeeper
     environment:
@@ -73,3 +90,15 @@ services:
     depends_on:
       schema-registry:
         condition: service_healthy
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.2
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - cluster.name=elasticsearch
+      - discovery.type=single-node
+      - xpack.security.enabled=true
+      - ELASTIC_PASSWORD=elasticpwd
+      - ES_JAVA_OPTS=-Xms2G -Xmx2G

@@ -1,23 +1,23 @@
 package no.digdir.fdk.searchservice.integration
 
+import no.digdir.fdk.searchservice.utils.ApiTestContext
 import no.digdir.fdk.searchservice.utils.apiGet
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.http.HttpStatus
+import org.springframework.test.context.ContextConfiguration
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(
+    properties = ["spring.profiles.active=test"],
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
+@ContextConfiguration(initializers = [ApiTestContext.Initializer::class])
 @Tag("integration")
-class StatusTest {
-
-    @LocalServerPort
-    var port = 0
+class StatusTest: ApiTestContext() {
 
     @Test
     fun ping() {

@@ -21,3 +21,5 @@ replay_pid*
 target/
 *.iml
 .idea/
+
+Local.Dockerfile
