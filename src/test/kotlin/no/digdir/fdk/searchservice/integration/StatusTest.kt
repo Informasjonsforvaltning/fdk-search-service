@@ -1,6 +1,5 @@
 package no.digdir.fdk.searchservice.integration
 
-
 import no.digdir.fdk.searchservice.utils.apiGet
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Tag
@@ -15,7 +14,6 @@ import org.springframework.http.HttpStatus
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 @Tag("integration")
-
 class StatusTest {
 
     @LocalServerPort
