@@ -5,12 +5,9 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class StatusController {
-    @GetMapping("/ping")
-    fun ping(): ResponseEntity<Void> =
-        ResponseEntity.ok().build()
-
-    @GetMapping("/ready")
-    fun ready(): ResponseEntity<Void> =
+class SearchController {
+    @GetMapping("/search")
+    fun search(): ResponseEntity<Void> =
+        // TODO: Implement search
         ResponseEntity.ok().build()
 }
