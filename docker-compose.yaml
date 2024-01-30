@@ -102,3 +102,5 @@ services:
       - xpack.security.enabled=true
       - ELASTIC_PASSWORD=elasticpwd
       - ES_JAVA_OPTS=-Xms2G -Xmx2G
+
+# Husk å starte elastic først
