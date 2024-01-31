@@ -1,4 +1,4 @@
-package no.digdir.fdk.searchservice.kafka;
+package no.digdir.fdk.searchservice.kafka.consumer;
 
 import no.fdk.rdf.parse.RdfParseEvent
 import no.fdk.rdf.parse.RdfParseResourceType
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 
 
 @Component
-class KafkaDatasetEventConsumer {
+class EventEventConsumer {
 
     @KafkaListener(
         topics = ["rdf-parse-events"],
@@ -25,10 +25,8 @@ class KafkaDatasetEventConsumer {
         try {
             // TODO: Implement logic for handling RDF parse event
 
-            if(event?.resourceType == RdfParseResourceType.DATASET) {
-                LOGGER.debug("Index dataset - id: " + event.fdkId)
-            } else if(event?.resourceType == RdfParseResourceType.DATASERVICE) {
-                LOGGER.debug("Index dataservice - id: " + event.fdkId)
+            if(event?.resourceType == RdfParseResourceType.EVENT) {
+                LOGGER.debug("Index event - id: " + event.fdkId)
             }
             // ...
             ack.acknowledge();
@@ -38,6 +36,6 @@ class KafkaDatasetEventConsumer {
     }
 
     companion object {
-        private val LOGGER: Logger = LoggerFactory.getLogger(KafkaDatasetEventConsumer::class.java)
+        private val LOGGER: Logger = LoggerFactory.getLogger(EventEventConsumer::class.java)
     }
 }
