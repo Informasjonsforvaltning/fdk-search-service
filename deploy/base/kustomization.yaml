@@ -8,3 +8,6 @@ images:
   - name: fdk-search-service
     newName: eu.gcr.io/digdir-fdk-infra/fdk-search-service
     newTag: $(GIT_COMMIT_SHA)
+
+patchesStrategicMerge:
+  - env.yaml
