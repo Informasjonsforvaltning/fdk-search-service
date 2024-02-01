@@ -28,7 +28,7 @@ spec:
             sizeLimit: 2Gi
       initContainers:
         - name: pem-to-keystore
-          image: eclipse-temurin:17-jdk-jammy
+          image: eclipse-temurin:17-jdk-alpine
           env:
             - name: crtfile
               value: /var/secrets/elastic/tls.crt
@@ -39,7 +39,7 @@ spec:
                 secretKeyRef:
                   name: fdk-search-service
                   key: KEYSTORE_PASSWORD
-          command: ["/bin/bash"]
+          command: ["/bin/sh"]
           args: ['-c', "keytool -noprompt -import -v -trustcacerts -file $crtfile -keystore $keystore_jks -keypass $KEYSTORE_PASSWORD -storepass $KEYSTORE_PASSWORD"]
           volumeMounts:
             - name: keystore-volume
