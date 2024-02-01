@@ -7,7 +7,7 @@ import org.springframework.data.elasticsearch.annotations.Document
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Document(indexName ="fdk-search-object")
+@Document(indexName ="fdk-search")
 data class TempTestDBO(
     @Id
     val id: String,
