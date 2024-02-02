@@ -1,12 +1,13 @@
 package no.digdir.fdk.searchservice.integration
 
 import no.digdir.fdk.searchservice.utils.ApiTestContext
-import no.digdir.fdk.searchservice.utils.apiGet
+import no.digdir.fdk.searchservice.utils.requestApi
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.HttpMethod.GET
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ContextConfiguration
 
@@ -21,13 +22,13 @@ class StatusTest: ApiTestContext() {
 
     @Test
     fun ping() {
-        val response = apiGet(port, "/ping", null)
+        val response = requestApi("/ping", port, null, GET)
         assertEquals(HttpStatus.OK.value(), response["status"])
     }
 
     @Test
     fun ready() {
-        val response = apiGet(port, "/ready", null)
+        val response = requestApi("/ready", port, null, GET)
         assertEquals(HttpStatus.OK.value(), response["status"])
     }
 }

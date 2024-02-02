@@ -55,6 +55,11 @@
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-elasticsearch</artifactId>
+            <version>5.2.2</version>
+        </dependency>
 
         <dependency>
             <groupId>io.confluent</groupId>
@@ -76,6 +81,12 @@
             <groupId>org.apache.avro</groupId>
             <artifactId>avro-maven-plugin</artifactId>
             <version>${avro.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+            <version>5.2.2</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -141,11 +152,6 @@
             <artifactId>junit-jupiter</artifactId>
             <version>${testcontainers.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-elasticsearch</artifactId>
-            <version>5.2.0</version>
         </dependency>
     </dependencies>
     <build>
@@ -271,6 +277,7 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>3.2.5</version>
                 <configuration>
+                    <!--suppress UnresolvedMavenProperty -->
                     <argLine>${failsafe.jacoco.args}</argLine>
                     <groups>integration</groups>
                     <excludedGroups>unit</excludedGroups>
