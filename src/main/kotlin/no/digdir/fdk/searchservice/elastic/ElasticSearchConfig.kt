@@ -14,7 +14,7 @@ import java.time.Duration
 import javax.net.ssl.SSLContext
 
 @Configuration
-@EnableElasticsearchRepositories(basePackages = ["no.digdir.searchservice.elastic"])
+@EnableElasticsearchRepositories
 open class ElasticsearchConfig(private val elasticProperties: ElasticProperties): ElasticsearchConfiguration() {
 
     private fun sslContext(): SSLContext {

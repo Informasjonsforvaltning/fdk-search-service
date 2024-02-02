@@ -22,7 +22,7 @@ abstract class ApiTestContext {
     @BeforeEach
     fun populateElastic() {
         repository.deleteAll()
-        repository.save(TEMP_TEST_OBJECT)
+        repository.saveAll(listOf( TEST_DATASET_HIT_1, TEST_DATASET_HIT_ALL_FIELDS ))
     }
 
     internal class Initializer : ApplicationContextInitializer<ConfigurableApplicationContext> {
