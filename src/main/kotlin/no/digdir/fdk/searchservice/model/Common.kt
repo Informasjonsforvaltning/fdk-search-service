@@ -43,10 +43,31 @@ data class Subject(
   val altLabel: LocalizedStrings?,
   val definition: LocalizedStrings?,
   val prefLabel: LocalizedStrings?,
+  val label: LocalizedStrings?,
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Distribution(
   val title: LocalizedStrings?,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class TextAndURI(
+  val text: LocalizedStrings?,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class Sources(
+  val text: List<TextAndURI>?,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class Definition(
+  val text: LocalizedStrings?,
+  val sources: Sources?,
+  val sourceRelationship: String?,
 )

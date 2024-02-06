@@ -1,5 +1,6 @@
 package no.digdir.fdk.searchservice.utils
-import no.digdir.fdk.searchservice.elastic.SearchObjectRepository
+
+import no.digdir.fdk.searchservice.elastic.DatasetSearchRepository
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.util.TestPropertyValues
@@ -17,7 +18,7 @@ abstract class ApiTestContext {
     var port = 0
 
     @Autowired
-    private lateinit var repository: SearchObjectRepository
+    private lateinit var repository: DatasetSearchRepository
 
     @BeforeEach
     fun populateElastic() {

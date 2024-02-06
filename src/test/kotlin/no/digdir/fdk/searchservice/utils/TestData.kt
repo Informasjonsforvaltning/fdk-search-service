@@ -11,14 +11,17 @@ val ELASTIC_ENV_VALUES: Map<String, String> = ImmutableMap.of(
         "ES_JAVA_OPTS", "-Xms2G -Xmx2G"
 )
 
-val TEST_DATASET_HIT_1 = Dataset(
+val TEST_NULL_DATASET = Dataset("123", null, null, null, null, null,
+        null, null, null, null, null)
+
+val TEST_DATASET_HIT_1 = TEST_NULL_DATASET.copy(
         id = "123",
         title = LocalizedStrings("NB Test title","NN Test title","EN Test title"),
         description = LocalizedStrings("NB Test description","NN Test description","EN Test description"),
 )
 
-val TEST_DATASET_HIT_ALL_FIELDS = Dataset(
-        id = "123",
+val TEST_DATASET_HIT_ALL_FIELDS = TEST_NULL_DATASET.copy(
+        id = "124",
         title = LocalizedStrings("NB Test title","NN Test title","EN Test title"),
         description = LocalizedStrings("NB Test description",
                 "NN Test description",
@@ -46,6 +49,9 @@ val TEST_DATASET_HIT_ALL_FIELDS = Dataset(
         subject = listOf(Subject(LocalizedStrings("NB Test subject",
                 "NN Test subject",
                 "EN Test subject"),
+                LocalizedStrings("NB Test subject",
+                        "NN Test subject",
+                        "EN Test subject"),
                 LocalizedStrings("NB Test subject",
                         "NN Test subject",
                         "EN Test subject"),
