@@ -1,5 +1,7 @@
 package no.digdir.fdk.searchservice.utils
-import no.digdir.fdk.searchservice.elastic.SearchObjectRepository
+
+import no.digdir.fdk.searchservice.elastic.ConceptSearchRepository
+import no.digdir.fdk.searchservice.elastic.DatasetSearchRepository
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.util.TestPropertyValues
@@ -17,12 +19,17 @@ abstract class ApiTestContext {
     var port = 0
 
     @Autowired
-    private lateinit var repository: SearchObjectRepository
+    private lateinit var datasetRepository: DatasetSearchRepository
+    @Autowired
+    private lateinit var conceptRepository: ConceptSearchRepository
 
     @BeforeEach
     fun populateElastic() {
-        repository.deleteAll()
-        repository.saveAll(listOf( TEST_DATASET_HIT_1, TEST_DATASET_HIT_ALL_FIELDS ))
+        datasetRepository.deleteAll()
+        datasetRepository.saveAll(listOf( TEST_DATASET_HIT_1, TEST_DATASET_HIT_ALL_FIELDS ))
+
+        conceptRepository.deleteAll()
+        conceptRepository.saveAll(listOf( TEST_CONCEPT_HIT_SUCCESS_1))
     }
 
     internal class Initializer : ApplicationContextInitializer<ConfigurableApplicationContext> {
