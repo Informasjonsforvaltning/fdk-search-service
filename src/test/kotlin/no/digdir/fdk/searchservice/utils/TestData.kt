@@ -85,11 +85,13 @@ val TEST_CONCEPT_HIT_SUCCESS_1 = TEST_NULL_CONCEPT.copy(
         id = "123",
         publisher = Publisher(
                 "Test publisher > name",
-                LocalizedStrings("NB Test publisher > prefLabel",
+                LocalizedStrings(
+                        "NB Test publisher > prefLabel",
                         "NN Test publisher > prefLabel",
                         "EN Test publisher > prefLabel")),
         definition = Definition(
-                LocalizedStrings("NB Test definition > text",
+                LocalizedStrings(
+                        "NB Test definition > text",
                         "NN Test definition > text",
                         "EN Test definition > text"),
                 Sources(listOf(TextAndURI(LocalizedStrings(
@@ -97,9 +99,10 @@ val TEST_CONCEPT_HIT_SUCCESS_1 = TEST_NULL_CONCEPT.copy(
                         "NN Test definition > sources > text",
                         "EN Test definition > sources > text")))),
                 "Test definition > sourceRelationship"),
-        prefLabel = LocalizedStrings("NB Test prefLabel",
-                "NN Test prefLabel",
-                "EN Test prefLabel"),
+        prefLabel = LocalizedStrings(
+                        "NB Test prefLabel",
+                        "NN Test prefLabel",
+                        "EN Test prefLabel"),
         subject = listOf(Subject(
                 LocalizedStrings(
                         "NB Test subject > altLabel",
@@ -117,4 +120,28 @@ val TEST_CONCEPT_HIT_SUCCESS_1 = TEST_NULL_CONCEPT.copy(
                         "NB Test subject > label",
                         "NN Test subject > label",
                         "EN Test subject > label")))
+)
+
+/**
+ * DATASERVICE
+ */
+
+val TEST_NULL_DATASERVICE = Dataservice("123", null, null, null)
+
+val TEST_DATASERVICE_HIT_SUCCESS_1 = TEST_NULL_DATASERVICE.copy(
+        id = "123",
+        title = LocalizedStrings(
+                "NB Test title",
+                "NN Test title",
+                "EN Test title"),
+        description = LocalizedStrings(
+                "NB Test description",
+                "NN Test description",
+                "EN Test description"),
+        publisher = Publisher(
+                "Test publisher > name",
+                LocalizedStrings(
+                        "NB Test publisher > prefLabel",
+                        "NN Test publisher > prefLabel",
+                        "EN Test publisher > prefLabel"))
 )
