@@ -11,6 +11,10 @@ val ELASTIC_ENV_VALUES: Map<String, String> = ImmutableMap.of(
         "ES_JAVA_OPTS", "-Xms2G -Xmx2G"
 )
 
+/**
+ * DATASET
+ */
+
 val TEST_NULL_DATASET = Dataset("123", null, null, null, null, null,
         null, null, null, null, null)
 
@@ -61,4 +65,48 @@ val TEST_DATASET_HIT_ALL_FIELDS = TEST_NULL_DATASET.copy(
         distribution = listOf(Distribution(LocalizedStrings("NB Test distribution",
                 "NN Test distribution",
                 "EN Test distribution")))
+)
+
+/**
+ * CONCEPT
+ */
+
+val TEST_NULL_CONCEPT = Concept("123", null, null, null, null)
+
+val TEST_CONCEPT_HIT_SUCCESS_1 = TEST_NULL_CONCEPT.copy(
+        id = "123",
+        publisher = Publisher(
+                "Test publisher > name",
+                LocalizedStrings("NB Test publisher > prefLabel",
+                        "NN Test publisher > prefLabel",
+                        "EN Test publisher > prefLabel")),
+        definition = Definition(
+                LocalizedStrings("NB Test definition > text",
+                        "NN Test definition > text",
+                        "EN Test definition > text"),
+                Sources(listOf(TextAndURI(LocalizedStrings(
+                        "NB Test definition > sources > text",
+                        "NN Test definition > sources > text",
+                        "EN Test definition > sources > text")))),
+                "Test definition > sourceRelationship"),
+        prefLabel = LocalizedStrings("NB Test prefLabel",
+                "NN Test prefLabel",
+                "EN Test prefLabel"),
+        subject = listOf(Subject(
+                LocalizedStrings(
+                        "NB Test subject > altLabel",
+                        "NN Test subject > altLabel",
+                        "EN Test subject > altLabel"),
+                LocalizedStrings(
+                        "NB Test subject > definition",
+                        "NN Test subject > definition",
+                        "EN Test subject > definition"),
+                LocalizedStrings(
+                        "NB Test subject > prefLabel",
+                        "NN Test subject > prefLabel",
+                        "EN Test subject > prefLabel"),
+                LocalizedStrings(
+                        "NB Test subject > label",
+                        "NN Test subject > label",
+                        "EN Test subject > label")))
 )
