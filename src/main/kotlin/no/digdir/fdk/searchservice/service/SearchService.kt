@@ -3,10 +3,7 @@ package no.digdir.fdk.searchservice.service
 import co.elastic.clients.elasticsearch._types.FieldValue
 import co.elastic.clients.elasticsearch._types.query_dsl.Operator
 import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType
-import no.digdir.fdk.searchservice.config.DATASET_INDEX_NAME
-import no.digdir.fdk.searchservice.model.Dataset
-import no.digdir.fdk.searchservice.model.SearchFilters
-import no.digdir.fdk.searchservice.model.SearchOperation
+import no.digdir.fdk.searchservice.model.*
 import org.springframework.data.elasticsearch.client.elc.NativeQuery
 import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations
@@ -17,20 +14,20 @@ import org.springframework.stereotype.Service
 import co.elastic.clients.elasticsearch._types.query_dsl.Query as DSLQuery
 
 @Service
-class DatasetSearchService(
+class SearchService(
     private val elasticSearchOperations: ElasticsearchOperations
 ) {
-    fun searchDatasets(search: SearchOperation): List<Dataset> =
+    fun search(search: SearchOperation, searchType: SearchType?): List<SearchObject> =
         elasticSearchOperations.search(
-            search.toElasticQuery(),
-            Dataset::class.java,
-            IndexCoordinates.of(DATASET_INDEX_NAME)
-        ).toDatasetList()
+            search.toElasticQuery(searchType),
+            SearchObject::class.java,
+            IndexCoordinates.of(SEARCH_INDEX_NAME)
+        ).toSearchObjectList()
 
-    private fun SearchOperation.toElasticQuery(): Query {
+    private fun SearchOperation.toElasticQuery(searchType: SearchType?): Query {
         val builder = NativeQuery.builder()
         if (!query.isNullOrBlank()) builder.addFieldsQuery(query)
-        if (filters != null) builder.addFilters(filters)
+        if (filters != null || searchType != null ) builder.addFilters(filters, searchType)
         return builder.build()
     }
 
@@ -49,20 +46,28 @@ class DatasetSearchService(
         }
     }
 
-    private fun NativeQueryBuilder.addFilters(filters: SearchFilters) {
+    private fun NativeQueryBuilder.addFilters(filters: SearchFilters?, searchType: SearchType?) {
         withFilter { queryBuilder ->
             queryBuilder.bool { boolBuilder ->
-                boolBuilder.must(filters.asQueryFilters())
+                boolBuilder.must(createQueryFilters(filters, searchType))
             }
         }
     }
 
-    private fun SearchHits<Dataset>.toDatasetList(): List<Dataset> = this.map { it.content }.toList()
-
-    private fun SearchFilters.asQueryFilters(): List<DSLQuery> {
+    private fun createQueryFilters(filters: SearchFilters?, searchType: SearchType?): List<DSLQuery> {
         val queryFilters = mutableListOf<DSLQuery>()
 
-        if (opendata != null) {
+        if (searchType != null) {
+            queryFilters.add(DSLQuery.of { queryBuilder ->
+                queryBuilder.term { termBuilder ->
+                    termBuilder
+                        .field("searchType.keyword")
+                        .value(FieldValue.of(searchType.name))
+                }
+            })
+        }
+
+        filters?.opendata?.let { opendata ->
             queryFilters.add(DSLQuery.of { queryBuilder ->
                 queryBuilder.term { termBuilder ->
                     termBuilder
@@ -72,7 +77,7 @@ class DatasetSearchService(
             })
         }
 
-        if (accessRights != null) {
+        filters?.accessRights?.let { accessRights ->
             queryFilters.add(DSLQuery.of { queryBuilder ->
                 queryBuilder.term { termBuilder ->
                     termBuilder
@@ -82,20 +87,22 @@ class DatasetSearchService(
             })
         }
 
-        if (theme != null) {
+        filters?.theme?.let { theme ->
             val themeList = theme.split(",").map { it.trim() }
 
             themeList.forEach { themeValue ->
                 queryFilters.add(DSLQuery.of { queryBuilder ->
                     queryBuilder.term { termBuilder ->
                         termBuilder
-                            .field("theme.code.keyword")
+                            .field("dataTheme.code.keyword")
                             .value(FieldValue.of(themeValue))
                     }
                 })
             }
         }
 
-            return queryFilters
+        return queryFilters
     }
+
+    private fun SearchHits<SearchObject>.toSearchObjectList(): List<SearchObject> = this.map { it.content }.toList()
 }

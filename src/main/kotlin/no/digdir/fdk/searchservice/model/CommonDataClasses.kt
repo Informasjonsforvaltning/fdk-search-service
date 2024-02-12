@@ -26,31 +26,10 @@ data class LosNode(
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class Publisher(
-  val name: String?,
-  val prefLabel: LocalizedStrings?,
-)
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties(ignoreUnknown = true)
 data class ReferenceDataCode(
+  val uri: String?,
   val code: String,
   val prefLabel: LocalizedStrings?,
-)
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class Subject(
-  val altLabel: LocalizedStrings?,
-  val definition: LocalizedStrings?,
-  val prefLabel: LocalizedStrings?,
-  val label: LocalizedStrings?,
-)
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class Distribution(
-  val title: LocalizedStrings?,
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -71,4 +50,41 @@ data class Definition(
   val text: LocalizedStrings?,
   val sources: Sources?,
   val sourceRelationship: String?,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class HarvestMetaData(
+  val firstHarvested: String?,
+  val changed: List<String>?,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class Catalog(
+  val description: LocalizedStrings?,
+  val id: String?,
+  val publisher: Organization?,
+  val title: LocalizedStrings?,
+  val uri: String?,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class Collection (
+  val description: LocalizedStrings?,
+  val id: String?,
+  val publisher: Organization?,
+  val label: LocalizedStrings?,
+  val uri: String?,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class Organization(
+  val identifier: String?,
+  val uri: String?,
+  val orgPath: String?,
+  val name: String?,
+  val prefLabel: LocalizedStrings?,
 )

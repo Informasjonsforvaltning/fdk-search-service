@@ -2,7 +2,7 @@ package no.digdir.fdk.searchservice.integration
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import no.digdir.fdk.searchservice.model.Dataset
+import no.digdir.fdk.searchservice.model.SearchObject
 import no.digdir.fdk.searchservice.model.SearchFilters
 import no.digdir.fdk.searchservice.model.SearchOperation
 import no.digdir.fdk.searchservice.utils.ApiTestContext
@@ -22,15 +22,15 @@ import org.springframework.test.context.ContextConfiguration
 )
 @ContextConfiguration(initializers = [ApiTestContext.Initializer::class])
 @Tag("integration")
-class SearchObjectTest: ApiTestContext() {
+class SearchDatasetTest: ApiTestContext() {
     private val mapper = jacksonObjectMapper()
     private val SEARCH_QUERY = "test"
     private val SEARCH_FILTER = SearchFilters(null, null, null)
     private val SEARCH_QUERY_NO_HITS = "nohits"
-    private val SEARCH_QUERYS_HIT_ALL_FIELDS = listOf(
-        "description", "objective", "keyword", "theme", "losTheme", "publisher",
-        "accessRights", "subject", "distribution")
-    private val DATASETS_PATH = "/datasets"
+    private val SEARCH_QUERYS_HIT_ALL_FIELDS =
+        listOf("title", "description", "keyword", "theme", "losTheme", "publisher", "accessRights", "spatial",
+            "provenance", "harvest", "catalog")
+    private val DATASETS_PATH = "/search/datasets"
 
     @Test
     fun `search datasets with at least one hit`() {
@@ -38,8 +38,8 @@ class SearchObjectTest: ApiTestContext() {
         val response = requestApi(DATASETS_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
-        val result: List<Dataset> = mapper.readValue(response["body"] as String)
-        Assertions.assertNotEquals(0, result.size)
+        val result: List<SearchObject> = mapper.readValue(response["body"] as String)
+        Assertions.assertTrue(result.size > 0)
     }
 
     @Test
@@ -48,7 +48,7 @@ class SearchObjectTest: ApiTestContext() {
         val response = requestApi(DATASETS_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
-        val result: List<Dataset> = mapper.readValue(response["body"] as String)
+        val result: List<SearchObject> = mapper.readValue(response["body"] as String)
         Assertions.assertEquals(0, result.size)
     }
 
@@ -58,19 +58,19 @@ class SearchObjectTest: ApiTestContext() {
         val response = requestApi(DATASETS_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
-        val result: List<Dataset> = mapper.readValue(response["body"] as String)
+        val result: List<SearchObject> = mapper.readValue(response["body"] as String)
         Assertions.assertNotEquals(0, result.size)
     }
 
     @Test
-    fun `search and hit all fields successfully`() {
+    fun `search and hit all datasets fields successfully`() {
         SEARCH_QUERYS_HIT_ALL_FIELDS.forEach {
             val searchBody = mapper.writeValueAsString(SearchOperation(it))
             val response = requestApi(DATASETS_PATH, port, searchBody, POST)
             Assertions.assertEquals(200, response["status"])
 
-            val result: List<Dataset> = mapper.readValue(response["body"] as String)
-            Assertions.assertNotEquals(0, result.size)
+            val result: List<SearchObject> = mapper.readValue(response["body"] as String)
+            Assertions.assertTrue(result.size > 0)
         }
     }
 
@@ -80,7 +80,7 @@ class SearchObjectTest: ApiTestContext() {
         val response = requestApi(DATASETS_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
-        val result: List<Dataset> = mapper.readValue(response["body"] as String)
+        val result: List<SearchObject> = mapper.readValue(response["body"] as String)
         Assertions.assertNotEquals(0, result.size)
 
         for (dataset in result) {
@@ -94,7 +94,7 @@ class SearchObjectTest: ApiTestContext() {
         val response = requestApi(DATASETS_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
-        val result: List<Dataset> = mapper.readValue(response["body"] as String)
+        val result: List<SearchObject> = mapper.readValue(response["body"] as String)
         Assertions.assertNotEquals(0, result.size)
 
         for (dataset in result) {
@@ -108,11 +108,11 @@ class SearchObjectTest: ApiTestContext() {
         val response = requestApi(DATASETS_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
-        val result: List<Dataset> = mapper.readValue(response["body"] as String)
+        val result: List<SearchObject> = mapper.readValue(response["body"] as String)
         Assertions.assertNotEquals(0, result.size )
 
         for (dataset in result) {
-            Assertions.assertEquals("PUBLIC", dataset.accessRights?.code)
+            Assertions.assertTrue(dataset.accessRights?.code?.contains("PUBLIC") ?: false)
         }
     }
 
@@ -122,7 +122,7 @@ class SearchObjectTest: ApiTestContext() {
         val response = requestApi(DATASETS_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
-        val result: List<Dataset> = mapper.readValue(response["body"] as String)
+        val result: List<SearchObject> = mapper.readValue(response["body"] as String)
         Assertions.assertEquals(0, result.size)
     }
 
@@ -132,13 +132,13 @@ class SearchObjectTest: ApiTestContext() {
         val response = requestApi(DATASETS_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
-        val result: List<Dataset> = mapper.readValue(response["body"] as String)
-        Assertions.assertNotEquals(0, result.size)
+        val result: List<SearchObject> = mapper.readValue(response["body"] as String)
+        Assertions.assertTrue(result.size > 0)
 
         val validValues = listOf("REGI")
 
         val allThemesValid = result.all { dataset ->
-            val themeCodes = dataset.theme?.map { it.code }
+            val themeCodes = dataset.dataTheme?.map { it.code }
             val datasetValid = themeCodes?.containsAll(validValues) ?: false
             datasetValid
         }
@@ -152,13 +152,13 @@ class SearchObjectTest: ApiTestContext() {
         val response = requestApi(DATASETS_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
-        val result: List<Dataset> = mapper.readValue(response["body"] as String)
+        val result: List<SearchObject> = mapper.readValue(response["body"] as String)
         Assertions.assertNotEquals(0, result.size)
 
         val validValues = listOf("ENVI", "REGI")
 
         val allThemesValid = result.all { dataset ->
-            val themeCodes = dataset.theme?.map { it.code }
+            val themeCodes = dataset.dataTheme?.map { it.code }
             val datasetValid = themeCodes?.containsAll(validValues) ?: false
             datasetValid
         }
@@ -172,7 +172,7 @@ class SearchObjectTest: ApiTestContext() {
         val response = requestApi(DATASETS_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
-        val result: List<Dataset> = mapper.readValue(response["body"] as String)
+        val result: List<SearchObject> = mapper.readValue(response["body"] as String)
         Assertions.assertEquals(0, result.size)
     }
 }
