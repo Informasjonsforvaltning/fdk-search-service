@@ -21,28 +21,40 @@ import org.springframework.test.context.ContextConfiguration
 )
 @ContextConfiguration(initializers = [ApiTestContext.Initializer::class])
 @Tag("integration")
-class ConceptSearchTest: ApiTestContext() {
+class SearchObjectTest: ApiTestContext() {
     private val mapper = jacksonObjectMapper()
+    private val PATH = "/search"
     private val SEARCH_QUERY = "test"
     private val SEARCH_QUERY_NO_HITS = "nohits"
-    private val SEARCH_QUERYS_HIT_ALL_FIELDS =
-        listOf("identifier", "publisher","definition","prefLabel", "harvest", "collection")
-    private val CONCEPT_PATH = "/search/concepts"
+    private val SEARCH_QUERYS_SUCCESS_ALL_TEXT_FIELDS =
+        listOf("uri",
+            "accessRights",
+            "catalog",
+            "dataTheme",
+            "description",
+            "fdkFormatPrefixed",
+            "harvest",
+            "keyword",
+            "losTheme",
+            "organization",
+            "provenance",
+            "spatial",
+            "title")
 
     @Test
-    fun `search concepts with at least one hit`() {
+    fun `search with at least one hit`() {
         val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERY))
-        val response = requestApi(CONCEPT_PATH, port, searchBody, POST)
+        val response = requestApi(PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
         val result: List<SearchObject> = mapper.readValue(response["body"] as String)
-        Assertions.assertNotEquals(result.size, 0)
+        Assertions.assertTrue (result.size > 0)
     }
 
     @Test
-    fun `search concepts with no hits`() {
+    fun `search with no hits`() {
         val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERY_NO_HITS))
-        val response = requestApi(CONCEPT_PATH, port, searchBody, POST)
+        val response = requestApi(PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
         val result: List<SearchObject> = mapper.readValue(response["body"] as String)
@@ -50,9 +62,9 @@ class ConceptSearchTest: ApiTestContext() {
     }
 
     @Test
-    fun `search concepts with empty query`() {
+    fun `search with empty query`() {
         val searchBody = mapper.writeValueAsString(SearchOperation(""))
-        val response = requestApi(CONCEPT_PATH, port, searchBody, POST)
+        val response = requestApi(PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
         val result: List<SearchObject> = mapper.readValue(response["body"] as String)
@@ -60,14 +72,14 @@ class ConceptSearchTest: ApiTestContext() {
     }
 
     @Test
-    fun `search and hit all fields successfully`() {
-        SEARCH_QUERYS_HIT_ALL_FIELDS.forEach {
+    fun `search and hit all text fields successfully`() {
+        SEARCH_QUERYS_SUCCESS_ALL_TEXT_FIELDS.forEach {
             val searchBody = mapper.writeValueAsString(SearchOperation(it))
-            val response = requestApi(CONCEPT_PATH, port, searchBody, POST)
+            val response = requestApi(PATH, port, searchBody, POST)
             Assertions.assertEquals(200, response["status"])
 
             val result: List<SearchObject> = mapper.readValue(response["body"] as String)
-            Assertions.assertNotEquals(result.size, 0)
+            Assertions.assertTrue(result.size > 0)
         }
     }
 }

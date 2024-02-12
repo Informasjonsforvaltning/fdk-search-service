@@ -21,5 +21,6 @@ replay_pid*
 target/
 *.iml
 .idea/
+.vscode/
 
 Local.Dockerfile
