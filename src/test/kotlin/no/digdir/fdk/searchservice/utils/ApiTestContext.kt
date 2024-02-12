@@ -1,6 +1,7 @@
 package no.digdir.fdk.searchservice.utils
 
 import no.digdir.fdk.searchservice.elastic.ConceptSearchRepository
+import no.digdir.fdk.searchservice.elastic.DataserviceSearchRepository
 import no.digdir.fdk.searchservice.elastic.DatasetSearchRepository
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,7 +12,7 @@ import org.springframework.context.ConfigurableApplicationContext
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy
 import org.testcontainers.elasticsearch.ElasticsearchContainer
 import java.net.HttpURLConnection
-import java.net.URL
+import java.net.URI
 
 abstract class ApiTestContext {
 
@@ -22,6 +23,8 @@ abstract class ApiTestContext {
     private lateinit var datasetRepository: DatasetSearchRepository
     @Autowired
     private lateinit var conceptRepository: ConceptSearchRepository
+    @Autowired
+    private lateinit var dataserviceRepository: DataserviceSearchRepository
 
     @BeforeEach
     fun populateElastic() {
@@ -30,6 +33,9 @@ abstract class ApiTestContext {
 
         conceptRepository.deleteAll()
         conceptRepository.saveAll(listOf( TEST_CONCEPT_HIT_SUCCESS_1))
+
+        dataserviceRepository.deleteAll()
+        dataserviceRepository.saveAll(listOf( TEST_DATASERVICE_HIT_SUCCESS_1 ))
     }
 
     internal class Initializer : ApplicationContextInitializer<ConfigurableApplicationContext> {
@@ -48,7 +54,7 @@ abstract class ApiTestContext {
         init {
             elasticContainer.start()
             try {
-                val con = URL("http://localhost:5050/ping").openConnection() as HttpURLConnection
+                val con = URI.create("http://localhost:5050/ping").toURL().openConnection() as HttpURLConnection
                 con.connect()
             } catch (e: Exception) {
                 e.printStackTrace()
