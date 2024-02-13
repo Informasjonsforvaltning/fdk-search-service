@@ -173,3 +173,21 @@ val TEST_INFORMATION_MODEL_HIT_SUCCESS_1 = TEST_NULL_INFORMATION_MODEL.copy(
                         "NN Test publisher > prefLabel",
                         "EN Test publisher > prefLabel"))
 )
+
+/**
+ * EVENT
+ */
+
+val TEST_NULL_EVENT = Event("123", null, null)
+
+val TEST_EVENT_HIT_SUCCESS_1 = TEST_NULL_EVENT.copy(
+        id = "123",
+        title = LocalizedStrings(
+                "NB Test title",
+                "NN Test title",
+                "EN Test title"),
+        description = LocalizedStrings(
+                "NB Test description",
+                "NN Test description",
+                "EN Test description")
+)
