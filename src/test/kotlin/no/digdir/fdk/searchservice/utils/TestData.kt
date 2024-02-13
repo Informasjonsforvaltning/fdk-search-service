@@ -137,3 +137,39 @@ val TEST_DATASERVICE_HIT_SUCCESS_1 = TEST_NULL_DATASERVICE.copy(
                         "NN Test publisher > prefLabel",
                         "EN Test publisher > prefLabel"))
 )
+
+/**
+ * INFORMATION MODEL
+ */
+
+val TEST_NULL_INFORMATION_MODEL = InformationModel("123", null, null, null, null, null, null)
+
+val TEST_INFORMATION_MODEL_HIT_SUCCESS_1 = TEST_NULL_INFORMATION_MODEL.copy(
+        id = "123",
+        title = LocalizedStrings(
+                "NB Test title",
+                "NN Test title",
+                "EN Test title"),
+        keyword = listOf(LocalizedStrings(
+                "NB Test keyword",
+                "NN Test keyword",
+                "EN Test keyword")),
+        theme = listOf(EuDataTheme(LocalizedStrings(
+                "NB Test theme",
+                "NN Test theme",
+                "EN Test theme"))),
+        losTheme = listOf(LosNode(LocalizedStrings(
+                "NB Test losTheme",
+                "NN Test losTheme",
+                "EN Test losTheme"))),
+        description = LocalizedStrings(
+                "NB Test description",
+                "NN Test description",
+                "EN Test description"),
+        publisher = Publisher(
+                "Test publisher > name",
+                LocalizedStrings(
+                        "NB Test publisher > prefLabel",
+                        "NN Test publisher > prefLabel",
+                        "EN Test publisher > prefLabel"))
+)

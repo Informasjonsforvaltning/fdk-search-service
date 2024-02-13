@@ -3,6 +3,7 @@ package no.digdir.fdk.searchservice.elastic
 import no.digdir.fdk.searchservice.model.Concept
 import no.digdir.fdk.searchservice.model.Dataservice
 import no.digdir.fdk.searchservice.model.Dataset
+import no.digdir.fdk.searchservice.model.InformationModel
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 import org.springframework.stereotype.Repository
 
@@ -14,3 +15,6 @@ interface ConceptSearchRepository : ElasticsearchRepository<Concept, String>
 
 @Repository
 interface DataserviceSearchRepository : ElasticsearchRepository<Dataservice, String>
+
+@Repository
+interface InformationModelSearchRepository : ElasticsearchRepository<InformationModel, String>
