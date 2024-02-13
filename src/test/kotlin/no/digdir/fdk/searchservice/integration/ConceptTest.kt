@@ -30,7 +30,7 @@ class ConceptSearchTest: ApiTestContext() {
 
     @Test
     fun `search concepts with at least one hit`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERY))
+        val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERY, null))
         val response = requestApi(ConceptS_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
@@ -40,7 +40,7 @@ class ConceptSearchTest: ApiTestContext() {
 
     @Test
     fun `search concepts with no hits`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERY_NO_HITS))
+        val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERY_NO_HITS, null))
         val response = requestApi(ConceptS_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
@@ -50,7 +50,7 @@ class ConceptSearchTest: ApiTestContext() {
 
     @Test
     fun `search concepts with empty query`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(""))
+        val searchBody = mapper.writeValueAsString(SearchOperation("", null))
         val response = requestApi(ConceptS_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
@@ -61,7 +61,7 @@ class ConceptSearchTest: ApiTestContext() {
     @Test
     fun `search and hit all fields successfully`() {
         SEARCH_QUERYS_HIT_ALL_FIELDS.forEach {
-            val searchBody = mapper.writeValueAsString(SearchOperation(it))
+            val searchBody = mapper.writeValueAsString(SearchOperation(it, null))
             val response = requestApi(ConceptS_PATH, port, searchBody, POST)
             Assertions.assertEquals(200, response["status"])
 
