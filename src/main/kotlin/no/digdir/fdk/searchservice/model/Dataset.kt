@@ -23,4 +23,5 @@ data class Dataset(
     val accessRights: ReferenceDataCode?,
     val subject: List<Subject>?,
     val distribution: List<Distribution>?,
+    val isOpenData: Boolean?
 )

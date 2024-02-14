@@ -15,13 +15,13 @@ val ELASTIC_ENV_VALUES: Map<String, String> = ImmutableMap.of(
  * DATASET
  */
 
-val TEST_NULL_DATASET = Dataset("123", null, null, null, null, null,
-        null, null, null, null, null)
+val TEST_NULL_DATASET = Dataset("123", null, null, null, null, null, null, null, null, null, null, null)
 
 val TEST_DATASET_HIT_1 = TEST_NULL_DATASET.copy(
         id = "123",
         title = LocalizedStrings("NB Test title","NN Test title","EN Test title"),
         description = LocalizedStrings("NB Test description","NN Test description","EN Test description"),
+        isOpenData = false
 )
 
 val TEST_DATASET_HIT_ALL_FIELDS = TEST_NULL_DATASET.copy(
@@ -46,7 +46,7 @@ val TEST_DATASET_HIT_ALL_FIELDS = TEST_NULL_DATASET.copy(
                 LocalizedStrings("NB Test publisher",
                         "NN Test publisher",
                         "EN Test publisher")),
-        accessRights = ReferenceDataCode("Test accessRights",
+        accessRights = ReferenceDataCode("PUBLIC",
                 LocalizedStrings("NB Test accessRights",
                         "NN Test accessRights",
                         "EN Test accessRights")),
@@ -64,7 +64,8 @@ val TEST_DATASET_HIT_ALL_FIELDS = TEST_NULL_DATASET.copy(
                         "EN Test subject"))),
         distribution = listOf(Distribution(LocalizedStrings("NB Test distribution",
                 "NN Test distribution",
-                "EN Test distribution")))
+                "EN Test distribution"))),
+        isOpenData = true
 )
 
 /**
