@@ -34,7 +34,7 @@ class SearchObjectTest: ApiTestContext() {
 
     @Test
     fun `search datasets with at least one hit`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERY, null))
+        val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERY))
         val response = requestApi(DATASETS_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
@@ -44,7 +44,7 @@ class SearchObjectTest: ApiTestContext() {
 
     @Test
     fun `search datasets with no hits`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERY_NO_HITS, null))
+        val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERY_NO_HITS))
         val response = requestApi(DATASETS_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
@@ -54,7 +54,7 @@ class SearchObjectTest: ApiTestContext() {
 
     @Test
     fun `search datasets with empty query`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation("", null))
+        val searchBody = mapper.writeValueAsString(SearchOperation(""))
         val response = requestApi(DATASETS_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
@@ -65,7 +65,7 @@ class SearchObjectTest: ApiTestContext() {
     @Test
     fun `search and hit all fields successfully`() {
         SEARCH_QUERYS_HIT_ALL_FIELDS.forEach {
-            val searchBody = mapper.writeValueAsString(SearchOperation(it, null))
+            val searchBody = mapper.writeValueAsString(SearchOperation(it))
             val response = requestApi(DATASETS_PATH, port, searchBody, POST)
             Assertions.assertEquals(200, response["status"])
 
@@ -76,7 +76,7 @@ class SearchObjectTest: ApiTestContext() {
 
     @Test
     fun `filter datasets on isOpen = true`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(null, SEARCH_FILTER.copy(opendata = true)))
+        val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(opendata = true)))
         val response = requestApi(DATASETS_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
@@ -90,7 +90,7 @@ class SearchObjectTest: ApiTestContext() {
 
     @Test
     fun `filter datasets on isOpen = false`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(null, SEARCH_FILTER.copy(opendata = false)))
+        val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(opendata = false)))
         val response = requestApi(DATASETS_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
@@ -104,7 +104,7 @@ class SearchObjectTest: ApiTestContext() {
 
     @Test
     fun `filter datasets on accessRight = 'PUBLIC'`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(null, SEARCH_FILTER.copy(accessRights = "PUBLIC")))
+        val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(accessRights = "PUBLIC")))
         val response = requestApi(DATASETS_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
@@ -118,7 +118,7 @@ class SearchObjectTest: ApiTestContext() {
 
     @Test
     fun `filter datasets on non valid accessRight returns empty list`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(null, SEARCH_FILTER.copy(accessRights = "")))
+        val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(accessRights = "")))
         val response = requestApi(DATASETS_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 

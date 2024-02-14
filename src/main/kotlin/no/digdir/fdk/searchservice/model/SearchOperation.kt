@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class SearchOperation(
-  val query: String?,
-  val filters: SearchFilters?
+  val query: String? = null,
+  val filters: SearchFilters? = null
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
