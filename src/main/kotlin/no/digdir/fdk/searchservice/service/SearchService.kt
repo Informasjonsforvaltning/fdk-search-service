@@ -125,6 +125,20 @@ class SearchService(
             }
         }
 
+        filters?.los?.let { los ->
+            val losThemeList = los.split(",").map { it.trim() }
+
+            losThemeList.forEach { losValue ->
+                queryFilters.add(DSLQuery.of { queryBuilder ->
+                    queryBuilder.term { termBuilder ->
+                        termBuilder
+                            .field("losTheme.losPaths.keyword")
+                            .value(FieldValue.of(losValue))
+                    }
+                })
+            }
+        }
+
             return queryFilters
     }
     private fun SearchHits<SearchObject>.toSearchObjectList(): List<SearchObject> = this.map { it.content }.toList()
