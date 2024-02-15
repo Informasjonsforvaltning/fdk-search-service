@@ -25,7 +25,7 @@ import org.springframework.test.context.ContextConfiguration
 class SearchObjectTest: ApiTestContext() {
     private val mapper = jacksonObjectMapper()
     private val SEARCH_QUERY = "test"
-    private val SEARCH_FILTER = SearchFilters(null, null)
+    private val SEARCH_FILTER = SearchFilters(null, null, null)
     private val SEARCH_QUERY_NO_HITS = "nohits"
     private val SEARCH_QUERYS_HIT_ALL_FIELDS = listOf(
         "description", "objective", "keyword", "theme", "losTheme", "publisher",
@@ -119,6 +119,56 @@ class SearchObjectTest: ApiTestContext() {
     @Test
     fun `filter datasets on non valid accessRight returns empty list`() {
         val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(accessRights = "")))
+        val response = requestApi(DATASETS_PATH, port, searchBody, POST)
+        Assertions.assertEquals(200, response["status"])
+
+        val result: List<Dataset> = mapper.readValue(response["body"] as String)
+        Assertions.assertEquals(0, result.size)
+    }
+
+    @Test
+    fun `filter datasets on one theme, theme = 'REGI'`() {
+        val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(theme = "REGI")))
+        val response = requestApi(DATASETS_PATH, port, searchBody, POST)
+        Assertions.assertEquals(200, response["status"])
+
+        val result: List<Dataset> = mapper.readValue(response["body"] as String)
+        Assertions.assertNotEquals(0, result.size)
+
+        val validValues = listOf("REGI")
+
+        val allThemesValid = result.all { dataset ->
+            val themeCodes = dataset.theme?.map { it.code }
+            val datasetValid = themeCodes?.containsAll(validValues) ?: false
+            datasetValid
+        }
+
+        Assertions.assertTrue(allThemesValid)
+    }
+
+    @Test
+    fun `filter datasets on multiple themes, theme = 'ENVI,REGI'`() {
+        val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(theme = "ENVI,REGI")))
+        val response = requestApi(DATASETS_PATH, port, searchBody, POST)
+        Assertions.assertEquals(200, response["status"])
+
+        val result: List<Dataset> = mapper.readValue(response["body"] as String)
+        Assertions.assertNotEquals(0, result.size)
+
+        val validValues = listOf("ENVI", "REGI")
+
+        val allThemesValid = result.all { dataset ->
+            val themeCodes = dataset.theme?.map { it.code }
+            val datasetValid = themeCodes?.containsAll(validValues) ?: false
+            datasetValid
+        }
+
+        Assertions.assertTrue(allThemesValid)
+    }
+
+    @Test
+    fun `filter datasets on non-existing theme = '1234' should return nothing`() {
+        val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(theme = "1234")))
         val response = requestApi(DATASETS_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 

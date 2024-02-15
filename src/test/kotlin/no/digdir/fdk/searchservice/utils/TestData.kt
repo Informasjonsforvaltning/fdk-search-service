@@ -19,9 +19,13 @@ val TEST_NULL_DATASET = Dataset("123", null, null, null, null, null, null, null,
 
 val TEST_DATASET_HIT_1 = TEST_NULL_DATASET.copy(
         id = "123",
-        title = LocalizedStrings("NB Test title","NN Test title","EN Test title"),
-        description = LocalizedStrings("NB Test description","NN Test description","EN Test description"),
-        isOpenData = false
+        title = LocalizedStrings("NB Test title", "NN Test title", "EN Test title"),
+        description = LocalizedStrings("NB Test description", "NN Test description", "EN Test description"),
+        isOpenData = false,
+        theme = listOf(EuDataTheme(
+                LocalizedStrings("NB theme", "NN theme", "EN theme"),
+                "REGI")
+        )
 )
 
 val TEST_DATASET_HIT_ALL_FIELDS = TEST_NULL_DATASET.copy(
@@ -38,7 +42,10 @@ val TEST_DATASET_HIT_ALL_FIELDS = TEST_NULL_DATASET.copy(
                 "EN Test keyword")),
         theme = listOf(EuDataTheme(LocalizedStrings("NB Test theme",
                 "NN Test theme",
-                "EN Test theme"))),
+                "EN Test theme"), "ENVI"),
+                EuDataTheme(LocalizedStrings("NB Test theme",
+                        "NN Test theme",
+                        "EN Test theme"), "REGI")),
         losTheme = listOf(LosNode(LocalizedStrings("NB Test losTheme",
                 "NN Test losTheme",
                 "EN Test losTheme"))),

@@ -11,5 +11,6 @@ data class SearchOperation(
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class SearchFilters(
   val opendata: Boolean?,
-  val accessRights: String?
+  val accessRights: String?,
+  val theme: String?
 )
