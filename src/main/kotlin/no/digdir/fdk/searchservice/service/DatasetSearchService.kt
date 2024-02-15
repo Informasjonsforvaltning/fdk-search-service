@@ -81,6 +81,21 @@ class DatasetSearchService(
                 }
             })
         }
-        return queryFilters
+
+        if (theme != null) {
+            val themeList = theme.split(",").map { it.trim() }
+
+            themeList.forEach { themeValue ->
+                queryFilters.add(DSLQuery.of { queryBuilder ->
+                    queryBuilder.term { termBuilder ->
+                        termBuilder
+                            .field("theme.code.keyword")
+                            .value(FieldValue.of(themeValue))
+                    }
+                })
+            }
+        }
+
+            return queryFilters
     }
 }

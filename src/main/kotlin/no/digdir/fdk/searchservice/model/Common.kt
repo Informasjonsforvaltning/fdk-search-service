@@ -15,6 +15,7 @@ data class LocalizedStrings(
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class EuDataTheme(
   val title: LocalizedStrings?,
+  val code: String?
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
