@@ -100,9 +100,17 @@ class SearchService(
                 })
             }
         }
+        filters?.provenance?.let { provenance ->
+            queryFilters.add(DSLQuery.of { queryBuilder ->
+                queryBuilder.term { termBuilder ->
+                    termBuilder
+                        .field("provenance.code.keyword")
+                        .value(FieldValue.of(provenance))
+                }
+            })
+        }
 
         return queryFilters
     }
-
     private fun SearchHits<SearchObject>.toSearchObjectList(): List<SearchObject> = this.map { it.content }.toList()
 }

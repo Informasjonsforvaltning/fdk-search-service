@@ -25,7 +25,7 @@ import org.springframework.test.context.ContextConfiguration
 class SearchDatasetTest: ApiTestContext() {
     private val mapper = jacksonObjectMapper()
     private val SEARCH_QUERY = "test"
-    private val SEARCH_FILTER = SearchFilters(null, null, null)
+    private val SEARCH_FILTER = SearchFilters(null, null, null, null)
     private val SEARCH_QUERY_NO_HITS = "nohits"
     private val SEARCH_QUERYS_HIT_ALL_FIELDS =
         listOf("title", "description", "keyword", "theme", "losTheme", "publisher", "accessRights", "spatial",
@@ -174,5 +174,19 @@ class SearchDatasetTest: ApiTestContext() {
 
         val result: List<SearchObject> = mapper.readValue(response["body"] as String)
         Assertions.assertEquals(0, result.size)
+    }
+
+    @Test
+    fun `filter datasets on provenance = 'BRUKER'`() {
+        val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(provenance = "BRUKER")))
+        val response = requestApi(DATASETS_PATH, port, searchBody, POST)
+        Assertions.assertEquals(200, response["status"])
+
+        val result: List<Dataset> = mapper.readValue(response["body"] as String)
+        Assertions.assertNotEquals(0, result.size )
+
+        for (dataset in result) {
+            Assertions.assertEquals("BRUKER", dataset.provenance?.code)
+        }
     }
 }
