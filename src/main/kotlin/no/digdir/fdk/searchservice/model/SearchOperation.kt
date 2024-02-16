@@ -13,5 +13,6 @@ data class SearchFilters(
   val opendata: Boolean?,
   val accessRights: String?,
   val theme: String?,
+  val spatial: String?,
   val provenance: String?
 )

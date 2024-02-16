@@ -111,7 +111,21 @@ class SearchService(
             })
         }
 
-        return queryFilters
+        filters?.spatial?.let { spatial ->
+            val filterList = spatial.split(",").map { it.trim() }
+
+            filterList.forEach { spatialValue ->
+                queryFilters.add(DSLQuery.of { queryBuilder ->
+                    queryBuilder.term { termBuilder ->
+                        termBuilder
+                            .field("spatial.code.keyword")
+                            .value(FieldValue.of(spatialValue))
+                    }
+                })
+            }
+        }
+
+            return queryFilters
     }
     private fun SearchHits<SearchObject>.toSearchObjectList(): List<SearchObject> = this.map { it.content }.toList()
 }

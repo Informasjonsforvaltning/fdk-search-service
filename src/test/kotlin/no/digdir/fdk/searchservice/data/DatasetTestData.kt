@@ -138,4 +138,19 @@ val TEST_DATASET_FILTERS = TEST_DATASET_HIT_ALL_FIELDS.copy(
             "Brukar",
             "User")
     ),
+    spatial = listOf(
+        ReferenceDataCode(
+            uri = "spatial > uri",
+            code = "Norge",
+            prefLabel = LocalizedStrings(
+                "Norge",
+                "Noreg",
+                "Norway")
+        ),
+        ReferenceDataCode(
+            uri = "spatial > uri",
+            code = "Spania",
+            prefLabel = null
+        )
+    ),
 )
