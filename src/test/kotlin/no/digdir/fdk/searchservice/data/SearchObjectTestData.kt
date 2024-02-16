@@ -79,12 +79,14 @@ val TEST_SEARCH_OBJECT_AND_HIT_ALL_FIELDS = TEST_NULL_SEARCH_OBJECT.copy(
                 LocalizedStrings(
                     "NB Test losTheme > name 1",
                     "NN Test losTheme > name 1",
-                    "EN Test losTheme > name 1")),
+                    "EN Test losTheme > name 1"),
+                losPaths = null),
             LosNode(
                 LocalizedStrings(
                     "NB Test losTheme > name 2",
                     "NN Test losTheme > name 2",
-                    "EN Test losTheme > name 2"))
+                    "EN Test losTheme > name 2"),
+                losPaths = "Test")
         ),
         organization = Organization(
             orgPath = "/STAT/072417858",

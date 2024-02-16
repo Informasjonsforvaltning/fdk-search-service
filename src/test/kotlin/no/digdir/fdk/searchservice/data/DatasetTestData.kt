@@ -55,6 +55,7 @@ val TEST_DATASET_HIT_ALL_FIELDS = TEST_NULL_DATASET.copy(
                 "NB Test losTheme > name",
                 "NN Test losTheme > name",
                 "EN Test losTheme > name"),
+            losPaths = "test",
         )
     ),
     publisher = Organization(
@@ -157,5 +158,16 @@ val TEST_DATASET_FILTERS = TEST_DATASET_HIT_ALL_FIELDS.copy(
             code = "56789",
             prefLabel = LocalizedStrings(nb = "Sogn og fjordane", null ,null )
         )
+    ),
+    losTheme = listOf(
+        LosNode(
+            name = null,
+            losPaths = "familie-og-barn",
+        ),
+        LosNode(
+            name = null,
+            losPaths = "demokrati-og-innbyggerrettigheter/politikk-og-valg",
+        ),
+
     ),
 )

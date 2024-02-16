@@ -138,7 +138,6 @@ class SearchService(
                 })
             }
         }
-
             return queryFilters
     }
     private fun SearchHits<SearchObject>.toSearchObjectList(): List<SearchObject> = this.map { it.content }.toList()

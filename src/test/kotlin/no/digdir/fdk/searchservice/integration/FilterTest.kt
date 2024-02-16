@@ -27,7 +27,7 @@ import org.springframework.test.context.ContextConfiguration
 @Tag("integration")
 class FilterTest: ApiTestContext() {
     private val mapper = jacksonObjectMapper()
-    private val SEARCH_FILTER = SearchFilters(null, null, null, null, null)
+    private val SEARCH_FILTER = SearchFilters(null, null, null, null, null, null)
     private val DATASETS_PATH = "/search/datasets"
 
     @Nested
@@ -196,7 +196,8 @@ class FilterTest: ApiTestContext() {
 
         @Test
         fun `filter datasets on multiple spatial, spatial = 'Norge,Spania'`() {
-            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(spatial = "Norge,Spania")))
+            val searchBody =
+                mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(spatial = "Norge,Spania")))
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 
@@ -244,4 +245,39 @@ class FilterTest: ApiTestContext() {
             Assertions.assertTrue(allThemesValid)
         }
     }
+
+    @Nested
+    inner class LosTheme {
+        @Test
+        fun `filter datasets on multiple los`() {
+            val searchBody =
+                mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(los = "familie-og-barn,demokrati-og-innbyggerrettigheter/politikk-og-valg")))
+            val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
+            Assertions.assertEquals(200, response["status"])
+
+            val result: List<Dataset> = mapper.readValue(response["body"] as String)
+            Assertions.assertNotEquals(0, result.size)
+
+            val validValues = listOf("familie-og-barn", "demokrati-og-innbyggerrettigheter/politikk-og-valg")
+
+            val allThemesValid = result.all { dataset ->
+                val themeCodes = dataset.losTheme?.map { it.losPaths }
+                val datasetValid = themeCodes?.containsAll(validValues) ?: false
+                datasetValid
+            }
+
+            Assertions.assertTrue(allThemesValid)
+        }
+
+        @Test
+        fun `filter datasets on non-existing los = '1234' should return nothing`() {
+            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(los = "1234")))
+            val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
+            Assertions.assertEquals(200, response["status"])
+
+            val result: List<Dataset> = mapper.readValue(response["body"] as String)
+            Assertions.assertEquals(0, result.size)
+        }
+    }
 }
+
