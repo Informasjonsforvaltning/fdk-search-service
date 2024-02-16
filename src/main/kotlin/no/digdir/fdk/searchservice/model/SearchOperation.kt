@@ -12,5 +12,6 @@ data class SearchOperation(
 data class SearchFilters(
   val opendata: Boolean?,
   val accessRights: String?,
-  val theme: String?
+  val theme: String?,
+  val provenance: String?
 )
