@@ -138,6 +138,15 @@ class SearchService(
                 })
             }
         }
+        filters?.orgPath?.let { orgPath ->
+            queryFilters.add(DSLQuery.of { queryBuilder ->
+                queryBuilder.term { termBuilder ->
+                    termBuilder
+                        .field("organization.orgPath.keyword")
+                        .value(FieldValue.of(orgPath))
+                }
+            })
+        }
             return queryFilters
     }
     private fun SearchHits<SearchObject>.toSearchObjectList(): List<SearchObject> = this.map { it.content }.toList()
