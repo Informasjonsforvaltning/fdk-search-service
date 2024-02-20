@@ -1,0 +1,12 @@
+{
+  "properties": {
+    "losTheme": {
+      "properties": {
+        "losPaths": {
+          "type": "text",
+          "analyzer": "path_analyzer"
+        }
+      }
+    }
+  }
+}
