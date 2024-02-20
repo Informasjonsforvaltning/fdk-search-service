@@ -100,6 +100,7 @@ class SearchService(
                 })
             }
         }
+
         filters?.provenance?.let { provenance ->
             queryFilters.add(DSLQuery.of { queryBuilder ->
                 queryBuilder.term { termBuilder ->
