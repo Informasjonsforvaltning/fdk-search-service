@@ -1,0 +1,20 @@
+{
+  "analysis": {
+    "analyzer": {
+      "path_analyzer": {
+        "type": "custom",
+        "tokenizer": "path_tokenizer"
+      }
+    },
+    "tokenizer": {
+      "path_tokenizer": {
+        "type": "path_hierarchy",
+        "delimiter": "/",
+        "buffer_size": 1024,
+        "replacement": "/",
+        "skip": 0,
+        "reverse": false
+      }
+    }
+  }
+}

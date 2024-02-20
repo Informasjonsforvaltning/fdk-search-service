@@ -2,9 +2,11 @@ package no.digdir.fdk.searchservice.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import org.springframework.data.annotation.Id
+import org.springframework.data.elasticsearch.annotations.Setting
 
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Setting(settingPath = "/elastic/settings.json")
 data class Dataset(
     @Id
     val id: String,
