@@ -4,7 +4,7 @@ and indexing these resources as documents in Elastic Search.
 
 ## Requirements
 - maven
-- java 21
+- java 17
 - docker
 - docker-compose
 
