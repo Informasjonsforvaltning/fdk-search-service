@@ -126,3 +126,16 @@ val TEST_DATASET_HIT_IS_OPEN = TEST_DATASET_HIT_ALL_FIELDS.copy(
     id = "2",
     isOpenData = true
 )
+
+val TEST_DATASET_FILTERS = TEST_DATASET_HIT_ALL_FIELDS.copy(
+    id = "3",
+    isOpenData = true,
+    provenance = ReferenceDataCode(
+        uri = "provenance > uri",
+        code = "BRUKER",
+        prefLabel = LocalizedStrings(
+            "Bruker",
+            "Brukar",
+            "User")
+    ),
+)
