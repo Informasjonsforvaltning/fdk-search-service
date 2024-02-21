@@ -24,7 +24,6 @@ class SuggestionService(
             .map { it.toSuggestion() }
             .toList()
 
-
     private fun SearchObject.toSuggestion(): Suggestion =
         Suggestion(
             id = id,

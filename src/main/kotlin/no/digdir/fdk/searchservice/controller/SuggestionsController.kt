@@ -18,9 +18,11 @@ class SuggestionsController(
         @RequestParam(
             value = "q"
         ) query: String,
-    ): ResponseEntity<List<Suggestion>> {
-        return  ResponseEntity(suggestionService.suggestResources(query, null), HttpStatus.OK)
-    }
+    ): ResponseEntity<List<Suggestion>> =
+       ResponseEntity(
+           suggestionService.suggestResources(query, null),
+           HttpStatus.OK
+       )
 
     @GetMapping(
         value = ["/{searchType}"]
@@ -28,10 +30,11 @@ class SuggestionsController(
     fun suggestionsForSpecificResource(
         @PathVariable searchType: String,
         @RequestParam("q") query: String,
-    ): ResponseEntity<List<Suggestion>> {
-
-        return ResponseEntity(suggestionService.suggestResources(query, searchType.pathVariableToSearchType()), HttpStatus.OK)
-    }
+    ): ResponseEntity<List<Suggestion>> =
+        ResponseEntity(
+            suggestionService.suggestResources(query, searchType.pathVariableToSearchType()),
+            HttpStatus.OK
+        )
 
     private fun String.pathVariableToSearchType(): SearchType? =
         when (this) {
