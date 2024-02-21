@@ -118,7 +118,7 @@ class SearchService(
                 queryFilters.add(DSLQuery.of { queryBuilder ->
                     queryBuilder.term { termBuilder ->
                         termBuilder
-                            .field("spatial.code.keyword")
+                            .field("spatial.prefLabel.nb.keyword")
                             .value(FieldValue.of(spatialValue))
                     }
                 })

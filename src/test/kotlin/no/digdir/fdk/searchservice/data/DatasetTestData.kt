@@ -141,7 +141,7 @@ val TEST_DATASET_FILTERS = TEST_DATASET_HIT_ALL_FIELDS.copy(
     spatial = listOf(
         ReferenceDataCode(
             uri = "spatial > uri",
-            code = "Norge",
+            code = "123789",
             prefLabel = LocalizedStrings(
                 "Norge",
                 "Noreg",
@@ -149,8 +149,13 @@ val TEST_DATASET_FILTERS = TEST_DATASET_HIT_ALL_FIELDS.copy(
         ),
         ReferenceDataCode(
             uri = "spatial > uri",
-            code = "Spania",
-            prefLabel = null
+            code = "123456",
+            prefLabel = LocalizedStrings(nb = "Spania", null ,null )
+        ),
+        ReferenceDataCode(
+            uri = "spatial > uri",
+            code = "56789",
+            prefLabel = LocalizedStrings(nb = "Sogn og fjordane", null ,null )
         )
     ),
 )

@@ -186,7 +186,7 @@ class FilterTest: ApiTestContext() {
             val validValues = listOf("Norge")
 
             val allThemesValid = result.all { dataset ->
-                val spatialCodes = dataset.spatial?.map { it.code }
+                val spatialCodes = dataset.spatial?.map { it.prefLabel?.nb }
                 val datasetValid = spatialCodes?.containsAll(validValues) ?: false
                 datasetValid
             }
@@ -206,7 +206,7 @@ class FilterTest: ApiTestContext() {
             val validValues = listOf("Norge", "Spania")
 
             val allThemesValid = result.all { dataset ->
-                val spatialCodes = dataset.spatial?.map { it.code }
+                val spatialCodes = dataset.spatial?.map { it.prefLabel?.nb }
                 val datasetValid = spatialCodes?.containsAll(validValues) ?: false
                 datasetValid
             }
@@ -222,6 +222,26 @@ class FilterTest: ApiTestContext() {
 
             val result: List<Dataset> = mapper.readValue(response["body"] as String)
             Assertions.assertEquals(0, result.size)
+        }
+
+        @Test
+        fun `filter datasets on one spatial with space, spatial = 'Sogn og fjordane'`() {
+            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(spatial = "Sogn og fjordane")))
+            val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
+            Assertions.assertEquals(200, response["status"])
+
+            val result: List<Dataset> = mapper.readValue(response["body"] as String)
+            Assertions.assertNotEquals(0, result.size)
+
+            val validValues = listOf("Sogn og fjordane")
+
+            val allThemesValid = result.all { dataset ->
+                val spatialCodes = dataset.spatial?.map { it.prefLabel?.nb }
+                val datasetValid = spatialCodes?.containsAll(validValues) ?: false
+                datasetValid
+            }
+
+            Assertions.assertTrue(allThemesValid)
         }
     }
 }
