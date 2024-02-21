@@ -7,6 +7,14 @@
           "analyzer": "path_analyzer"
         }
       }
+    },
+    "organization": {
+      "properties": {
+        "orgPath": {
+          "type": "text",
+          "analyzer": "path_analyzer"
+        }
+      }
     }
   }
 }

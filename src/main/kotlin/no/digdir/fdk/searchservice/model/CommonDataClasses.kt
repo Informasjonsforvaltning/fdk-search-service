@@ -97,6 +97,7 @@ data class Collection (
 data class Organization(
   val identifier: String?,
   val uri: String?,
+  @Field(type = FieldType.Text, analyzer = "path_analyzer", fielddata = true)
   val orgPath: String?,
   val name: String?,
   val prefLabel: LocalizedStrings?,

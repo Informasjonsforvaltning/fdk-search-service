@@ -55,7 +55,7 @@ val TEST_DATASET_HIT_ALL_FIELDS = TEST_NULL_DATASET.copy(
                 "NB Test losTheme > name",
                 "NN Test losTheme > name",
                 "EN Test losTheme > name"),
-            losPaths = "test",
+            losPaths = "familie-og-barn",
         )
     ),
     publisher = Organization(
@@ -170,7 +170,7 @@ val TEST_DATASET_FILTERS = TEST_DATASET_HIT_ALL_FIELDS.copy(
         ),
     ),
     publisher = Organization(
-        orgPath = "FYLKE",
+        orgPath = "/FYLKE",
         identifier = "Test publisher > identifier",
         uri = "Test publisher > uri",
         name = "Test publisher > name",

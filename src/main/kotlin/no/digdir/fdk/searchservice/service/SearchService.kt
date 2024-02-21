@@ -147,10 +147,10 @@ class SearchService(
         }
         filters?.orgPath?.let { orgPath ->
             queryFilters.add(DSLQuery.of { queryBuilder ->
-                queryBuilder.term { termBuilder ->
-                    termBuilder
-                        .field("organization.orgPath.keyword")
-                        .value(FieldValue.of(orgPath))
+                queryBuilder.match { matchBuilder ->
+                    matchBuilder
+                        .field("organization.orgPath")
+                        .query(FieldValue.of(orgPath))
                 }
             })
         }
