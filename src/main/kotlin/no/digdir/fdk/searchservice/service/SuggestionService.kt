@@ -44,13 +44,13 @@ class SuggestionService(
             }
         }
 
-
         builder.withQuery { queryBuilder ->
             queryBuilder.matchPhrasePrefix { matchBuilder ->
                 matchBuilder.query(query)
                     .field("title.nb")
             }
         }
+
         return builder.build()
     }
 
