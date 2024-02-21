@@ -13,5 +13,5 @@ data class Concept(
     val publisher: Organization?,
     val definition: Definition?,
     val prefLabel: LocalizedStrings?,
-    val harvest: HarvestMetaData?
+    val harvest: HarvestMetadata?
 )

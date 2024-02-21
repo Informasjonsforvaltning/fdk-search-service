@@ -2,22 +2,22 @@ package no.digdir.fdk.searchservice.mapper
 
 import no.digdir.fdk.searchservice.model.*
 
-fun Concept.toSearchObject(timestamp: Long, deleted: Boolean = false) =
+fun Event.toSearchObject(timestamp: Long, deleted: Boolean = false) =
     SearchObject(
         id = id,
-        uri = identifier,
+        uri = uri,
         accessRights = null,
-        catalog = collection?.toCatalog(),
+        catalog = catalog,
         dataTheme = null,
-        description = definition?.text,
+        description = description,
         fdkFormatPrefixed = null,
         metadata = harvest?.toMetadata(timestamp, deleted),
         isOpenData = null,
         keyword = null,
         losTheme = null,
-        organization = publisher,
+        organization = null,
         provenance = null,
-        searchType = SearchType.CONCEPT,
+        searchType = SearchType.EVENT,
         spatial = null,
-        title = prefLabel
+        title = title
     )

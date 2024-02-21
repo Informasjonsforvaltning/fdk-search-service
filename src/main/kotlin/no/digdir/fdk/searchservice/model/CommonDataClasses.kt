@@ -54,9 +54,18 @@ data class Definition(
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class HarvestMetaData(
+data class HarvestMetadata(
+  val firstHarvested: String?,
+  val changed: List<String>?
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class Metadata(
   val firstHarvested: String?,
   val changed: List<String>?,
+  val deleted: Boolean?,
+  val timestamp: Long?
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

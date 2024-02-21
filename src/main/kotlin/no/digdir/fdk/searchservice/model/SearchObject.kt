@@ -19,7 +19,7 @@ data class SearchObject(
     val dataTheme: List<EuDataTheme>?,
     val description: LocalizedStrings?,
     val fdkFormatPrefixed: List<String>?,
-    val harvest: HarvestMetaData?,
+    val metadata: Metadata?,
     val isOpenData: Boolean?,
     val keyword: List<LocalizedStrings>?,
     val losTheme: List<LosNode>?,

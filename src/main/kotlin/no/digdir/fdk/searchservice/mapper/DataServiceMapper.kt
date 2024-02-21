@@ -2,7 +2,7 @@ package no.digdir.fdk.searchservice.mapper
 
 import no.digdir.fdk.searchservice.model.*
 
-fun Dataset.toSearchObject(timestamp: Long, deleted: Boolean = false) =
+fun DataService.toSearchObject(timestamp: Long, deleted: Boolean = false) =
     SearchObject(
         id = id,
         uri = uri,
@@ -12,12 +12,12 @@ fun Dataset.toSearchObject(timestamp: Long, deleted: Boolean = false) =
         description = description,
         fdkFormatPrefixed = null,
         metadata = harvest?.toMetadata(timestamp, deleted),
-        isOpenData = isOpenData,
+        isOpenData = null,
         keyword = keyword,
         losTheme = losTheme,
         organization = publisher,
-        provenance = provenance,
-        searchType = SearchType.DATASET,
-        spatial = spatial,
+        provenance = null,
+        searchType = SearchType.DATA_SERVICE,
+        spatial = null,
         title = title
     )

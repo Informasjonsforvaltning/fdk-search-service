@@ -28,10 +28,10 @@ abstract class ApiTestContext {
         repository.saveAll(
             listOf(
                 TEST_SEARCH_OBJECT_AND_HIT_ALL_FIELDS,
-                TEST_DATASET_HIT_ALL_FIELDS.toSearchObject(),
-                TEST_DATASET_HIT_IS_OPEN.toSearchObject(),
-                TEST_CONCEPT_HIT_ALL_FIELDS.toSearchObject(),
-                TEST_DATASET_FILTERS.toSearchObject()
+                TEST_DATASET_HIT_ALL_FIELDS.toSearchObject(System.currentTimeMillis()),
+                TEST_DATASET_HIT_IS_OPEN.toSearchObject(System.currentTimeMillis()),
+                TEST_CONCEPT_HIT_ALL_FIELDS.toSearchObject(System.currentTimeMillis()),
+                TEST_DATASET_FILTERS.toSearchObject(System.currentTimeMillis()),
             ))
     }
 

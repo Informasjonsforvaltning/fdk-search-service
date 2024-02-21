@@ -27,7 +27,7 @@ class SearchService(
     private fun SearchOperation.toElasticQuery(searchType: SearchType?): Query {
         val builder = NativeQuery.builder()
         if (!query.isNullOrBlank()) builder.addFieldsQuery(query)
-        if (filters != null || searchType != null ) builder.addFilters(filters, searchType)
+        builder.addFilters(filters, searchType)
         return builder.build()
     }
 
@@ -57,6 +57,13 @@ class SearchService(
     private fun createQueryFilters(filters: SearchFilters?, searchType: SearchType?): List<DSLQuery> {
         val queryFilters = mutableListOf<DSLQuery>()
 
+        queryFilters.add(DSLQuery.of { queryBuilder ->
+            queryBuilder.term { termBuilder ->
+                termBuilder
+                        .field("metadata.deleted")
+                        .value(FieldValue.of(false))
+            }
+        })
         if (searchType != null) {
             queryFilters.add(DSLQuery.of { queryBuilder ->
                 queryBuilder.term { termBuilder ->
