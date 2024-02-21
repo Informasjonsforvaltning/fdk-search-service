@@ -27,7 +27,8 @@ import org.springframework.test.context.ContextConfiguration
 @Tag("integration")
 class FilterTest: ApiTestContext() {
     private val mapper = jacksonObjectMapper()
-    private val SEARCH_FILTER = SearchFilters(null, null, null, null, null, null)
+    private val SEARCH_FILTER = SearchFilters(null, null, null,
+        null, null, null, null)
     private val DATASETS_PATH = "/search/datasets"
 
     @Nested
@@ -98,7 +99,7 @@ class FilterTest: ApiTestContext() {
             Assertions.assertEquals(200, response["status"])
 
             val result: List<SearchObject> = mapper.readValue(response["body"] as String)
-            Assertions.assertTrue(result.size > 0)
+            Assertions.assertTrue(result.isNotEmpty())
 
             val validValues = listOf("REGI")
 
@@ -152,7 +153,7 @@ class FilterTest: ApiTestContext() {
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 
-            val result: List<Dataset> = mapper.readValue(response["body"] as String)
+            val result: List<SearchObject> = mapper.readValue(response["body"] as String)
             Assertions.assertNotEquals(0, result.size)
 
             for (dataset in result) {
@@ -167,7 +168,7 @@ class FilterTest: ApiTestContext() {
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 
-            val result: List<Dataset> = mapper.readValue(response["body"] as String)
+            val result: List<SearchObject> = mapper.readValue(response["body"] as String)
             Assertions.assertEquals(0, result.size)
         }
     }
@@ -180,7 +181,7 @@ class FilterTest: ApiTestContext() {
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 
-            val result: List<Dataset> = mapper.readValue(response["body"] as String)
+            val result: List<SearchObject> = mapper.readValue(response["body"] as String)
             Assertions.assertNotEquals(0, result.size)
 
             val validValues = listOf("Norge")
@@ -201,7 +202,7 @@ class FilterTest: ApiTestContext() {
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 
-            val result: List<Dataset> = mapper.readValue(response["body"] as String)
+            val result: List<SearchObject> = mapper.readValue(response["body"] as String)
             Assertions.assertNotEquals(0, result.size)
 
             val validValues = listOf("Norge", "Spania")
@@ -221,7 +222,7 @@ class FilterTest: ApiTestContext() {
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 
-            val result: List<Dataset> = mapper.readValue(response["body"] as String)
+            val result: List<SearchObject> = mapper.readValue(response["body"] as String)
             Assertions.assertEquals(0, result.size)
         }
 
@@ -276,6 +277,33 @@ class FilterTest: ApiTestContext() {
             Assertions.assertEquals(200, response["status"])
 
             val result: List<Dataset> = mapper.readValue(response["body"] as String)
+            Assertions.assertEquals(0, result.size)
+        }
+    }
+
+    @Nested
+    inner class OrgPath {
+        @Test
+        fun `filter datasets on orgPath = 'FYLKE'`() {
+            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(orgPath = "FYLKE")))
+            val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
+            Assertions.assertEquals(200, response["status"])
+
+            val result: List<SearchObject> = mapper.readValue(response["body"] as String)
+            Assertions.assertNotEquals(0, result.size )
+
+            for (dataset in result) {
+                Assertions.assertEquals("FYLKE", dataset.organization?.orgPath)
+            }
+        }
+
+        @Test
+        fun `filter datasets on non-existing orgPath = '1234' should return nothing`() {
+            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(orgPath = "1234")))
+            val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
+            Assertions.assertEquals(200, response["status"])
+
+            val result: List<SearchObject> = mapper.readValue(response["body"] as String)
             Assertions.assertEquals(0, result.size)
         }
     }

@@ -168,6 +168,12 @@ val TEST_DATASET_FILTERS = TEST_DATASET_HIT_ALL_FIELDS.copy(
             name = null,
             losPaths = "demokrati-og-innbyggerrettigheter/politikk-og-valg",
         ),
-
     ),
+    publisher = Organization(
+        orgPath = "FYLKE",
+        identifier = "Test publisher > identifier",
+        uri = "Test publisher > uri",
+        name = "Test publisher > name",
+        prefLabel = null
+    )
 )

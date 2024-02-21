@@ -15,5 +15,6 @@ data class SearchFilters(
   val theme: String?,
   val spatial: String?,
   val provenance: String?,
-  val los: String?
+  val los: String?,
+  val orgPath: String?
 )
