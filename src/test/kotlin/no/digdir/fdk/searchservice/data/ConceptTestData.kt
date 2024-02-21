@@ -39,9 +39,9 @@ val TEST_CONCEPT_HIT_ALL_FIELDS = TEST_NULL_CONCEPT.copy(
         "NB Test prefLabel",
         "NN Test prefLabel",
         "EN Test prefLabel"),
-    harvest = HarvestMetaData(
-        "Test harvest > firstHarvested",
-        listOf("Test harvest > changed")),
+    harvest =  HarvestMetadata(
+            "Test harvest > firstHarvested",
+            listOf("Test harvest > changed")),
     collection = Collection(
         id = "Test collection > id",
         uri = "Test collection > uri",

@@ -1,11 +1,12 @@
 package no.digdir.fdk.searchservice.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.annotation.JsonInclude
 import org.springframework.data.annotation.Id
 
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class Dataset(
+data class Service(
     @Id
     val id: String,
     val uri: String,
@@ -13,12 +14,10 @@ data class Dataset(
     val catalog: Catalog?,
     val description: LocalizedStrings?,
     val keyword: List<LocalizedStrings>?,
-    val theme:List<EuDataTheme>?,
+    val euDataThemes:List<EuDataTheme>?,
     val losTheme: List<LosNode>?,
-    val publisher: Organization?,
-    val accessRights: ReferenceDataCode?,
-    val isOpenData: Boolean?,
+    val ownedBy: List<Organization>?,
+    val hasCompetantAuthority: List<Organization>?,
     val spatial: List<ReferenceDataCode>?,
-    val provenance: ReferenceDataCode?,
     val harvest: HarvestMetadata?,
 )

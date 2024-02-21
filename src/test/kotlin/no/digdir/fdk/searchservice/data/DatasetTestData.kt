@@ -94,11 +94,11 @@ val TEST_DATASET_HIT_ALL_FIELDS = TEST_NULL_DATASET.copy(
             "NN Test provenance > prefLabel",
             "EN Test provenance > prefLabel")
     ),
-    harvest = HarvestMetaData(
-        firstHarvested = "Test harvest > firstHarvested",
-        changed = listOf(
-            "Test harvest > changed 1",
-            "Test harvest > changed 2")
+    harvest = HarvestMetadata(
+            firstHarvested = "Test harvest > firstHarvested",
+            changed = listOf(
+                    "Test harvest > changed 1",
+                    "Test harvest > changed 2")
     ),
     catalog = Catalog(
         description = LocalizedStrings(

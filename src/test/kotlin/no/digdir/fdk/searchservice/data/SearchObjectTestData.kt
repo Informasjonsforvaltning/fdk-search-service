@@ -11,7 +11,7 @@ val TEST_NULL_SEARCH_OBJECT = SearchObject(
     dataTheme = null,
     description = null,
     fdkFormatPrefixed = null,
-    harvest = null,
+    metadata = null,
     isOpenData = false,
     keyword = null,
     losTheme = null,
@@ -63,11 +63,13 @@ val TEST_SEARCH_OBJECT_AND_HIT_ALL_FIELDS = TEST_NULL_SEARCH_OBJECT.copy(
             "NN Test description",
             "EN Test description"),
         fdkFormatPrefixed = listOf("Test fdkFormatPrefixed"),
-        harvest = HarvestMetaData(
-            firstHarvested = "Test harvest > firstHarvested",
-            changed = listOf(
-                "Test harvest > changed 1",
-                "Test harvest > changed 2")),
+        metadata = Metadata(
+                firstHarvested = "Test harvest > firstHarvested",
+                changed = listOf(
+                        "Test harvest > changed 1",
+                        "Test harvest > changed 2"),
+                deleted = false,
+                timestamp = System.currentTimeMillis()),
         keyword = listOf(
             LocalizedStrings(
                 "NB Test keyword",
