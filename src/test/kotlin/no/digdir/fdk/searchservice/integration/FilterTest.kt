@@ -303,7 +303,7 @@ class FilterTest: ApiTestContext() {
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 
-            val result: List<Dataset> = mapper.readValue(response["body"] as String)
+            val result: List<SearchObject> = mapper.readValue(response["body"] as String)
             Assertions.assertEquals(0, result.size)
         }
     }
