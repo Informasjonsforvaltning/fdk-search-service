@@ -27,7 +27,7 @@ import org.springframework.test.context.ContextConfiguration
 @Tag("integration")
 class FilterTest: ApiTestContext() {
     private val mapper = jacksonObjectMapper()
-    private val SEARCH_FILTER = SearchFilters(null, null, null, null)
+    private val SEARCH_FILTER = SearchFilters(null, null, null, null, null)
     private val DATASETS_PATH = "/search/datasets"
 
     @Nested
@@ -169,6 +169,79 @@ class FilterTest: ApiTestContext() {
 
             val result: List<Dataset> = mapper.readValue(response["body"] as String)
             Assertions.assertEquals(0, result.size)
+        }
+    }
+
+    @Nested
+    inner class Spatial {
+        @Test
+        fun `filter datasets on one spatial, spatial = 'Norge'`() {
+            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(spatial = "Norge")))
+            val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
+            Assertions.assertEquals(200, response["status"])
+
+            val result: List<Dataset> = mapper.readValue(response["body"] as String)
+            Assertions.assertNotEquals(0, result.size)
+
+            val validValues = listOf("Norge")
+
+            val allThemesValid = result.all { dataset ->
+                val spatialCodes = dataset.spatial?.map { it.prefLabel?.nb }
+                val datasetValid = spatialCodes?.containsAll(validValues) ?: false
+                datasetValid
+            }
+
+            Assertions.assertTrue(allThemesValid)
+        }
+
+        @Test
+        fun `filter datasets on multiple spatial, spatial = 'Norge,Spania'`() {
+            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(spatial = "Norge,Spania")))
+            val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
+            Assertions.assertEquals(200, response["status"])
+
+            val result: List<Dataset> = mapper.readValue(response["body"] as String)
+            Assertions.assertNotEquals(0, result.size)
+
+            val validValues = listOf("Norge", "Spania")
+
+            val allThemesValid = result.all { dataset ->
+                val spatialCodes = dataset.spatial?.map { it.prefLabel?.nb }
+                val datasetValid = spatialCodes?.containsAll(validValues) ?: false
+                datasetValid
+            }
+
+            Assertions.assertTrue(allThemesValid)
+        }
+
+        @Test
+        fun `filter datasets on non-existing spatial = '1234' should return nothing`() {
+            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(spatial = "1234")))
+            val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
+            Assertions.assertEquals(200, response["status"])
+
+            val result: List<Dataset> = mapper.readValue(response["body"] as String)
+            Assertions.assertEquals(0, result.size)
+        }
+
+        @Test
+        fun `filter datasets on one spatial with space, spatial = 'Sogn og fjordane'`() {
+            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(spatial = "Sogn og fjordane")))
+            val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
+            Assertions.assertEquals(200, response["status"])
+
+            val result: List<Dataset> = mapper.readValue(response["body"] as String)
+            Assertions.assertNotEquals(0, result.size)
+
+            val validValues = listOf("Sogn og fjordane")
+
+            val allThemesValid = result.all { dataset ->
+                val spatialCodes = dataset.spatial?.map { it.prefLabel?.nb }
+                val datasetValid = spatialCodes?.containsAll(validValues) ?: false
+                datasetValid
+            }
+
+            Assertions.assertTrue(allThemesValid)
         }
     }
 }
