@@ -1,5 +1,9 @@
 package no.digdir.fdk.searchservice.kafka
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import no.digdir.fdk.searchservice.elastic.SearchRepository
+import no.digdir.fdk.searchservice.mapper.toSearchObject
+import no.digdir.fdk.searchservice.model.*
 import no.fdk.rdf.parse.RdfParseEvent
 import no.fdk.rdf.parse.RdfParseResourceType
 import org.apache.kafka.clients.consumer.ConsumerRecord
@@ -11,7 +15,16 @@ import org.springframework.stereotype.Component
 
 
 @Component
-class KafkaRdfParseEventConsumer {
+class KafkaRdfParseEventConsumer(
+   private val searchRepository: SearchRepository
+) {
+    private fun <T> index(event: RdfParseEvent, clazz: Class<T>, index: (T) -> Unit){
+        val search = searchRepository.findById("${event.fdkId}")
+        if(search.isEmpty || (search.get().metadata?.timestamp ?: 0) < event.timestamp) {
+            val payload = ObjectMapper().readValue(event.data.toString(), clazz)
+            index(payload)
+        }
+    }
 
     @KafkaListener(
         topics = ["rdf-parse-events"],
@@ -23,15 +36,37 @@ class KafkaRdfParseEventConsumer {
 
         val event = record.value()
         try {
-            // TODO: Implement logic for handling RDF parse event
-
             if(event?.resourceType == RdfParseResourceType.DATASET) {
                 LOGGER.debug("Index dataset - id: " + event.fdkId)
-
+                index(event, Dataset::class.java) {
+                    searchRepository.save(it.toSearchObject(event.timestamp))
+                }
             } else if(event?.resourceType == RdfParseResourceType.DATASERVICE) {
                 LOGGER.debug("Index dataservice - id: " + event.fdkId)
+                index(event, DataService::class.java) {
+                    searchRepository.save(it.toSearchObject(event.timestamp))
+                }
+            } else if(event?.resourceType == RdfParseResourceType.CONCEPT) {
+                LOGGER.debug("Index concept - id: " + event.fdkId)
+                index(event, Concept::class.java) {
+                    searchRepository.save(it.toSearchObject(event.timestamp))
+                }
+            } else if(event?.resourceType == RdfParseResourceType.INFORMATIONMODEL) {
+                LOGGER.debug("Index informationmodel - id: " + event.fdkId)
+                index(event, InformationModel::class.java) {
+                    searchRepository.save(it.toSearchObject(event.timestamp))
+                }
+            } else if(event?.resourceType == RdfParseResourceType.EVENT) {
+                LOGGER.debug("Index event - id: " + event.fdkId)
+                index(event, Event::class.java) {
+                    searchRepository.save(it.toSearchObject(event.timestamp))
+                }
+            } else if(event?.resourceType == RdfParseResourceType.SERVICE) {
+                LOGGER.debug("Index service - id: " + event.fdkId)
+                index(event, Service::class.java) {
+                    searchRepository.save(it.toSearchObject(event.timestamp))
+                }
             }
-            // ...
             ack.acknowledge()
         } catch (e: Exception) {
             LOGGER.error("Error processing message: " + e.message)
