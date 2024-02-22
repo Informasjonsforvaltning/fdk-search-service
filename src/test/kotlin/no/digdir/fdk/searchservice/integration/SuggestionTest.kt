@@ -80,6 +80,25 @@ class SuggestionTest: ApiTestContext() {
             }
             Assertions.assertTrue(validResult)
         }
-    }
 
+        @Test
+        fun `get suggestions for data service`() {
+            val response = requestApi("$SUGGESTIONS_PATH/dataservices?q=title", port, null, GET)
+            Assertions.assertEquals(200, response["status"])
+
+            val result: List<Suggestion> = mapper.readValue(response["body"] as String)
+            Assertions.assertNotEquals(0, result.size)
+
+            val validResult = result.all { resource ->
+                resource.title?.nb?.contains("title") == true && resource.searchType == SearchType.DATA_SERVICE
+            }
+            Assertions.assertTrue(validResult)
+        }
+
+        @Test
+        fun `non valid resource type should return not found`() {
+            val response = requestApi("$SUGGESTIONS_PATH/nonvalid?q=title", port, null, GET)
+            Assertions.assertEquals(404, response["status"])
+        }
+    }
 }

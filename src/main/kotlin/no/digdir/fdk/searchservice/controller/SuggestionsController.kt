@@ -4,7 +4,6 @@ import no.digdir.fdk.searchservice.model.SearchType
 import no.digdir.fdk.searchservice.model.Suggestion
 import no.digdir.fdk.searchservice.service.SuggestionService
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -30,16 +29,24 @@ class SuggestionsController(
     fun suggestionsForSpecificResource(
         @PathVariable searchType: String,
         @RequestParam("q") query: String,
-    ): ResponseEntity<List<Suggestion>> =
-        ResponseEntity(
-            suggestionService.suggestResources(query, searchType.pathVariableToSearchType()),
-            HttpStatus.OK
-        )
+    ): ResponseEntity<List<Suggestion>> = (
+        if (searchType.pathVariableToSearchType() == null) {
+            ResponseEntity.notFound().build()
+        } else {
+            ResponseEntity(
+                suggestionService.suggestResources(query, searchType.pathVariableToSearchType()),
+                HttpStatus.OK
+            )
+        })
 
     private fun String.pathVariableToSearchType(): SearchType? =
         when (this) {
             "concepts" -> SearchType.CONCEPT
             "datasets" -> SearchType.DATASET
+            "dataservices" -> SearchType.DATA_SERVICE
+            "informationmodels" -> SearchType.INFORMATION_MODEL
+            "services" -> SearchType.SERVICE
+            "events" -> SearchType.EVENT
             else -> null
         }
 }
