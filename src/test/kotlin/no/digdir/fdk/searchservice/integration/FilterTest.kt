@@ -290,7 +290,7 @@ class FilterTest: ApiTestContext() {
             Assertions.assertNotEquals(0, result.size)
 
             val allThemesValid = result.all { searchObject ->
-                searchObject.losTheme?.all { losNode ->
+                searchObject.losTheme?.any { losNode ->
                     losNode.losPaths?.startsWith("demokrati-og-innbyggerrettigheter") ?: false
                 } ?: false
             }

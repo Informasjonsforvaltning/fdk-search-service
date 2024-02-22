@@ -137,24 +137,25 @@ class SearchService(
 
             losThemeList.forEach { losValue ->
                 queryFilters.add(DSLQuery.of { queryBuilder ->
-                    queryBuilder.match { matchBuilder ->
-                        matchBuilder
-                            .field("losTheme.losPaths")
-                            .query(FieldValue.of(losValue))
+                    queryBuilder.term { termBuilder ->
+                        termBuilder
+                            .field("losTheme.losPaths.keyword")
+                            .value(FieldValue.of(losValue))
                     }
                 })
             }
         }
         filters?.orgPath?.let { orgPath ->
             queryFilters.add(DSLQuery.of { queryBuilder ->
-                queryBuilder.match { matchBuilder ->
-                    matchBuilder
-                        .field("organization.orgPath")
-                        .query(FieldValue.of(orgPath))
+                queryBuilder.term { termBuilder ->
+                    termBuilder
+                        .field("organization.orgPath.keyword")
+                        .value(FieldValue.of(orgPath))
                 }
             })
         }
             return queryFilters
     }
+
     private fun SearchHits<SearchObject>.toSearchObjectList(): List<SearchObject> = this.map { it.content }.toList()
 }
