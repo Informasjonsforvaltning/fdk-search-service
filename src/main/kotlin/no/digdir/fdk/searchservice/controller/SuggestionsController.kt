@@ -1,5 +1,6 @@
 package no.digdir.fdk.searchservice.controller
 
+import no.digdir.fdk.searchservice.mapper.pathVariableToSearchType
 import no.digdir.fdk.searchservice.model.SearchType
 import no.digdir.fdk.searchservice.model.Suggestion
 import no.digdir.fdk.searchservice.service.SuggestionService
@@ -51,15 +52,4 @@ class SuggestionsController(
                 HttpStatus.OK
             )
         })
-
-    private fun String.pathVariableToSearchType(): SearchType? =
-        when (this) {
-            "concepts" -> SearchType.CONCEPT
-            "datasets" -> SearchType.DATASET
-            "dataservices" -> SearchType.DATA_SERVICE
-            "informationmodels" -> SearchType.INFORMATION_MODEL
-            "services" -> SearchType.SERVICE
-            "events" -> SearchType.EVENT
-            else -> null
-        }
 }
