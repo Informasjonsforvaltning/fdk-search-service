@@ -2,10 +2,7 @@ package no.digdir.fdk.searchservice.integration
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import no.digdir.fdk.searchservice.model.Dataset
-import no.digdir.fdk.searchservice.model.SearchObject
-import no.digdir.fdk.searchservice.model.SearchFilters
-import no.digdir.fdk.searchservice.model.SearchOperation
+import no.digdir.fdk.searchservice.model.*
 import no.digdir.fdk.searchservice.utils.ApiTestContext
 import no.digdir.fdk.searchservice.utils.requestApi
 import org.junit.jupiter.api.Assertions
@@ -28,7 +25,7 @@ import org.springframework.test.context.ContextConfiguration
 class FilterTest: ApiTestContext() {
     private val mapper = jacksonObjectMapper()
     private val SEARCH_FILTER = SearchFilters(null, null, null,
-        null, null, null, null)
+        null, null, null, null, null)
     private val DATASETS_PATH = "/search/datasets"
 
     @Nested
@@ -300,6 +297,41 @@ class FilterTest: ApiTestContext() {
         @Test
         fun `filter datasets on non-existing orgPath = '1234' should return nothing`() {
             val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(orgPath = "1234")))
+            val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
+            Assertions.assertEquals(200, response["status"])
+
+            val result: List<SearchObject> = mapper.readValue(response["body"] as String)
+            Assertions.assertEquals(0, result.size)
+        }
+    }
+
+    @Nested
+    inner class FdkFormatPrefixed {
+        @Test
+        fun `filter datasets on list of formats`() {
+            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(
+                collection = SearchCollection(field = null, values = listOf("MEDIA_TYPE tiff", "FILE_TYPE SHP"))
+            )))
+            val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
+            Assertions.assertEquals(200, response["status"])
+
+            val result: List<SearchObject> = mapper.readValue(response["body"] as String)
+            Assertions.assertTrue(result.isNotEmpty())
+
+            val validValues = listOf("MEDIA_TYPE tiff", "FILE_TYPE SHP")
+
+            val allFormatsValid = result.all { dataset ->
+                dataset.fdkFormatPrefixed?.all { validValues.contains(it) } ?: false
+            }
+
+            Assertions.assertTrue(allFormatsValid)
+
+        }
+        @Test
+        fun `filter datasets on non-existing format = '1234' should return nothing`() {
+            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(
+                collection = SearchCollection(field = null, values = listOf("1234"))
+            )))
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 

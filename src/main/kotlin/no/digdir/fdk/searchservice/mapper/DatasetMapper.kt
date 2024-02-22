@@ -10,7 +10,7 @@ fun Dataset.toSearchObject(timestamp: Long, deleted: Boolean = false) =
         catalog = catalog,
         dataTheme = theme,
         description = description,
-        fdkFormatPrefixed = null,
+        fdkFormatPrefixed = extractPrefixedFormats(),
         metadata = harvest?.toMetadata(timestamp, deleted),
         isOpenData = isOpenData,
         keyword = keyword,
@@ -21,3 +21,13 @@ fun Dataset.toSearchObject(timestamp: Long, deleted: Boolean = false) =
         spatial = spatial,
         title = title
     )
+
+fun Dataset.extractPrefixedFormats(): List<String> {
+    val mutableList = mutableListOf<String>()
+    distribution?.forEach { dist ->
+        dist.fdkFormat?.forEach { format ->
+            mutableList.add("${format.type} ${format.code}")
+        }
+    }
+    return mutableList
+}

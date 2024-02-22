@@ -8,3 +8,9 @@ enum class SearchType {
     SERVICE,
     EVENT,
 }
+
+enum class MediaTypeOrExtentType {
+    UNKNOWN,
+    MEDIA_TYPE,
+    FILE_TYPE
+}

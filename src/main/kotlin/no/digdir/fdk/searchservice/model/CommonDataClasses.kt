@@ -98,3 +98,24 @@ data class Organization(
   val name: String?,
   val prefLabel: LocalizedStrings?,
 )
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class Distribution(
+  val fdkFormat: List<MediaTypeOrExtent>?
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class MediaTypeOrExtent(
+  val uri: String?,
+  val name: String?,
+  val code: String?,
+  val type: MediaTypeOrExtentType = MediaTypeOrExtentType.UNKNOWN
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class SearchCollection(
+  val values: List<String>,
+  val field: String?,
+)
