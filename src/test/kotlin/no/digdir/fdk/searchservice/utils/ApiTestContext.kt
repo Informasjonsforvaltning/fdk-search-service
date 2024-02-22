@@ -32,6 +32,9 @@ abstract class ApiTestContext {
                 TEST_DATASET_HIT_IS_OPEN.toSearchObject(System.currentTimeMillis()),
                 TEST_CONCEPT_HIT_ALL_FIELDS.toSearchObject(System.currentTimeMillis()),
                 TEST_DATASET_FILTERS.toSearchObject(System.currentTimeMillis()),
+                TEST_DATA_SERVICE.toSearchObject(System.currentTimeMillis()),
+                TEST_SERVICE.toSearchObject(System.currentTimeMillis()),
+                TEST_EVENT.toSearchObject(System.currentTimeMillis())
             ))
     }
 

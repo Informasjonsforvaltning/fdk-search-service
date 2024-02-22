@@ -18,10 +18,23 @@ class SuggestionsController(
             value = "q"
         ) query: String,
     ): ResponseEntity<List<Suggestion>> =
-       ResponseEntity(
-           suggestionService.suggestResources(query, null),
-           HttpStatus.OK
-       )
+        ResponseEntity(
+            suggestionService.suggestResources(query, null),
+            HttpStatus.OK
+        )
+
+    @GetMapping(value = ["/public_services_and_events"])
+    fun suggestPublicServicesAndEvents(
+        @RequestParam(
+            value = "q"
+        ) query: String,
+    ): ResponseEntity<List<Suggestion>> {
+        val suggestedServices = suggestionService.suggestResources(query, SearchType.SERVICE)
+        val suggestedEvents = suggestionService.suggestResources(query, SearchType.EVENT)
+        val combinedSuggestions = suggestedServices + suggestedEvents
+        return ResponseEntity(combinedSuggestions, HttpStatus.OK)
+}
+
 
     @GetMapping(
         value = ["/{searchType}"]

@@ -50,6 +50,23 @@ class SuggestionTest: ApiTestContext() {
         Assertions.assertEquals(0, result.size)
     }
 
+    @Test
+    fun `get suggestions for services and events`() {
+        val response = requestApi(
+            "$SUGGESTIONS_PATH/public_services_and_events?q=title",
+            port, null, GET
+        )
+        Assertions.assertEquals(200, response["status"])
+
+        val result: List<Suggestion> = mapper.readValue(response["body"] as String)
+        Assertions.assertEquals(2, result.size)
+
+        val validResult = result.all { resource ->
+            resource.title?.nb?.contains("title") == true &&
+                    (resource.searchType == SearchType.SERVICE || resource.searchType == SearchType.EVENT)
+        }
+        Assertions.assertTrue(validResult)
+    }
 
     @Nested
     inner class SearchTypeFilter {
