@@ -21,4 +21,5 @@ data class Dataset(
     val spatial: List<ReferenceDataCode>?,
     val provenance: ReferenceDataCode?,
     val harvest: HarvestMetadata?,
+    val distribution: List<Distribution>?
 )

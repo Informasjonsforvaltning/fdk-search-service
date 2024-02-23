@@ -154,6 +154,16 @@ class SearchService(
                 }
             })
         }
+
+        filters?.formats?.value?.forEach { formatValue ->
+                queryFilters.add(DSLQuery.of { queryBuilder ->
+                    queryBuilder.match { matchBuilder ->
+                        matchBuilder
+                            .field("fdkFormatPrefixed.keyword")
+                            .query(FieldValue.of(formatValue))
+                    }
+                })
+            }
             return queryFilters
     }
     private fun SearchHits<SearchObject>.toSearchObjectList(): List<SearchObject> = this.map { it.content }.toList()

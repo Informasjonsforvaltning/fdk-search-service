@@ -16,7 +16,8 @@ val TEST_NULL_DATASET = Dataset(
     spatial = null,
     provenance = null,
     harvest = null,
-    catalog = null
+    catalog = null,
+    distribution = null
 )
 
 val TEST_DATASET_HIT_ALL_FIELDS = TEST_NULL_DATASET.copy(
@@ -175,5 +176,12 @@ val TEST_DATASET_FILTERS = TEST_DATASET_HIT_ALL_FIELDS.copy(
         uri = "Test publisher > uri",
         name = "Test publisher > name",
         prefLabel = null
+    ),
+    distribution = listOf(
+        Distribution(
+        listOf(
+            MediaTypeOrExtent(name = null, uri = null, type = MediaTypeOrExtentType.MEDIA_TYPE, code = "tiff"),
+            MediaTypeOrExtent(name = null, uri = null, type = MediaTypeOrExtentType.FILE_TYPE, code = "SHP")
+        ))
     )
 )

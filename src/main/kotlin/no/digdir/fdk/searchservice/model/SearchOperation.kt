@@ -16,5 +16,11 @@ data class SearchFilters(
   val spatial: String?,
   val provenance: String?,
   val los: String?,
-  val orgPath: String?
+  val orgPath: String?,
+  val formats: SearchFilter<List<String>>?
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+class SearchFilter<T>(
+  val value: T
 )
