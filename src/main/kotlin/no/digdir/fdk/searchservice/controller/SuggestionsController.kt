@@ -1,7 +1,6 @@
 package no.digdir.fdk.searchservice.controller
 
 import no.digdir.fdk.searchservice.mapper.pathVariableToSearchType
-import no.digdir.fdk.searchservice.model.SearchType
 import no.digdir.fdk.searchservice.model.Suggestion
 import no.digdir.fdk.searchservice.service.SuggestionService
 import org.springframework.http.HttpStatus
@@ -24,31 +23,18 @@ class SuggestionsController(
             HttpStatus.OK
         )
 
-    @GetMapping(value = ["/public_services_and_events"])
-    fun suggestPublicServicesAndEvents(
-        @RequestParam(
-            value = "q"
-        ) query: String,
-    ): ResponseEntity<List<Suggestion>> {
-        val suggestedServices = suggestionService.suggestResources(query, SearchType.SERVICE)
-        val suggestedEvents = suggestionService.suggestResources(query, SearchType.EVENT)
-        val combinedSuggestions = suggestedServices + suggestedEvents
-        return ResponseEntity(combinedSuggestions, HttpStatus.OK)
-}
-
-
     @GetMapping(
-        value = ["/{searchType}"]
+        value = ["/{searchTypes}"]
     )
     fun suggestionsForSpecificResource(
-        @PathVariable searchType: String,
+        @PathVariable searchTypes: String,
         @RequestParam("q") query: String,
     ): ResponseEntity<List<Suggestion>> = (
-        if (searchType.pathVariableToSearchType() == null) {
+        if (searchTypes.pathVariableToSearchType() == null) {
             ResponseEntity.notFound().build()
         } else {
             ResponseEntity(
-                suggestionService.suggestResources(query, searchType.pathVariableToSearchType()),
+                suggestionService.suggestResources(query, searchTypes.pathVariableToSearchType()),
                 HttpStatus.OK
             )
         })

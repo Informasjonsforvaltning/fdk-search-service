@@ -20,13 +20,14 @@ fun HarvestMetadata.toMetadata(timestamp: Long, deleted: Boolean = false) =
                 timestamp = timestamp
         )
 
-fun String.pathVariableToSearchType(): SearchType? =
+fun String.pathVariableToSearchType(): List<SearchType>? =
     when (this) {
-        "concepts" -> SearchType.CONCEPT
-        "datasets" -> SearchType.DATASET
-        "dataservices" -> SearchType.DATA_SERVICE
-        "informationmodels" -> SearchType.INFORMATION_MODEL
-        "services" -> SearchType.SERVICE
-        "events" -> SearchType.EVENT
+        "concepts" -> listOf( SearchType.CONCEPT)
+        "datasets" -> listOf(SearchType.DATASET)
+        "dataservices" -> listOf(SearchType.DATA_SERVICE)
+        "informationmodels" -> listOf(SearchType.INFORMATION_MODEL)
+        "services" -> listOf(SearchType.SERVICE)
+        "events" -> listOf(SearchType.EVENT)
+        "public_services_and_events" -> listOf(SearchType.SERVICE, SearchType.EVENT)
         else -> null
     }

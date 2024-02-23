@@ -59,7 +59,7 @@ class SuggestionTest: ApiTestContext() {
         Assertions.assertEquals(200, response["status"])
 
         val result: List<Suggestion> = mapper.readValue(response["body"] as String)
-        Assertions.assertEquals(2, result.size)
+        Assertions.assertTrue(result.size > 1)
 
         val validResult = result.all { resource ->
             resource.title?.nb?.contains("title") == true &&

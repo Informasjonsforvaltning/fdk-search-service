@@ -15,10 +15,10 @@ import co.elastic.clients.elasticsearch._types.query_dsl.Query as DSLQuery
 class SuggestionService(
     private val elasticsearchOperations: ElasticsearchOperations
 ) {
-    private fun suggestResource(query: String, searchType: SearchType?): SearchHits<SearchObject> =
+    private fun suggestResource(query: String, searchType: List<SearchType>?): SearchHits<SearchObject> =
         elasticsearchOperations.search(suggestionQuery(query, searchType), SearchObject::class.java)
 
-    fun suggestResources(query: String, searchType: SearchType?): List<Suggestion> =
+    fun suggestResources(query: String, searchType: List<SearchType>?): List<Suggestion> =
         suggestResource(query, searchType )
             .map { it.content }
             .map { it.toSuggestion() }
@@ -32,13 +32,13 @@ class SuggestionService(
             searchType = searchType
         )
 
-    private fun suggestionQuery(query: String, searchType: SearchType?): Query {
+    private fun suggestionQuery(query: String, searchTypes: List<SearchType>?): Query {
         val builder = NativeQuery.builder()
 
-        if (searchType != null) {
+        if (!searchTypes.isNullOrEmpty()) {
             builder.withFilter { queryBuilder ->
                 queryBuilder.bool { boolBuilder ->
-                    boolBuilder.must(searchTypeFilter(searchType))
+                    boolBuilder.should(searchTypeFilter(searchTypes))
                 }
             }
         }
@@ -53,12 +53,15 @@ class SuggestionService(
         return builder.build()
     }
 
-    private fun searchTypeFilter(searchType: SearchType): List<DSLQuery> =
-        listOf(DSLQuery.of { queryBuilder ->
-            queryBuilder.term { termBuilder ->
-                termBuilder
-                    .field("searchType.keyword")
-                    .value(FieldValue.of(searchType.name))
+    private fun searchTypeFilter(searchTypes: List<SearchType>): List<DSLQuery> {
+        return searchTypes.map { searchType ->
+            DSLQuery.of { queryBuilder ->
+                queryBuilder.term { termBuilder ->
+                    termBuilder
+                        .field("searchType.keyword")
+                        .value(FieldValue.of(searchType.name))
+                }
             }
-        })
+        }
+    }
 }
