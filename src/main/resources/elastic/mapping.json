@@ -1,0 +1,32 @@
+{
+  "properties": {
+    "losTheme": {
+      "properties": {
+        "losPaths": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "text",
+              "analyzer": "path_analyzer",
+              "search_analyzer": "keyword"
+            }
+          }
+        }
+      }
+    },
+    "organization": {
+      "properties": {
+        "orgPath": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "text",
+              "analyzer": "path_analyzer",
+              "search_analyzer": "keyword"
+            }
+          }
+        }
+      }
+    }
+  }
+}

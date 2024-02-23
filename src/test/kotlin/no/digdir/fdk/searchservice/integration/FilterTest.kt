@@ -276,13 +276,30 @@ class FilterTest: ApiTestContext() {
             val result: List<Dataset> = mapper.readValue(response["body"] as String)
             Assertions.assertEquals(0, result.size)
         }
+        @Test
+        fun `filtering datasets by parent category should include hits from subcategories`() {
+            val searchBody =
+                mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(los = "demokrati-og-innbyggerrettigheter")))
+            val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
+            Assertions.assertEquals(200, response["status"])
+
+            val result: List<SearchObject> = mapper.readValue(response["body"] as String)
+            Assertions.assertNotEquals(0, result.size)
+
+            val allThemesValid = result.all { searchObject ->
+                searchObject.losTheme?.any { losNode ->
+                    losNode.losPaths?.startsWith("demokrati-og-innbyggerrettigheter") ?: false
+                } ?: false
+            }
+            Assertions.assertTrue(allThemesValid)
+        }
     }
 
     @Nested
     inner class OrgPath {
         @Test
         fun `filter datasets on orgPath = 'FYLKE'`() {
-            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(orgPath = "FYLKE")))
+            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(orgPath = "/FYLKE")))
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 
@@ -290,18 +307,34 @@ class FilterTest: ApiTestContext() {
             Assertions.assertNotEquals(0, result.size )
 
             for (dataset in result) {
-                Assertions.assertEquals("FYLKE", dataset.organization?.orgPath)
+                Assertions.assertEquals("/FYLKE", dataset.organization?.orgPath)
             }
         }
 
         @Test
         fun `filter datasets on non-existing orgPath = '1234' should return nothing`() {
-            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(orgPath = "1234")))
+            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(orgPath = "/1234")))
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 
             val result: List<SearchObject> = mapper.readValue(response["body"] as String)
             Assertions.assertEquals(0, result.size)
+        }
+
+        @Test
+        fun `filtering datasets by parent category should include hits from subcategories`() {
+            val searchBody =
+                mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(orgPath = "/STAT")))
+            val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
+            Assertions.assertEquals(200, response["status"])
+
+            val result: List<SearchObject> = mapper.readValue(response["body"] as String)
+            Assertions.assertNotEquals(0, result.size)
+
+            val allThemesValid = result.all { dataset ->
+                dataset.organization?.orgPath?.startsWith("/STAT") ?: false
+            }
+            Assertions.assertTrue(allThemesValid)
         }
     }
 
