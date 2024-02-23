@@ -10,13 +10,13 @@ data class SearchOperation(
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class SearchFilters(
-  val opendata: Boolean?,
-  val accessRights: String?,
-  val theme: String?,
-  val spatial: String?,
-  val provenance: String?,
-  val los: String?,
-  val orgPath: String?,
+  val opendata: SearchFilter<Boolean>?,
+  val accessRights: SearchFilter<String>?,
+  val theme: SearchFilter<String>?,
+  val spatial: SearchFilter<String>?,
+  val provenance: SearchFilter<String>?,
+  val los: SearchFilter<String>?,
+  val orgPath: SearchFilter<String>?,
   val formats: SearchFilter<List<String>>?
 )
 
