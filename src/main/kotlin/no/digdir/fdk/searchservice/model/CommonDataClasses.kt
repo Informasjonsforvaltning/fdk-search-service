@@ -113,9 +113,3 @@ data class MediaTypeOrExtent(
   val code: String?,
   val type: MediaTypeOrExtentType = MediaTypeOrExtentType.UNKNOWN
 )
-
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class SearchCollection(
-  val values: List<String>,
-  val field: String?,
-)

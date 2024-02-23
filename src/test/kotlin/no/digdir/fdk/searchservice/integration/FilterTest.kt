@@ -310,7 +310,7 @@ class FilterTest: ApiTestContext() {
         @Test
         fun `filter datasets on list of formats`() {
             val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(
-                collection = SearchCollection(field = null, values = listOf("MEDIA_TYPE tiff", "FILE_TYPE SHP"))
+                formats = SearchFilter(value = listOf("MEDIA_TYPE tiff", "FILE_TYPE SHP"))
             )))
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
@@ -330,7 +330,7 @@ class FilterTest: ApiTestContext() {
         @Test
         fun `filter datasets on non-existing format = '1234' should return nothing`() {
             val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(
-                collection = SearchCollection(field = null, values = listOf("1234"))
+                formats = SearchFilter(value = listOf("1234"))
             )))
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])

@@ -155,7 +155,7 @@ class SearchService(
             })
         }
 
-        filters?.collection?.values?.forEach { formatValue ->
+        filters?.formats?.value?.forEach { formatValue ->
                 queryFilters.add(DSLQuery.of { queryBuilder ->
                     queryBuilder.match { matchBuilder ->
                         matchBuilder
