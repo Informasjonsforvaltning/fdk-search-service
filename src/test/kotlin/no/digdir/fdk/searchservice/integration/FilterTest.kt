@@ -32,7 +32,7 @@ class FilterTest: ApiTestContext() {
     inner class IsOpen {
         @Test
         fun `filter datasets on isOpen = true`() {
-            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(opendata = true)))
+            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(opendata = SearchFilter(true))))
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 
@@ -46,7 +46,7 @@ class FilterTest: ApiTestContext() {
 
         @Test
         fun `filter datasets on isOpen = false`() {
-            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(opendata = false)))
+            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(opendata = SearchFilter(false))))
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 
@@ -64,7 +64,7 @@ class FilterTest: ApiTestContext() {
         @Test
         fun `filter datasets on accessRight = 'PUBLIC'`() {
             val searchBody =
-                mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(accessRights = "PUBLIC")))
+                mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(accessRights = SearchFilter("PUBLIC"))))
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 
@@ -78,7 +78,7 @@ class FilterTest: ApiTestContext() {
 
         @Test
         fun `filter datasets on non valid accessRight returns empty list`() {
-            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(accessRights = "")))
+            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(accessRights = SearchFilter(""))))
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 
@@ -91,7 +91,15 @@ class FilterTest: ApiTestContext() {
     inner class DataTheme {
         @Test
         fun `filter datasets on one theme, theme = 'REGI'`() {
-            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(theme = "REGI")))
+            val searchBody = mapper.writeValueAsString(
+                SearchOperation(
+                    filters = SEARCH_FILTER.copy(
+                        theme = SearchFilter(
+                            listOf("REGI")
+                        )
+                    )
+                )
+            )
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 
@@ -105,14 +113,24 @@ class FilterTest: ApiTestContext() {
                 val datasetValid = themeCodes?.containsAll(validValues) ?: false
                 datasetValid
             }
-
             Assertions.assertTrue(allThemesValid)
         }
 
         @Test
         fun `filter datasets on multiple themes, theme = 'ENVI,REGI'`() {
             val searchBody =
-                mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(theme = "ENVI,REGI")))
+                mapper.writeValueAsString(
+                    SearchOperation(
+                        filters = SEARCH_FILTER.copy(
+                            theme = SearchFilter(
+                                listOf(
+                                    "ENVI",
+                                    "REGI"
+                                )
+                            )
+                        )
+                    )
+                )
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 
@@ -132,7 +150,9 @@ class FilterTest: ApiTestContext() {
 
         @Test
         fun `filter datasets on non-existing theme = '1234' should return nothing`() {
-            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(theme = "1234")))
+            val searchBody = mapper.writeValueAsString(
+                SearchOperation(filters = SEARCH_FILTER.copy(theme = SearchFilter(listOf("1234"))))
+            )
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 
@@ -141,12 +161,13 @@ class FilterTest: ApiTestContext() {
         }
     }
 
+
     @Nested
     inner class Provenance {
         @Test
         fun `filter datasets on provenance = 'BRUKER'`() {
             val searchBody =
-                mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(provenance = "BRUKER")))
+                mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(provenance = SearchFilter("BRUKER"))))
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 
@@ -161,7 +182,7 @@ class FilterTest: ApiTestContext() {
         @Test
         fun `filter datasets on non valid provenance = '1234' should return nothing`() {
             val searchBody =
-                mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(provenance = "1234")))
+                mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(provenance = SearchFilter("1234"))))
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 
@@ -174,7 +195,7 @@ class FilterTest: ApiTestContext() {
     inner class Spatial {
         @Test
         fun `filter datasets on one spatial, spatial = 'Norge'`() {
-            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(spatial = "Norge")))
+            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(spatial = SearchFilter("Norge"))))
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 
@@ -195,7 +216,7 @@ class FilterTest: ApiTestContext() {
         @Test
         fun `filter datasets on multiple spatial, spatial = 'Norge,Spania'`() {
             val searchBody =
-                mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(spatial = "Norge,Spania")))
+                mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(spatial = SearchFilter("Norge,Spania"))))
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 
@@ -215,7 +236,7 @@ class FilterTest: ApiTestContext() {
 
         @Test
         fun `filter datasets on non-existing spatial = '1234' should return nothing`() {
-            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(spatial = "1234")))
+            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(spatial = SearchFilter("1234"))))
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 
@@ -225,7 +246,7 @@ class FilterTest: ApiTestContext() {
 
         @Test
         fun `filter datasets on one spatial with space, spatial = 'Sogn og fjordane'`() {
-            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(spatial = "Sogn og fjordane")))
+            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(spatial = SearchFilter("Sogn og fjordane"))))
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 
@@ -249,7 +270,7 @@ class FilterTest: ApiTestContext() {
         @Test
         fun `filter datasets on multiple los`() {
             val searchBody =
-                mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(los = "familie-og-barn,demokrati-og-innbyggerrettigheter/politikk-og-valg")))
+                mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(los = SearchFilter("familie-og-barn,demokrati-og-innbyggerrettigheter/politikk-og-valg"))))
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 
@@ -269,7 +290,7 @@ class FilterTest: ApiTestContext() {
 
         @Test
         fun `filter datasets on non-existing los = '1234' should return nothing`() {
-            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(los = "1234")))
+            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(los = SearchFilter("1234"))))
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 
@@ -279,7 +300,7 @@ class FilterTest: ApiTestContext() {
         @Test
         fun `filtering datasets by parent category should include hits from subcategories`() {
             val searchBody =
-                mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(los = "demokrati-og-innbyggerrettigheter")))
+                mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(los = SearchFilter("demokrati-og-innbyggerrettigheter"))))
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 
@@ -299,7 +320,7 @@ class FilterTest: ApiTestContext() {
     inner class OrgPath {
         @Test
         fun `filter datasets on orgPath = 'FYLKE'`() {
-            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(orgPath = "/FYLKE")))
+            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(orgPath = SearchFilter("/FYLKE"))))
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 
@@ -313,7 +334,7 @@ class FilterTest: ApiTestContext() {
 
         @Test
         fun `filter datasets on non-existing orgPath = '1234' should return nothing`() {
-            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(orgPath = "/1234")))
+            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(orgPath = SearchFilter(value = "/1234"))))
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 
@@ -324,7 +345,7 @@ class FilterTest: ApiTestContext() {
         @Test
         fun `filtering datasets by parent category should include hits from subcategories`() {
             val searchBody =
-                mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(orgPath = "/STAT")))
+                mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(orgPath = SearchFilter("/STAT"))))
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 

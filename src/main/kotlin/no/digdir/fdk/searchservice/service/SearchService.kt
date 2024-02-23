@@ -79,7 +79,7 @@ class SearchService(
                 queryBuilder.term { termBuilder ->
                     termBuilder
                         .field("isOpenData")
-                        .value(FieldValue.of(opendata))
+                        .value(FieldValue.of(opendata.value))
                 }
             })
         }
@@ -89,15 +89,13 @@ class SearchService(
                 queryBuilder.term { termBuilder ->
                     termBuilder
                         .field("accessRights.code.keyword")
-                        .value(FieldValue.of(accessRights))
+                        .value(FieldValue.of(accessRights.value))
                 }
             })
         }
 
-        filters?.theme?.let { theme ->
-            val themeList = theme.split(",").map { it.trim() }
-
-            themeList.forEach { themeValue ->
+        filters?.theme?.value?.let { themes ->
+            themes.forEach { themeValue ->
                 queryFilters.add(DSLQuery.of { queryBuilder ->
                     queryBuilder.term { termBuilder ->
                         termBuilder
@@ -113,13 +111,13 @@ class SearchService(
                 queryBuilder.term { termBuilder ->
                     termBuilder
                         .field("provenance.code.keyword")
-                        .value(FieldValue.of(provenance))
+                        .value(FieldValue.of(provenance.value))
                 }
             })
         }
 
         filters?.spatial?.let { spatial ->
-            val filterList = spatial.split(",").map { it.trim() }
+            val filterList = spatial.value.split(",").map { it.trim() }
 
             filterList.forEach { spatialValue ->
                 queryFilters.add(DSLQuery.of { queryBuilder ->
@@ -133,7 +131,7 @@ class SearchService(
         }
 
         filters?.los?.let { los ->
-            val losThemeList = los.split(",").map { it.trim() }
+            val losThemeList = los.value.split(",").map { it.trim() }
 
             losThemeList.forEach { losValue ->
                 queryFilters.add(DSLQuery.of { queryBuilder ->
@@ -150,7 +148,7 @@ class SearchService(
                 queryBuilder.term { termBuilder ->
                     termBuilder
                         .field("organization.orgPath.keyword")
-                        .value(FieldValue.of(orgPath))
+                        .value(FieldValue.of(orgPath.value))
                 }
             })
         }
