@@ -94,8 +94,8 @@ class SearchService(
             })
         }
 
-        filters?.theme?.value?.let { theme ->
-            theme.forEach { themeValue ->
+        filters?.theme?.value?.let { themes ->
+            themes.forEach { themeValue ->
                 queryFilters.add(DSLQuery.of { queryBuilder ->
                     queryBuilder.term { termBuilder ->
                         termBuilder
