@@ -36,7 +36,7 @@ val TEST_CONCEPT_HIT_ALL_FIELDS = TEST_NULL_CONCEPT.copy(
             "EN Test definition > sources > text")))),
         "Test definition > sourceRelationship"),
     prefLabel = LocalizedStrings(
-        "NB Test prefLabel",
+        "NB Test prefLabel, title",
         "NN Test prefLabel",
         "EN Test prefLabel"),
     harvest =  HarvestMetadata(
@@ -62,5 +62,5 @@ val TEST_CONCEPT_HIT_ALL_FIELDS = TEST_NULL_CONCEPT.copy(
                 "NB Test publisher > prefLabel",
                 "NN Test publisher > prefLabel",
             "EN Test publisher > prefLabel"))
-    )
+    ),
 )
