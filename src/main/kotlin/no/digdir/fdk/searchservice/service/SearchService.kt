@@ -94,10 +94,8 @@ class SearchService(
             })
         }
 
-        filters?.theme?.let { theme ->
-            val themeList = theme.value.split(",").map { it.trim() }
-
-            themeList.forEach { themeValue ->
+        filters?.theme?.value?.let { theme ->
+            theme.forEach { themeValue ->
                 queryFilters.add(DSLQuery.of { queryBuilder ->
                     queryBuilder.term { termBuilder ->
                         termBuilder

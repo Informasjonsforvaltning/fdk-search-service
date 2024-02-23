@@ -12,7 +12,7 @@ data class SearchOperation(
 data class SearchFilters(
   val opendata: SearchFilter<Boolean>?,
   val accessRights: SearchFilter<String>?,
-  val theme: SearchFilter<String>?,
+  val theme: SearchFilter<List<String>>?,
   val spatial: SearchFilter<String>?,
   val provenance: SearchFilter<String>?,
   val los: SearchFilter<String>?,
