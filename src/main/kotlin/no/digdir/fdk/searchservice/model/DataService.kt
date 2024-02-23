@@ -18,5 +18,7 @@ data class DataService(
     val publisher: Organization?,
     val accessRights: ReferenceDataCode?,
     val harvest: HarvestMetadata?,
+    val conformsTo: List<ConformsTo>?,
+    val servesDataset: Set<String>?
     val fdkFormat: List<MediaTypeOrExtent>?
 )

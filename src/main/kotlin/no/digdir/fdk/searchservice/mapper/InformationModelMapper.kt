@@ -21,5 +21,34 @@ fun InformationModel.toSearchObject(timestamp: Long, deleted: Boolean = false) =
         provenance = null,
         searchType = SearchType.INFORMATION_MODEL,
         spatial = null,
-        title = title
+        title = title,
+        relations = getRelations()
     )
+
+private fun InformationModel.getRelations(): List<Relation> {
+    val relations: MutableList<Relation> = mutableListOf()
+
+
+    hasPart?.let {
+        relations.add(Relation(uri = hasPart, type = "hasPart"))
+    }
+
+    isPartOf?.let {
+        relations.add(Relation(uri = isPartOf, type = "isPartOf"))
+    }
+
+    isReplacedBy?.let {
+        relations.add(Relation(uri = isReplacedBy, type = "isReplacedBy"))
+    }
+
+    replaces?.let {
+        relations.add(Relation(uri = it, type = "replaces"))
+    }
+
+
+    subjects?.forEach {
+        relations.add(Relation(uri = it, type = "subjects"))
+    }
+
+    return relations
+}

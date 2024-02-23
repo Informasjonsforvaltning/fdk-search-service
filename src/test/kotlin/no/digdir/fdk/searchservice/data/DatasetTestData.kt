@@ -17,7 +17,12 @@ val TEST_NULL_DATASET = Dataset(
     provenance = null,
     harvest = null,
     catalog = null,
-    distribution = null
+    distribution = null,
+    subject = null,
+    conformsTo = null,
+    inSeries = null,
+    informationModel = null,
+    references = null
 )
 
 val TEST_DATASET_HIT_ALL_FIELDS = TEST_NULL_DATASET.copy(

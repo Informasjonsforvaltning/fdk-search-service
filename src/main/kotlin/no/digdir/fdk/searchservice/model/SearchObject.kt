@@ -32,4 +32,5 @@ data class SearchObject(
     val searchType: SearchType,
     val spatial: List<ReferenceDataCode>?,
     val title: LocalizedStrings?,
+    val relations: List<Relation>?
 )

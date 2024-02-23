@@ -21,5 +21,20 @@ fun Event.toSearchObject(timestamp: Long, deleted: Boolean = false) =
         provenance = null,
         searchType = SearchType.EVENT,
         spatial = null,
-        title = title
+        title = title,
+        relations = getRelations()
     )
+
+private fun Event.getRelations(): List<Relation> {
+    val relations: MutableList<Relation> = mutableListOf()
+
+    mayTrigger?.forEach {
+        relations.add(Relation(uri = it, type = "mayTrigger"))
+    }
+
+    subject?.forEach {
+        relations.add(Relation(uri = it, type = "subject"))
+    }
+
+    return relations
+}

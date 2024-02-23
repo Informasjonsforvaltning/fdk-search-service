@@ -19,7 +19,8 @@ val TEST_NULL_SEARCH_OBJECT = SearchObject(
     provenance = null,
     searchType = SearchType.DATASET,
     spatial = null,
-    title = null
+    title = null,
+    relations = null
 )
 
 val TEST_SEARCH_OBJECT_AND_HIT_ALL_FIELDS = TEST_NULL_SEARCH_OBJECT.copy(

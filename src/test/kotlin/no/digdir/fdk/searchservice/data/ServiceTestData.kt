@@ -14,7 +14,13 @@ val TEST_NULL_SERVICE = Service(
     spatial = null,
     hasCompetantAuthority = null,
     ownedBy = null,
-    euDataThemes = null
+    euDataThemes = null,
+    subject = null,
+    relation = null,
+    requires = null,
+    isDescribedAt = null,
+    isGroupedBy = null,
+    isClassifiedBy = null
 )
 
 val TEST_SERVICE = TEST_NULL_SERVICE.copy(

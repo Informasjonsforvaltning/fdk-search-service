@@ -14,4 +14,13 @@ data class Concept(
     val definition: Definition?,
     val prefLabel: LocalizedStrings?,
     val harvest: HarvestMetadata?,
+    val associativeRelation: List<AssociativeRelation>?,
+    val closeMatch: Set<String>?,
+    val exactMatch: Set<String>?,
+    val genericRelation: List<GenericRelation>?,
+    val isReplacedBy: Set<String>?,
+    val memberOf: Set<String>?,
+    val partitiveRelation: List<PartitiveRelation>?,
+    val replaces: Set<String>?,
+    val seeAlso: Set<String>?
 )

@@ -11,7 +11,16 @@ val TEST_NULL_CONCEPT = Concept(
     definition = null,
     prefLabel = null,
     harvest = null,
-    collection = null)
+    collection = null,
+    memberOf = null,
+    replaces = null,
+    seeAlso = null,
+    associativeRelation = null,
+    partitiveRelation = null,
+    isReplacedBy = null,
+    closeMatch = null,
+    exactMatch = null,
+    genericRelation = null)
 
 val TEST_CONCEPT_HIT_ALL_FIELDS = TEST_NULL_CONCEPT.copy(
     id = "1021",

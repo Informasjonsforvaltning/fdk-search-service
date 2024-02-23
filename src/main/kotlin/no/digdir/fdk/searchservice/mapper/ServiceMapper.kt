@@ -21,11 +21,39 @@ fun Service.toSearchObject(timestamp: Long, deleted: Boolean = false) =
         provenance = null,
         searchType = SearchType.SERVICE,
         spatial = spatial,
-        title = title
+        title = title,
+        relations = getRelations()
     )
 
 private fun Service.getOrganization() = if (hasCompetantAuthority.isNullOrEmpty()) {
     ownedBy?.get(0)
 } else {
     hasCompetantAuthority.get(0)
+}
+
+
+private fun Service.getRelations(): List<Relation> {
+    val relations: MutableList<Relation> = mutableListOf()
+
+    isGroupedBy?.forEach {
+        relations.add(Relation(uri = it, type = "isGroupedBy"))
+    }
+
+    isClassifiedBy?.forEach {
+        relations.add(Relation(uri = it.uri, type = "isClassifiedBy"))
+    }
+
+    isDescribedAt?.forEach {
+        relations.add(Relation(uri = it.uri, type = "isDescribedAt"))
+    }
+
+    relation?.forEach {
+        relations.add(Relation(uri = it.uri, type = "relation"))
+    }
+
+    subject?.forEach {
+        relations.add(Relation(uri = it.uri, type = "subject"))
+    }
+
+    return relations
 }

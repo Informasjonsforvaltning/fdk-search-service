@@ -13,4 +13,6 @@ data class Event(
     val catalog: Catalog?,
     val description: LocalizedStrings?,
     val harvest: HarvestMetadata?,
+    val mayTrigger: List<String>?,
+    val subject: List<String>?
 )

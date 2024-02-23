@@ -1,6 +1,7 @@
 package no.digdir.fdk.searchservice.mapper
 
 import no.digdir.fdk.searchservice.model.DataService
+import no.digdir.fdk.searchservice.model.Relation
 import no.digdir.fdk.searchservice.model.SearchObject
 import no.digdir.fdk.searchservice.model.SearchType
 
@@ -21,7 +22,8 @@ fun DataService.toSearchObject(timestamp: Long, deleted: Boolean = false) =
         provenance = null,
         searchType = SearchType.DATA_SERVICE,
         spatial = null,
-        title = title
+        title = title,
+        relations = getRelations()
     )
 
 fun DataService.extractPrefixedFormats(): List<String> {
@@ -30,4 +32,18 @@ fun DataService.extractPrefixedFormats(): List<String> {
             mutableList.add("${format.type} ${format.code}")
         }
     return mutableList
+}
+
+private fun DataService.getRelations(): List<Relation> {
+    val relations: MutableList<Relation> = mutableListOf()
+
+    conformsTo?.forEach {
+        relations.add(Relation(uri = it.uri, type = "conformsTo"))
+    }
+
+    servesDataset?.forEach {
+        relations.add(Relation(uri = it, type = "servesDataset"))
+    }
+
+    return relations
 }

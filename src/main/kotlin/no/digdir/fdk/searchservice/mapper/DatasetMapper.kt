@@ -21,7 +21,8 @@ fun Dataset.toSearchObject(timestamp: Long, deleted: Boolean = false) =
         provenance = provenance,
         searchType = SearchType.DATASET,
         spatial = spatial,
-        title = title
+        title = title,
+        relations = getRelations()
     )
 
 fun Dataset.extractPrefixedFormats(): List<String> {
@@ -32,4 +33,30 @@ fun Dataset.extractPrefixedFormats(): List<String> {
         }
     }
     return mutableList
+}
+
+private fun Dataset.getRelations(): List<Relation> {
+    val relations: MutableList<Relation> = mutableListOf()
+
+    conformsTo?.forEach {
+        relations.add(Relation(uri = it.uri, type = "conformsTo"))
+    }
+
+    inSeries?.forEach {
+        relations.add(Relation(uri = it.uri, type = "inSeries"))
+    }
+
+    informationModel?.forEach {
+        relations.add(Relation(uri = it.uri, type = "informationModel"))
+    }
+
+    references?.forEach {
+        relations.add(Relation(uri = it.source, type = it.referenceType?.uri ?: "references"))
+    }
+
+    subject?.forEach {
+        relations.add(Relation(uri = it.uri, type = "subject"))
+    }
+
+    return relations
 }

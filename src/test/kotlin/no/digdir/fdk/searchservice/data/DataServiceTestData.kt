@@ -14,6 +14,8 @@ val TEST_NULL_DATA_SERVICE = DataService(
     title = null,
     keyword = null,
     description = null,
+    servesDataset = null,
+    conformsTo = null,
     fdkFormat = null
 )
 

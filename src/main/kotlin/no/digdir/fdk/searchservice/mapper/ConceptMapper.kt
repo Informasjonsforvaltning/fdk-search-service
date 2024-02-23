@@ -21,5 +21,47 @@ fun Concept.toSearchObject(timestamp: Long, deleted: Boolean = false) =
         provenance = null,
         searchType = SearchType.CONCEPT,
         spatial = null,
-        title = prefLabel
+        title = prefLabel,
+        relations = getRelations()
     )
+
+private fun Concept.getRelations(): List<Relation> {
+    val relations: MutableList<Relation> = mutableListOf()
+
+    associativeRelation?.forEach {
+        relations.add(Relation(uri = it.related, type = "associativeRelation"))
+    }
+
+    closeMatch?.forEach {
+        relations.add(Relation(uri = it, type = "closeMatch"))
+    }
+
+    exactMatch?.forEach {
+        relations.add(Relation(uri = it, type = "exactMatch"))
+    }
+
+    genericRelation?.forEach {
+        relations.add(Relation(uri = it.generalizes, type = "genericRelation"))
+    }
+
+    isReplacedBy?.forEach {
+        relations.add(Relation(uri = it, type = "isReplacedBy"))
+    }
+
+    memberOf?.forEach {
+        relations.add(Relation(uri = it, type = "memberOf"))
+    }
+    partitiveRelation?.forEach {
+        relations.add(Relation(uri = it.isPartOf, type = "partitiveRelation"))
+    }
+
+    replaces?.forEach {
+        relations.add(Relation(uri = it, type = "replaces"))
+    }
+
+    seeAlso?.forEach {
+        relations.add(Relation(uri = it, type = "seeAlso"))
+    }
+
+    return relations
+}

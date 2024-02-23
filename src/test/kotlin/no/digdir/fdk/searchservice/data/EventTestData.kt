@@ -8,7 +8,9 @@ val TEST_NULL_EVENT = Event(
     harvest = null,
     catalog = null,
     title = null,
-    description = null
+    description = null,
+    subject = null,
+    mayTrigger = null
 )
 
 val TEST_EVENT = TEST_NULL_EVENT.copy(
