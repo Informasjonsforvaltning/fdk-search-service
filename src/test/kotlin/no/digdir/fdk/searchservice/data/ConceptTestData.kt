@@ -3,9 +3,10 @@ package no.digdir.fdk.searchservice.data
 import no.digdir.fdk.searchservice.model.*
 import no.digdir.fdk.searchservice.model.Collection
 
+// ids start from 20 to avoid conflicts with the ids in the test data for the other types
 val TEST_NULL_CONCEPT = Concept(
-    id = "0",
-    identifier = "identifier 0",
+    id = "1020",
+    identifier = "identifier 1020",
     publisher = null,
     definition = null,
     prefLabel = null,
@@ -13,12 +14,12 @@ val TEST_NULL_CONCEPT = Concept(
     collection = null)
 
 val TEST_CONCEPT_HIT_ALL_FIELDS = TEST_NULL_CONCEPT.copy(
-    id = "1",
-    identifier = "identifier 1",
+    id = "1021",
+    identifier = "identifier 1021",
     publisher = Organization(
-        orgPath = "/STAT/972417858",
-        identifier = "Test publisher > identifier",
-        uri = "Test publisher > uri",
+        orgPath = "/STAT/102117858",
+        identifier = "Test publisher > identifier 1021",
+        uri = "Test publisher > uri 1021",
         name = "Test publisher > name",
         prefLabel = LocalizedStrings(
             "NB Test publisher > prefLabel",
@@ -43,8 +44,8 @@ val TEST_CONCEPT_HIT_ALL_FIELDS = TEST_NULL_CONCEPT.copy(
             "Test harvest > firstHarvested",
             listOf("Test harvest > changed")),
     collection = Collection(
-        id = "Test collection > id",
-        uri = "Test collection > uri",
+        id = "Test collection > id 1021",
+        uri = "Test collection > uri 1021",
         label = LocalizedStrings(
             "NB Test collection > label",
             "NN Test collection > label",
@@ -54,9 +55,9 @@ val TEST_CONCEPT_HIT_ALL_FIELDS = TEST_NULL_CONCEPT.copy(
             "NN Test collection > description",
             "EN Test collection > description"),
         publisher = Organization(
-            orgPath = "/KOMMUNE/972417858",
+            orgPath = "/KOMMUNE/102117858",
             identifier = "Test publisher > identifier",
-            uri = "Test publisher > uri",
+            uri = "Test publisher > uri ",
             name = "Test publisher > name",
             prefLabel = LocalizedStrings(
                 "NB Test publisher > prefLabel",
