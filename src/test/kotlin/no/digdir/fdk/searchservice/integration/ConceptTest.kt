@@ -2,8 +2,10 @@ package no.digdir.fdk.searchservice.integration
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import no.digdir.fdk.searchservice.model.SearchFilters
 import no.digdir.fdk.searchservice.model.SearchObject
 import no.digdir.fdk.searchservice.model.SearchOperation
+import no.digdir.fdk.searchservice.model.SearchType
 import no.digdir.fdk.searchservice.utils.ApiTestContext
 import no.digdir.fdk.searchservice.utils.requestApi
 import org.junit.jupiter.api.Assertions
@@ -22,27 +24,41 @@ import org.springframework.test.context.ContextConfiguration
 @ContextConfiguration(initializers = [ApiTestContext.Initializer::class])
 @Tag("integration")
 class ConceptSearchTest: ApiTestContext() {
-    private val mapper = jacksonObjectMapper()
+    private val CONCEPTS_PATH = "/search/concepts"
     private val SEARCH_QUERY = "test"
     private val SEARCH_QUERY_NO_HITS = "nohits"
     private val SEARCH_QUERYS_HIT_ALL_FIELDS =
         listOf("identifier", "publisher","definition","prefLabel", "harvest", "collection")
-    private val CONCEPT_PATH = "/search/concepts"
+    private val searchFilters = SearchFilters(null, null, null,
+        null, null, null, null, null)
+    private val mapper = jacksonObjectMapper()
 
     @Test
-    fun `search concepts with at least one hit`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERY))
-        val response = requestApi(CONCEPT_PATH, port, searchBody, POST)
+    fun `search with at least one hit`() {
+        val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERY, searchFilters))
+        val response = requestApi(CONCEPTS_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
         val result: List<SearchObject> = mapper.readValue(response["body"] as String)
-        Assertions.assertNotEquals(result.size, 0)
+        Assertions.assertTrue(result.isNotEmpty())
+    }
+
+    @Test
+    fun `check searchType`() {
+        val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERY, searchFilters))
+        val response = requestApi(CONCEPTS_PATH, port, searchBody, POST)
+        Assertions.assertEquals(200, response["status"])
+
+        val result: List<SearchObject> = mapper.readValue(response["body"] as String)
+        result.forEach {
+            Assertions.assertTrue(it.searchType == SearchType.CONCEPT)
+        }
     }
 
     @Test
     fun `search concepts with no hits`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERY_NO_HITS))
-        val response = requestApi(CONCEPT_PATH, port, searchBody, POST)
+        val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERY_NO_HITS, searchFilters))
+        val response = requestApi(CONCEPTS_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
         val result: List<SearchObject> = mapper.readValue(response["body"] as String)
@@ -51,23 +67,23 @@ class ConceptSearchTest: ApiTestContext() {
 
     @Test
     fun `search concepts with empty query`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(""))
-        val response = requestApi(CONCEPT_PATH, port, searchBody, POST)
+        val searchBody = mapper.writeValueAsString(SearchOperation("", searchFilters))
+        val response = requestApi(CONCEPTS_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
         val result: List<SearchObject> = mapper.readValue(response["body"] as String)
-        Assertions.assertNotEquals(result.size, 0)
+        Assertions.assertTrue(result.isNotEmpty())
     }
 
     @Test
     fun `search and hit all fields successfully`() {
         SEARCH_QUERYS_HIT_ALL_FIELDS.forEach {
-            val searchBody = mapper.writeValueAsString(SearchOperation(it))
-            val response = requestApi(CONCEPT_PATH, port, searchBody, POST)
+            val searchBody = mapper.writeValueAsString(SearchOperation(it, searchFilters))
+            val response = requestApi(CONCEPTS_PATH, port, searchBody, POST)
             Assertions.assertEquals(200, response["status"])
 
             val result: List<SearchObject> = mapper.readValue(response["body"] as String)
-            Assertions.assertNotEquals(result.size, 0)
+            if (result.isEmpty()) Assertions.fail<String>("No hit for query: $it")
         }
     }
 }

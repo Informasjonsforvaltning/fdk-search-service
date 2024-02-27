@@ -23,13 +23,14 @@ import org.springframework.test.context.ContextConfiguration
 )
 @ContextConfiguration(initializers = [ApiTestContext.Initializer::class])
 @Tag("integration")
-class SearchDatasetTest: ApiTestContext() {
-    private val DATASETS_PATH = "/search/datasets"
+class ServiceSearchTest : ApiTestContext() {
+    private val SERVICES_PATH = "/search/services"
     private val SEARCH_QUERY = "test"
     private val SEARCH_QUERY_NO_HITS = "nohits"
-    private val SEARCH_QUERYS_HIT_ALL_FIELDS =
-        listOf("title", "description", "keyword", "theme", "losTheme", "publisher", "accessRights", "spatial",
-            "provenance", "harvest", "catalog")
+    private val SEARCH_QUERYS_HIT_ALL_UNCONDITIONAL_FIELDS =
+        listOf("uri", "title", "catalog", "description", "keyword", "euDataThemes", "losTheme", "spatial", "harvest")
+    private val SEARCH_QUERYS_OWNED_BY = "ownedBy"
+    private val SEARCH_QUERYS_HAS_COMPETANT_AUTHORITY = "hasCompetantAuthority"
     private val mapper = jacksonObjectMapper()
     private val searchFilters = SearchFilters(
         null, null, null,
@@ -37,56 +38,66 @@ class SearchDatasetTest: ApiTestContext() {
     )
 
     @Test
-    fun `search datasets with at least one hit`() {
+    fun `search with at least one hit`() {
         val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERY, searchFilters))
-        val response = requestApi(DATASETS_PATH, port, searchBody, POST)
+        val response = requestApi(SERVICES_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
         val result: List<SearchObject> = mapper.readValue(response["body"] as String)
-        Assertions.assertTrue(result.size > 0)
+        Assertions.assertTrue(result.isNotEmpty())
     }
 
     @Test
     fun `check searchType`() {
         val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERY, searchFilters))
-        val response = requestApi(DATASETS_PATH, port, searchBody, POST)
+        val response = requestApi(SERVICES_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
         val result: List<SearchObject> = mapper.readValue(response["body"] as String)
         result.forEach {
-            Assertions.assertTrue(it.searchType == SearchType.DATASET)
+            Assertions.assertTrue(it.searchType == SearchType.SERVICE)
         }
     }
 
     @Test
-    fun `search datasets with no hits`() {
+    fun `search with no hits`() {
         val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERY_NO_HITS, searchFilters))
-        val response = requestApi(DATASETS_PATH, port, searchBody, POST)
+        val response = requestApi(SERVICES_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
         val result: List<SearchObject> = mapper.readValue(response["body"] as String)
-        Assertions.assertEquals(0, result.size)
+        Assertions.assertEquals(result.size, 0)
     }
 
     @Test
-    fun `search datasets with empty query`() {
+    fun `search with empty query`() {
         val searchBody = mapper.writeValueAsString(SearchOperation("", searchFilters))
-        val response = requestApi(DATASETS_PATH, port, searchBody, POST)
+        val response = requestApi(SERVICES_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
         val result: List<SearchObject> = mapper.readValue(response["body"] as String)
-        Assertions.assertNotEquals(0, result.size)
+        Assertions.assertTrue(result.isNotEmpty())
     }
 
     @Test
-    fun `search and hit all datasets fields successfully`() {
-        SEARCH_QUERYS_HIT_ALL_FIELDS.forEach {
+    fun `hit all unconditional fields`() {
+        SEARCH_QUERYS_HIT_ALL_UNCONDITIONAL_FIELDS.forEach {
             val searchBody = mapper.writeValueAsString(SearchOperation(it, searchFilters))
-            val response = requestApi(DATASETS_PATH, port, searchBody, POST)
+            val response = requestApi(SERVICES_PATH, port, searchBody, POST)
             Assertions.assertEquals(200, response["status"])
 
             val result: List<SearchObject> = mapper.readValue(response["body"] as String)
             if (result.isEmpty()) Assertions.fail<String>("No hit for query: $it")
         }
+    }
+
+    @Test
+    fun `hit ownedBy field`() {
+        val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERYS_OWNED_BY, searchFilters))
+        val response = requestApi(SERVICES_PATH, port, searchBody, POST)
+        Assertions.assertEquals(200, response["status"])
+
+        val result: List<SearchObject> = mapper.readValue(response["body"] as String)
+        Assertions.assertTrue(result.isNotEmpty())
     }
 }
