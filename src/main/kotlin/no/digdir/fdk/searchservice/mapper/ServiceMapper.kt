@@ -36,23 +36,23 @@ private fun Service.getRelations(): List<Relation> {
     val relations: MutableList<Relation> = mutableListOf()
 
     isGroupedBy?.forEach {
-        relations.add(Relation(uri = it, type = "isGroupedBy"))
+        relations.add(Relation(uri = it, type = RelationType.isGroupedBy))
     }
 
     isClassifiedBy?.forEach {
-        relations.add(Relation(uri = it.uri, type = "isClassifiedBy"))
+        relations.add(Relation(uri = it.uri, type = RelationType.isClassifiedBy))
     }
 
     isDescribedAt?.forEach {
-        relations.add(Relation(uri = it.uri, type = "isDescribedAt"))
+        relations.add(Relation(uri = it.uri, type = RelationType.isDescribedAt))
     }
 
     relation?.forEach {
-        relations.add(Relation(uri = it.uri, type = "relation"))
+        relations.add(Relation(uri = it.uri, type = RelationType.relation))
     }
 
     subject?.forEach {
-        relations.add(Relation(uri = it.uri, type = "subject"))
+        relations.add(Relation(uri = it.uri, type = RelationType.subject))
     }
 
     return relations

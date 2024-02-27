@@ -34,3 +34,41 @@ data class SearchObject(
     val title: LocalizedStrings?,
     val relations: List<Relation>?
 )
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class Relation(
+    val uri: String?,
+    val type: RelationType?
+)
+
+enum class RelationType {
+    associativeRelation,
+    closeMatch,
+    exactMatch,
+    genericRelation,
+    isReplacedBy,
+    memberOf,
+    partitiveRelation,
+    replaces,
+    seeAlso,
+    conformsTo,
+    servesDataset,
+    inSeries,
+    informationModel,
+    subject,
+    mayTrigger,
+    hasPart,
+    isPartOf,
+    subjects,
+    isGroupedBy,
+    isClassifiedBy,
+    isDescribedAt,
+    relation,
+    hasVersion,
+    isVersionOf,
+    references,
+    isReferencedBy,
+    requires,
+    isRequiredBy,
+    source
+}

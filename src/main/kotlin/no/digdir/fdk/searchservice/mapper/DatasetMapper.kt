@@ -39,24 +39,42 @@ private fun Dataset.getRelations(): List<Relation> {
     val relations: MutableList<Relation> = mutableListOf()
 
     conformsTo?.forEach {
-        relations.add(Relation(uri = it.uri, type = "conformsTo"))
+        relations.add(Relation(uri = it.uri, type = RelationType.conformsTo))
     }
 
     inSeries?.forEach {
-        relations.add(Relation(uri = it.uri, type = "inSeries"))
+        relations.add(Relation(uri = it.uri, type = RelationType.inSeries))
     }
 
     informationModel?.forEach {
-        relations.add(Relation(uri = it.uri, type = "informationModel"))
+        relations.add(Relation(uri = it.uri, type = RelationType.informationModel))
     }
 
     references?.forEach {
-        relations.add(Relation(uri = it.source, type = it.referenceType?.uri ?: "references"))
+        relations.add(Relation(uri = it.source?.uri, type = it.uriToRelationType() ?: RelationType.references))
     }
 
     subject?.forEach {
-        relations.add(Relation(uri = it.uri, type = "subject"))
+        relations.add(Relation(uri = it.uri, type = RelationType.subject))
     }
 
     return relations
+}
+
+private fun Reference.uriToRelationType(): RelationType? {
+    return when (referenceType?.uri) {
+        "http://purl.org/dc/terms/source" -> RelationType.source
+        "http://purl.org/dc/terms/hasVersion" -> RelationType.hasVersion
+        "http://purl.org/dc/terms/isVersionOf" -> RelationType.isVersionOf
+        "http://purl.org/dc/terms/isPartOf" -> RelationType.isPartOf
+        "http://purl.org/dc/terms/hasPart" -> RelationType.hasPart
+        "http://purl.org/dc/terms/references" -> RelationType.references
+        "http://purl.org/dc/terms/isReferencedBy" -> RelationType.isReferencedBy
+        "http://purl.org/dc/terms/replaces" -> RelationType.replaces
+        "http://purl.org/dc/terms/isReplacedBy" -> RelationType.isReplacedBy
+        "http://purl.org/dc/terms/requires" -> RelationType.requires
+        "http://purl.org/dc/terms/isRequiredBy" -> RelationType.isRequiredBy
+        "http://purl.org/dc/terms/relation" -> RelationType.relation
+        else -> null
+    }
 }

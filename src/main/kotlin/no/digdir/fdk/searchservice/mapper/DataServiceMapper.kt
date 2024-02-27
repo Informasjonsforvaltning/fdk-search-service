@@ -38,11 +38,11 @@ private fun DataService.getRelations(): List<Relation> {
     val relations: MutableList<Relation> = mutableListOf()
 
     conformsTo?.forEach {
-        relations.add(Relation(uri = it.uri, type = "conformsTo"))
+        relations.add(Relation(uri = it.uri, type = RelationType.conformsTo))
     }
 
     servesDataset?.forEach {
-        relations.add(Relation(uri = it, type = "servesDataset"))
+        relations.add(Relation(uri = it, type = RelationType.servesDataset))
     }
 
     return relations

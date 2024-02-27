@@ -57,14 +57,7 @@ data class Subject(
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Reference(
   val referenceType: ReferenceDataCode?,
-  val source: String?,
-)
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class Relation(
-  val uri: String?,
-  val type: String?
+  val source: SkosConcept?
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -92,8 +85,8 @@ data class GenericRelation(
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class PartitiveRelation(
   val description: LocalizedStrings?,
-  val hasPart: String,
-  val isPartOf: String
+  val hasPart: String?,
+  val isPartOf: String?
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

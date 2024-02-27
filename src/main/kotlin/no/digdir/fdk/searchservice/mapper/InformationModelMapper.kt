@@ -30,24 +30,24 @@ private fun InformationModel.getRelations(): List<Relation> {
 
 
     hasPart?.let {
-        relations.add(Relation(uri = hasPart, type = "hasPart"))
+        relations.add(Relation(uri = hasPart, type = RelationType.hasPart))
     }
 
     isPartOf?.let {
-        relations.add(Relation(uri = isPartOf, type = "isPartOf"))
+        relations.add(Relation(uri = isPartOf, type = RelationType.isPartOf))
     }
 
     isReplacedBy?.let {
-        relations.add(Relation(uri = isReplacedBy, type = "isReplacedBy"))
+        relations.add(Relation(uri = isReplacedBy, type = RelationType.isReplacedBy))
     }
 
     replaces?.let {
-        relations.add(Relation(uri = it, type = "replaces"))
+        relations.add(Relation(uri = it, type = RelationType.replaces))
     }
 
 
     subjects?.forEach {
-        relations.add(Relation(uri = it, type = "subjects"))
+        relations.add(Relation(uri = it, type = RelationType.subjects))
     }
 
     return relations

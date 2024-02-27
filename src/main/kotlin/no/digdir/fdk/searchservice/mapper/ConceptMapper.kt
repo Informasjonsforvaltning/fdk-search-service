@@ -29,38 +29,55 @@ private fun Concept.getRelations(): List<Relation> {
     val relations: MutableList<Relation> = mutableListOf()
 
     associativeRelation?.forEach {
-        relations.add(Relation(uri = it.related, type = "associativeRelation"))
+        relations.add(Relation(uri = it.related, type = RelationType.associativeRelation))
     }
 
     closeMatch?.forEach {
-        relations.add(Relation(uri = it, type = "closeMatch"))
+        relations.add(Relation(uri = it, type = RelationType.closeMatch))
     }
 
     exactMatch?.forEach {
-        relations.add(Relation(uri = it, type = "exactMatch"))
+        relations.add(Relation(uri = it, type = RelationType.exactMatch))
     }
 
-    genericRelation?.forEach {
-        relations.add(Relation(uri = it.generalizes, type = "genericRelation"))
+    genericRelation?.forEach { relation ->
+        relation.generalizes?.let { generalizes ->
+            relations.add(Relation(uri = generalizes, type = RelationType.genericRelation))
+        }
+    }
+
+    genericRelation?.forEach { relation ->
+        relation.specializes?.let { specializes ->
+            relations.add(Relation(uri = specializes, type = RelationType.genericRelation))
+        }
     }
 
     isReplacedBy?.forEach {
-        relations.add(Relation(uri = it, type = "isReplacedBy"))
+        relations.add(Relation(uri = it, type = RelationType.isReplacedBy))
     }
 
     memberOf?.forEach {
-        relations.add(Relation(uri = it, type = "memberOf"))
+        relations.add(Relation(uri = it, type = RelationType.memberOf))
     }
-    partitiveRelation?.forEach {
-        relations.add(Relation(uri = it.isPartOf, type = "partitiveRelation"))
+
+    partitiveRelation?.forEach { relation ->
+        relation.hasPart?.let { hasPart ->
+            relations.add(Relation(uri = hasPart, type = RelationType.partitiveRelation))
+        }
+    }
+
+    partitiveRelation?.forEach { relation ->
+        relation.isPartOf?.let { isPartOf ->
+            relations.add(Relation(uri = isPartOf, type = RelationType.partitiveRelation))
+        }
     }
 
     replaces?.forEach {
-        relations.add(Relation(uri = it, type = "replaces"))
+        relations.add(Relation(uri = it, type = RelationType.replaces))
     }
 
     seeAlso?.forEach {
-        relations.add(Relation(uri = it, type = "seeAlso"))
+        relations.add(Relation(uri = it, type = RelationType.seeAlso))
     }
 
     return relations
