@@ -129,11 +129,12 @@ val TEST_DATASET_HIT_ALL_FIELDS = TEST_NULL_DATASET.copy(
         ))
 )
 
-val TEST_DATASET_FILTERS = TEST_NULL_DATASET.copy(
+val TEST_DATASET_FILTERS = TEST_DATASET_HIT_ALL_FIELDS.copy(
     id = "3",
     isOpenData = true,
+    uri = "dataset.id3.uri",
     provenance = ReferenceDataCode(
-        uri = "dataset.id3.uri",
+        uri = "provenance > uri",
         code = "BRUKER",
         prefLabel = LocalizedStrings(
             "Bruker",

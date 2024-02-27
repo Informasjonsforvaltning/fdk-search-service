@@ -430,11 +430,13 @@ class FilterTest: ApiTestContext() {
             val result: List<SearchObject> = mapper.readValue(response["body"] as String)
             Assertions.assertNotEquals(0, result.size)
 
-            result.forEach { searchObject ->
-                searchObject.relations?.forEach { relation ->
-                    Assertions.assertTrue(relation.uri == TEST_DATASET_FILTERS.uri)
-                }
+            val validValues = result.all { searchObject ->
+                searchObject.relations?.any { relation ->
+                    relation.uri == TEST_DATASET_FILTERS.uri
+                } ?: false
             }
+
+            Assertions.assertTrue(validValues)
         }
 
         @Test
