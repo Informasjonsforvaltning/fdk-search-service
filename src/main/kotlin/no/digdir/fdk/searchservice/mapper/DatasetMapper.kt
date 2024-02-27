@@ -51,7 +51,7 @@ private fun Dataset.getRelations(): List<Relation> {
     }
 
     references?.forEach {
-        relations.add(Relation(uri = it.source?.uri, type = it.uriToRelationType() ?: RelationType.references))
+        relations.add(Relation(uri = it.source?.uri, type = it.uriToRelationType() ?: RelationType.relation))
     }
 
     subject?.forEach {
