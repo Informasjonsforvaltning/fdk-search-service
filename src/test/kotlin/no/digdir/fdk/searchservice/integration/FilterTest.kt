@@ -421,7 +421,7 @@ class FilterTest: ApiTestContext() {
         @Test
         fun `get relations to dataset`() {
             val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(
-                relations = TEST_DATASET_FILTERS.uri)
+                relations = SearchFilter(TEST_DATASET_FILTERS.uri))
             ))
 
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
@@ -440,7 +440,7 @@ class FilterTest: ApiTestContext() {
         @Test
         fun `filter datasets on non-existing uri = '1234' should return nothing`() {
             val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(
-                relations = "1234")
+                relations = SearchFilter("1234"))
             ))
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])

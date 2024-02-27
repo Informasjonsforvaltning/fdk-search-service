@@ -171,7 +171,7 @@ class SearchService(
                 queryBuilder.term { termBuilder ->
                     termBuilder
                         .field("relations.uri.keyword")
-                        .value(relation)
+                        .value(FieldValue.of(relation.value))
                 }
             })
         }

@@ -62,19 +62,20 @@ private fun Dataset.getRelations(): List<Relation> {
 }
 
 private fun Reference.uriToRelationType(): RelationType? {
+    val basePath = "http://purl.org/dc/terms";
     return when (referenceType?.uri) {
-        "http://purl.org/dc/terms/source" -> RelationType.source
-        "http://purl.org/dc/terms/hasVersion" -> RelationType.hasVersion
-        "http://purl.org/dc/terms/isVersionOf" -> RelationType.isVersionOf
-        "http://purl.org/dc/terms/isPartOf" -> RelationType.isPartOf
-        "http://purl.org/dc/terms/hasPart" -> RelationType.hasPart
-        "http://purl.org/dc/terms/references" -> RelationType.references
-        "http://purl.org/dc/terms/isReferencedBy" -> RelationType.isReferencedBy
-        "http://purl.org/dc/terms/replaces" -> RelationType.replaces
-        "http://purl.org/dc/terms/isReplacedBy" -> RelationType.isReplacedBy
-        "http://purl.org/dc/terms/requires" -> RelationType.requires
-        "http://purl.org/dc/terms/isRequiredBy" -> RelationType.isRequiredBy
-        "http://purl.org/dc/terms/relation" -> RelationType.relation
+        "$basePath/source" -> RelationType.source
+        "$basePath/hasVersion" -> RelationType.hasVersion
+        "$basePath/isVersionOf" -> RelationType.isVersionOf
+        "$basePath/isPartOf" -> RelationType.isPartOf
+        "$basePath/hasPart" -> RelationType.hasPart
+        "$basePath/references" -> RelationType.references
+        "$basePath/isReferencedBy" -> RelationType.isReferencedBy
+        "$basePath/replaces" -> RelationType.replaces
+        "$basePath/isReplacedBy" -> RelationType.isReplacedBy
+        "$basePath/requires" -> RelationType.requires
+        "$basePath/isRequiredBy" -> RelationType.isRequiredBy
+        "$basePath/relation" -> RelationType.relation
         else -> null
     }
 }

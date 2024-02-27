@@ -44,9 +44,6 @@ private fun Concept.getRelations(): List<Relation> {
         relation.generalizes?.let { generalizes ->
             relations.add(Relation(uri = generalizes, type = RelationType.genericRelation))
         }
-    }
-
-    genericRelation?.forEach { relation ->
         relation.specializes?.let { specializes ->
             relations.add(Relation(uri = specializes, type = RelationType.genericRelation))
         }
@@ -64,9 +61,6 @@ private fun Concept.getRelations(): List<Relation> {
         relation.hasPart?.let { hasPart ->
             relations.add(Relation(uri = hasPart, type = RelationType.partitiveRelation))
         }
-    }
-
-    partitiveRelation?.forEach { relation ->
         relation.isPartOf?.let { isPartOf ->
             relations.add(Relation(uri = isPartOf, type = RelationType.partitiveRelation))
         }
