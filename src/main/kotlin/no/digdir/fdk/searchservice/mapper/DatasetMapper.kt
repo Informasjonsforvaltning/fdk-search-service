@@ -1,6 +1,8 @@
 package no.digdir.fdk.searchservice.mapper
 
-import no.digdir.fdk.searchservice.model.*
+import no.digdir.fdk.searchservice.model.Dataset
+import no.digdir.fdk.searchservice.model.SearchObject
+import no.digdir.fdk.searchservice.model.SearchType
 
 fun Dataset.toSearchObject(timestamp: Long, deleted: Boolean = false) =
     SearchObject(

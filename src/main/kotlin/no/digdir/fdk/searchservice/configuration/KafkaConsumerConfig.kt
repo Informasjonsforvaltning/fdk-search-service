@@ -14,7 +14,8 @@ open class KafkaConsumerConfig {
 
     @Bean
     open fun kafkaListenerContainerFactory(consumerFactory: ConsumerFactory<String, RdfParseEvent>): ConcurrentKafkaListenerContainerFactory<String, RdfParseEvent> {
-        val factory: ConcurrentKafkaListenerContainerFactory<String, RdfParseEvent> = ConcurrentKafkaListenerContainerFactory()
+        val factory: ConcurrentKafkaListenerContainerFactory<String, RdfParseEvent> =
+            ConcurrentKafkaListenerContainerFactory()
         factory.setConsumerFactory(consumerFactory)
         factory.containerProperties.ackMode = ContainerProperties.AckMode.MANUAL_IMMEDIATE
         return factory

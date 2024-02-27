@@ -12,7 +12,7 @@ data class Dataset(
     val catalog: Catalog?,
     val description: LocalizedStrings?,
     val keyword: List<LocalizedStrings>?,
-    val theme:List<EuDataTheme>?,
+    val theme: List<EuDataTheme>?,
     val losTheme: List<LosNode>?,
     val publisher: Organization?,
     val accessRights: ReferenceDataCode?,

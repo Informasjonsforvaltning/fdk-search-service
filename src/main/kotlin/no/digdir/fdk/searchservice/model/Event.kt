@@ -1,7 +1,6 @@
 package no.digdir.fdk.searchservice.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.annotation.JsonInclude
 import org.springframework.data.annotation.Id
 
 
