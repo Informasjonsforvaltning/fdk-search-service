@@ -157,11 +157,21 @@ class SearchService(
         }
 
         filters?.formats?.value?.forEach { formatValue ->
+                queryFilters.add(DSLQuery.of { queryBuilder ->
+                    queryBuilder.match { matchBuilder ->
+                        matchBuilder
+                            .field("fdkFormatPrefixed.keyword")
+                            .query(FieldValue.of(formatValue))
+                    }
+                })
+            }
+
+        filters?.relations?.let { relation ->
             queryFilters.add(DSLQuery.of { queryBuilder ->
-                queryBuilder.match { matchBuilder ->
-                    matchBuilder
-                        .field("fdkFormatPrefixed.keyword")
-                        .query(FieldValue.of(formatValue))
+                queryBuilder.term { termBuilder ->
+                    termBuilder
+                        .field("relations.uri.keyword")
+                        .value(relation)
                 }
             })
         }

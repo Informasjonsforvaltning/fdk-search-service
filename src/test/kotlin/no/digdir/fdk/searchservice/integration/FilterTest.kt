@@ -2,6 +2,7 @@ package no.digdir.fdk.searchservice.integration
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import no.digdir.fdk.searchservice.data.TEST_DATASET_FILTERS
 import no.digdir.fdk.searchservice.model.*
 import no.digdir.fdk.searchservice.utils.ApiTestContext
 import no.digdir.fdk.searchservice.utils.requestApi
@@ -25,7 +26,7 @@ import org.springframework.test.context.ContextConfiguration
 class FilterTest: ApiTestContext() {
     private val mapper = jacksonObjectMapper()
     private val SEARCH_FILTER = SearchFilters(null, null, null,
-        null, null, null, null, null)
+        null, null, null, null, null, null)
     private val DATASETS_PATH = "/search/datasets"
     private val DATASERVICES_PATH = "/search/dataservices"
 
@@ -380,8 +381,8 @@ class FilterTest: ApiTestContext() {
             }
 
             Assertions.assertTrue(allFormatsValid)
-
         }
+
         @Test
         fun `filter datasets on non-existing format = '1234' should return nothing`() {
             val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(
@@ -412,6 +413,40 @@ class FilterTest: ApiTestContext() {
             }
 
             Assertions.assertTrue(allFormatsValid)
+        }
+    }
+
+    @Nested
+    inner class Relations {
+        @Test
+        fun `get relations to dataset`() {
+            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(
+                relations = TEST_DATASET_FILTERS.uri)
+            ))
+
+            val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
+            Assertions.assertEquals(200, response["status"])
+
+            val result: List<SearchObject> = mapper.readValue(response["body"] as String)
+            Assertions.assertNotEquals(0, result.size)
+
+            result.forEach { searchObject ->
+                searchObject.relations?.forEach { relation ->
+                    Assertions.assertTrue(relation.uri == TEST_DATASET_FILTERS.uri)
+                }
+            }
+        }
+
+        @Test
+        fun `filter datasets on non-existing uri = '1234' should return nothing`() {
+            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(
+                relations = "1234")
+            ))
+            val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
+            Assertions.assertEquals(200, response["status"])
+
+            val result: List<SearchObject> = mapper.readValue(response["body"] as String)
+            Assertions.assertEquals(0, result.size)
         }
     }
 }
