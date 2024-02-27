@@ -33,14 +33,12 @@ data class ReferenceDataCode(
     val prefLabel: LocalizedStrings?,
 )
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class ConformsTo(
   val uri: String?,
   val prefLabel: LocalizedStrings?,
 )
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class InSeries(
   val id: String?,
@@ -48,7 +46,6 @@ data class InSeries(
   val title: LocalizedStrings?,
 )
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Subject(
   val identifier: String?,
@@ -57,20 +54,19 @@ data class Subject(
   val definition: LocalizedStrings?
 )
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Reference(
   val referenceType: ReferenceDataCode?,
   val source: String?,
 )
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Relation(
   val uri: String?,
   val type: String?
 )
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class SkosConcept(
   val uri: String?,
@@ -80,14 +76,12 @@ data class SkosConcept(
   val narrower: List<String>
 )
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class AssociativeRelation(
   val description: LocalizedStrings?,
   val related: String?,
 )
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class GenericRelation(
   val divisioncriterion: LocalizedStrings?,
@@ -95,7 +89,6 @@ data class GenericRelation(
   val specializes: String?
 )
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class PartitiveRelation(
   val description: LocalizedStrings?,
