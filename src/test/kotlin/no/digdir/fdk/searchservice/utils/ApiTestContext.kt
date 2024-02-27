@@ -1,7 +1,7 @@
 package no.digdir.fdk.searchservice.utils
 
 import no.digdir.fdk.searchservice.data.*
-import no.digdir.fdk.searchservice.elastic.*
+import no.digdir.fdk.searchservice.elastic.SearchRepository
 import no.digdir.fdk.searchservice.mapper.toSearchObject
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired

@@ -17,17 +17,17 @@ import co.elastic.clients.elasticsearch._types.query_dsl.Query as DSLQuery
 class SearchService(
     private val elasticSearchOperations: ElasticsearchOperations
 ) {
-    fun search(search: SearchOperation, searchType: SearchType?): List<SearchObject> =
+    fun search(search: SearchOperation, searchTypes: List<SearchType>?): List<SearchObject> =
         elasticSearchOperations.search(
-            search.toElasticQuery(searchType),
+            search.toElasticQuery(searchTypes),
             SearchObject::class.java,
             IndexCoordinates.of(SEARCH_INDEX_NAME)
         ).toSearchObjectList()
 
-    private fun SearchOperation.toElasticQuery(searchType: SearchType?): Query {
+    private fun SearchOperation.toElasticQuery(searchTypes: List<SearchType>?): Query {
         val builder = NativeQuery.builder()
         if (!query.isNullOrBlank()) builder.addFieldsQuery(query)
-        builder.addFilters(filters, searchType)
+        builder.addFilters(filters, searchTypes)
         return builder.build()
     }
 
@@ -46,32 +46,34 @@ class SearchService(
         }
     }
 
-    private fun NativeQueryBuilder.addFilters(filters: SearchFilters?, searchType: SearchType?) {
+    private fun NativeQueryBuilder.addFilters(filters: SearchFilters?, searchTypes: List<SearchType>?) {
         withFilter { queryBuilder ->
             queryBuilder.bool { boolBuilder ->
-                boolBuilder.must(createQueryFilters(filters, searchType))
+                boolBuilder.must(createQueryFilters(filters, searchTypes))
             }
         }
     }
 
-    private fun createQueryFilters(filters: SearchFilters?, searchType: SearchType?): List<DSLQuery> {
+    private fun createQueryFilters(filters: SearchFilters?, searchTypes: List<SearchType>?): List<DSLQuery> {
         val queryFilters = mutableListOf<DSLQuery>()
 
         queryFilters.add(DSLQuery.of { queryBuilder ->
             queryBuilder.term { termBuilder ->
                 termBuilder
-                        .field("metadata.deleted")
-                        .value(FieldValue.of(false))
+                    .field("metadata.deleted")
+                    .value(FieldValue.of(false))
             }
         })
-        if (searchType != null) {
-            queryFilters.add(DSLQuery.of { queryBuilder ->
-                queryBuilder.term { termBuilder ->
-                    termBuilder
-                        .field("searchType.keyword")
-                        .value(FieldValue.of(searchType.name))
-                }
-            })
+
+        searchTypes?.forEach { searchTypes ->
+            queryFilters.add(
+                DSLQuery.of { queryBuilder ->
+                    queryBuilder.term { termBuilder ->
+                        termBuilder
+                            .field("searchType.keyword")
+                            .value(FieldValue.of(searchTypes.name))
+                    }
+                })
         }
 
         filters?.opendata?.let { opendata ->
@@ -143,6 +145,7 @@ class SearchService(
                 })
             }
         }
+
         filters?.orgPath?.let { orgPath ->
             queryFilters.add(DSLQuery.of { queryBuilder ->
                 queryBuilder.term { termBuilder ->
@@ -154,15 +157,16 @@ class SearchService(
         }
 
         filters?.formats?.value?.forEach { formatValue ->
-                queryFilters.add(DSLQuery.of { queryBuilder ->
-                    queryBuilder.match { matchBuilder ->
-                        matchBuilder
-                            .field("fdkFormatPrefixed.keyword")
-                            .query(FieldValue.of(formatValue))
-                    }
-                })
-            }
-            return queryFilters
+            queryFilters.add(DSLQuery.of { queryBuilder ->
+                queryBuilder.match { matchBuilder ->
+                    matchBuilder
+                        .field("fdkFormatPrefixed.keyword")
+                        .query(FieldValue.of(formatValue))
+                }
+            })
+        }
+
+        return queryFilters
     }
 
     private fun SearchHits<SearchObject>.toSearchObjectList(): List<SearchObject> = this.map { it.content }.toList()
