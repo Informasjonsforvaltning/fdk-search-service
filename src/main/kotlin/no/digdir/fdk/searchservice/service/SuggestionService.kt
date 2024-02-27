@@ -6,9 +6,9 @@ import no.digdir.fdk.searchservice.model.SearchType
 import no.digdir.fdk.searchservice.model.Suggestion
 import org.springframework.data.elasticsearch.client.elc.NativeQuery
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations
-import org.springframework.stereotype.Service
 import org.springframework.data.elasticsearch.core.SearchHits
 import org.springframework.data.elasticsearch.core.query.Query
+import org.springframework.stereotype.Service
 import co.elastic.clients.elasticsearch._types.query_dsl.Query as DSLQuery
 
 @Service
@@ -19,7 +19,7 @@ class SuggestionService(
         elasticsearchOperations.search(suggestionQuery(query, searchType), SearchObject::class.java)
 
     fun suggestResources(query: String, searchType: List<SearchType>?): List<Suggestion> =
-        suggestResource(query, searchType )
+        suggestResource(query, searchType)
             .map { it.content }
             .map { it.toSuggestion() }
             .toList()

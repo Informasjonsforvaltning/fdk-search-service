@@ -13,16 +13,16 @@ fun Collection.toCatalog() =
     )
 
 fun HarvestMetadata.toMetadata(timestamp: Long, deleted: Boolean = false) =
-        Metadata(
-                firstHarvested = firstHarvested,
-                changed = changed,
-                deleted = deleted,
-                timestamp = timestamp
-        )
+    Metadata(
+        firstHarvested = firstHarvested,
+        changed = changed,
+        deleted = deleted,
+        timestamp = timestamp
+    )
 
 fun String.pathVariableToSearchType(): List<SearchType>? =
     when (this) {
-        "concepts" -> listOf( SearchType.CONCEPT)
+        "concepts" -> listOf(SearchType.CONCEPT)
         "datasets" -> listOf(SearchType.DATASET)
         "dataservices" -> listOf(SearchType.DATA_SERVICE)
         "informationmodels" -> listOf(SearchType.INFORMATION_MODEL)

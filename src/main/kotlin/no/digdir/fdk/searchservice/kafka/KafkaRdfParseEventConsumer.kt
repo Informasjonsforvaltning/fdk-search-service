@@ -16,11 +16,11 @@ import org.springframework.stereotype.Component
 
 @Component
 class KafkaRdfParseEventConsumer(
-   private val searchRepository: SearchRepository
+    private val searchRepository: SearchRepository
 ) {
-    private fun <T> index(event: RdfParseEvent, clazz: Class<T>, index: (T) -> Unit){
+    private fun <T> index(event: RdfParseEvent, clazz: Class<T>, index: (T) -> Unit) {
         val search = searchRepository.findById("${event.fdkId}")
-        if(search.isEmpty || (search.get().metadata?.timestamp ?: 0) < event.timestamp) {
+        if (search.isEmpty || (search.get().metadata?.timestamp ?: 0) < event.timestamp) {
             val payload = ObjectMapper().readValue(event.data.toString(), clazz)
             index(payload)
         }
@@ -36,32 +36,32 @@ class KafkaRdfParseEventConsumer(
 
         val event = record.value()
         try {
-            if(event?.resourceType == RdfParseResourceType.DATASET) {
+            if (event?.resourceType == RdfParseResourceType.DATASET) {
                 LOGGER.debug("Index dataset - id: " + event.fdkId)
                 index(event, Dataset::class.java) {
                     searchRepository.save(it.toSearchObject(event.timestamp))
                 }
-            } else if(event?.resourceType == RdfParseResourceType.DATASERVICE) {
+            } else if (event?.resourceType == RdfParseResourceType.DATASERVICE) {
                 LOGGER.debug("Index dataservice - id: " + event.fdkId)
                 index(event, DataService::class.java) {
                     searchRepository.save(it.toSearchObject(event.timestamp))
                 }
-            } else if(event?.resourceType == RdfParseResourceType.CONCEPT) {
+            } else if (event?.resourceType == RdfParseResourceType.CONCEPT) {
                 LOGGER.debug("Index concept - id: " + event.fdkId)
                 index(event, Concept::class.java) {
                     searchRepository.save(it.toSearchObject(event.timestamp))
                 }
-            } else if(event?.resourceType == RdfParseResourceType.INFORMATIONMODEL) {
+            } else if (event?.resourceType == RdfParseResourceType.INFORMATIONMODEL) {
                 LOGGER.debug("Index informationmodel - id: " + event.fdkId)
                 index(event, InformationModel::class.java) {
                     searchRepository.save(it.toSearchObject(event.timestamp))
                 }
-            } else if(event?.resourceType == RdfParseResourceType.EVENT) {
+            } else if (event?.resourceType == RdfParseResourceType.EVENT) {
                 LOGGER.debug("Index event - id: " + event.fdkId)
                 index(event, Event::class.java) {
                     searchRepository.save(it.toSearchObject(event.timestamp))
                 }
-            } else if(event?.resourceType == RdfParseResourceType.SERVICE) {
+            } else if (event?.resourceType == RdfParseResourceType.SERVICE) {
                 LOGGER.debug("Index service - id: " + event.fdkId)
                 index(event, Service::class.java) {
                     searchRepository.save(it.toSearchObject(event.timestamp))

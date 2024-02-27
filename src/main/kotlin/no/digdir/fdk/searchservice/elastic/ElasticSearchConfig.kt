@@ -15,14 +15,14 @@ import javax.net.ssl.SSLContext
 
 @Configuration
 @EnableElasticsearchRepositories
-open class ElasticsearchConfig(private val elasticProperties: ElasticProperties): ElasticsearchConfiguration() {
+open class ElasticsearchConfig(private val elasticProperties: ElasticProperties) : ElasticsearchConfiguration() {
 
     private fun sslContext(): SSLContext {
         val builder: SSLContextBuilder = SSLContexts.custom()
         builder.loadTrustMaterial(
-                File(elasticProperties.storePath),
-                elasticProperties.storePass.toCharArray(),
-                TrustSelfSignedStrategy()
+            File(elasticProperties.storePath),
+            elasticProperties.storePass.toCharArray(),
+            TrustSelfSignedStrategy()
         )
         return builder.build()
     }
@@ -30,12 +30,12 @@ open class ElasticsearchConfig(private val elasticProperties: ElasticProperties)
     @Bean(name = ["elasticsearchClientConfiguration"])
     override fun clientConfiguration(): ClientConfiguration {
         val builder = ClientConfiguration.builder()
-                .connectedTo(elasticProperties.host)
+            .connectedTo(elasticProperties.host)
 
         if (elasticProperties.ssl) builder.usingSsl(sslContext())
 
         builder.withBasicAuth(elasticProperties.username, elasticProperties.password)
-                .withConnectTimeout(Duration.ofSeconds(120))
+            .withConnectTimeout(Duration.ofSeconds(120))
 
         return builder.build()
     }

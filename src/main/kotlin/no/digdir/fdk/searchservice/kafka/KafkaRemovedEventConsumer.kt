@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class KafkaRemovedEventConsumer(
-        private val searchRepository: SearchRepository
+    private val searchRepository: SearchRepository
 ) {
     @KafkaListener(
         topics = [
