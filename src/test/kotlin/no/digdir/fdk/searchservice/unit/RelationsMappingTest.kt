@@ -46,19 +46,19 @@ val expectedDatasetRelations = listOf(
     Relation(uri = "conformsTo_uri", type=RelationType.conformsTo),
     Relation(uri = "inSeries_uri", type=RelationType.inSeries),
     Relation(uri = "informationModel_uri", type=RelationType.informationModel),
-    Relation(uri = "references_uri", type=RelationType.source),
-    Relation(uri = "references_uri", type=RelationType.hasVersion),
-    Relation(uri = "references_uri", type=RelationType.isVersionOf),
-    Relation(uri = "references_uri", type=RelationType.isPartOf),
-    Relation(uri = "references_uri", type=RelationType.hasPart),
+    Relation(uri = "source_uri", type=RelationType.source),
+    Relation(uri = "has_version_uri", type=RelationType.hasVersion),
+    Relation(uri = "is_version_of_uri", type=RelationType.isVersionOf),
+    Relation(uri = "is_part_of_uri", type=RelationType.isPartOf),
+    Relation(uri = "has_part_uri", type=RelationType.hasPart),
     Relation(uri = "references_uri", type=RelationType.references),
-    Relation(uri = "references_uri", type=RelationType.isReferencedBy),
-    Relation(uri = "references_uri", type=RelationType.replaces),
-    Relation(uri = "references_uri", type=RelationType.isReplacedBy),
-    Relation(uri = "references_uri", type=RelationType.requires),
-    Relation(uri = "references_uri", type=RelationType.isRequiredBy),
-    Relation(uri = "references_uri", type=RelationType.relation),
-    Relation(uri = "references_uri", type=RelationType.relation)
+    Relation(uri = "is_referenced_by_uri", type=RelationType.isReferencedBy),
+    Relation(uri = "replaces_uri", type=RelationType.replaces),
+    Relation(uri = "is_replaced_by_uri", type=RelationType.isReplacedBy),
+    Relation(uri = "requires_uri", type=RelationType.requires),
+    Relation(uri = "is_required_by_uri", type=RelationType.isRequiredBy),
+    Relation(uri = "relation_uri", type=RelationType.relation),
+    Relation(uri = "missing_type_uri", type=RelationType.relation)
 )
 
 val expectedEventRelations = listOf(
