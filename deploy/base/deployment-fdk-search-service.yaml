@@ -70,7 +70,7 @@ spec:
             failureThreshold: 5
           resources:
             requests:
-              memory: 500Mi
+              memory: 2Gi
           volumeMounts:
             - name: keystore-volume
               mountPath: /var/secrets/elastic/keystores
