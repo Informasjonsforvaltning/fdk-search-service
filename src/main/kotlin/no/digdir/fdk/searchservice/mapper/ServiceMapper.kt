@@ -55,5 +55,9 @@ private fun Service.getRelations(): List<Relation> {
         relations.add(Relation(uri = it.uri, type = RelationType.subject))
     }
 
+    requires?.forEach {
+        relations.add(Relation(uri = it.uri, type = RelationType.requires))
+    }
+
     return relations
 }
