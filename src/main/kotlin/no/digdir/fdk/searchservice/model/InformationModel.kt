@@ -22,5 +22,5 @@ data class InformationModel(
     val isPartOf: String?,
     val isReplacedBy: String?,
     val replaces: String?,
-    val subjects: Set<String>?
+    val subjects: List<String>?
 )
