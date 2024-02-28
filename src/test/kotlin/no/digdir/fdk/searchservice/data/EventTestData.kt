@@ -10,7 +10,6 @@ val TEST_NULL_EVENT = Event(
     title = null,
     description = null,
     subject = null,
-    mayTrigger = null
 )
 
 val TEST_EVENT = TEST_NULL_EVENT.copy(

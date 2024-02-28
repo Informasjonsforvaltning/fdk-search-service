@@ -31,7 +31,7 @@ class InformationModelSearchTest: ApiTestContext() {
         listOf("uri", "title","catalog","description", "keyword", "theme", "losTheme", "publisher",
             "accessRights", "harvest")
     private val searchFilters = SearchFilters(null, null, null,
-        null, null, null, null, null)
+        null, null, null, null, null, null)
     private val mapper = jacksonObjectMapper()
 
     @Test

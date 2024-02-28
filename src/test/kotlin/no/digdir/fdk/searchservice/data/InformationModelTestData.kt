@@ -14,7 +14,12 @@ val TEST_NULL_INFORMATION_MODEL = InformationModel(
     losTheme = null,
     publisher = null,
     accessRights = null,
-    harvest = null
+    harvest = null,
+    replaces = null,
+    hasPart = null,
+    isReplacedBy = null,
+    isPartOf = null,
+    subjects = null
 )
 
 val TEST_INFORMATION_MODEL_HIT_ALL_FIELDS = TEST_NULL_INFORMATION_MODEL.copy(

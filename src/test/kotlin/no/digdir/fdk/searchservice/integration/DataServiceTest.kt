@@ -27,7 +27,8 @@ class DataServiceSearchTest : ApiTestContext() {
     private val mapper = jacksonObjectMapper()
     private val searchFilters = SearchFilters(
         null, null, null,
-        null, null, null, null, null
+        null, null, null, null, null,
+        null
     )
     private val SEARCH_QUERY = "test"
     private val SEARCH_QUERY_NO_HITS = "nohits"

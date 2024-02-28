@@ -1,8 +1,6 @@
 package no.digdir.fdk.searchservice.mapper
 
-import no.digdir.fdk.searchservice.model.Dataset
-import no.digdir.fdk.searchservice.model.SearchObject
-import no.digdir.fdk.searchservice.model.SearchType
+import no.digdir.fdk.searchservice.model.*
 
 fun Dataset.toSearchObject(timestamp: Long, deleted: Boolean = false) =
     SearchObject(
@@ -42,7 +40,7 @@ private fun Dataset.getRelations(): List<Relation> {
         relations.add(Relation(uri = it.uri, type = RelationType.conformsTo))
     }
 
-    inSeries?.forEach {
+    inSeries?.let {
         relations.add(Relation(uri = it.uri, type = RelationType.inSeries))
     }
 

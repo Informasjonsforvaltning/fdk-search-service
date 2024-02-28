@@ -190,5 +190,5 @@ val TEST_DATASET_FILTERS = TEST_DATASET_HIT_ALL_FIELDS.copy(
 val TEST_DATASET_HIT_IS_OPEN = TEST_DATASET_HIT_ALL_FIELDS.copy(
     id = "2",
     isOpenData = true,
-    conformsTo = listOf(ConformsTo(prefLabel = null, uri=TEST_DATASET_FILTERS.uri))
+    conformsTo = listOf(ObjectWithURI(uri=TEST_DATASET_FILTERS.uri))
 )

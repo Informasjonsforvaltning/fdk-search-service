@@ -36,7 +36,7 @@ data class ReferenceDataCode(
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Reference(
   val referenceType: ReferenceDataCode?,
-  val source: SkosConcept?
+  val source: ObjectWithURI?
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)

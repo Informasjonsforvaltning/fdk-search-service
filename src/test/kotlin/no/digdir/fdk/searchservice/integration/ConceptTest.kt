@@ -30,7 +30,7 @@ class ConceptSearchTest: ApiTestContext() {
     private val SEARCH_QUERYS_HIT_ALL_FIELDS =
         listOf("identifier", "publisher","definition","prefLabel", "harvest", "collection")
     private val searchFilters = SearchFilters(null, null, null,
-        null, null, null, null, null)
+        null, null, null, null, null, null)
     private val mapper = jacksonObjectMapper()
 
     @Test

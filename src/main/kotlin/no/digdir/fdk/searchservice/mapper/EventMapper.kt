@@ -1,8 +1,6 @@
 package no.digdir.fdk.searchservice.mapper
 
-import no.digdir.fdk.searchservice.model.Event
-import no.digdir.fdk.searchservice.model.SearchObject
-import no.digdir.fdk.searchservice.model.SearchType
+import no.digdir.fdk.searchservice.model.*
 
 fun Event.toSearchObject(timestamp: Long, deleted: Boolean = false) =
     SearchObject(

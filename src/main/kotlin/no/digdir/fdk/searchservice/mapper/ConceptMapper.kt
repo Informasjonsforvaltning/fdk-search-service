@@ -1,8 +1,6 @@
 package no.digdir.fdk.searchservice.mapper
 
-import no.digdir.fdk.searchservice.model.Concept
-import no.digdir.fdk.searchservice.model.SearchObject
-import no.digdir.fdk.searchservice.model.SearchType
+import no.digdir.fdk.searchservice.model.*
 
 fun Concept.toSearchObject(timestamp: Long, deleted: Boolean = false) =
     SearchObject(

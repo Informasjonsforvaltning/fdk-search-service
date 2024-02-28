@@ -4,6 +4,7 @@ import no.digdir.fdk.searchservice.model.DataService
 import no.digdir.fdk.searchservice.model.Relation
 import no.digdir.fdk.searchservice.model.SearchObject
 import no.digdir.fdk.searchservice.model.SearchType
+import no.digdir.fdk.searchservice.model.*
 
 fun DataService.toSearchObject(timestamp: Long, deleted: Boolean = false) =
     SearchObject(
