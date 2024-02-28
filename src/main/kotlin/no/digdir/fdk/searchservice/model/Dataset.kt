@@ -21,8 +21,8 @@ data class Dataset(
     val provenance: ReferenceDataCode?,
     val harvest: HarvestMetadata?,
     val distribution: List<Distribution>?,
-    val conformsTo: List<ConformsTo>?,
-    val inSeries: List<InSeries>?,
+    val conformsTo: List<ObjectWithURI>?,
+    val inSeries: InSeries?,
     val informationModel: List<SkosConcept>?,
     val references: List<Reference>?,
     val subject: List<Subject>?
