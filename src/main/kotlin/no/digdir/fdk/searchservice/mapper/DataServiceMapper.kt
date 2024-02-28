@@ -12,7 +12,7 @@ fun DataService.toSearchObject(timestamp: Long, deleted: Boolean = false) =
         catalog = catalog,
         dataTheme = theme,
         description = description,
-        fdkFormatPrefixed = null,
+        fdkFormatPrefixed = extractPrefixedFormats(),
         metadata = harvest?.toMetadata(timestamp, deleted),
         isOpenData = null,
         keyword = keyword,
@@ -23,3 +23,11 @@ fun DataService.toSearchObject(timestamp: Long, deleted: Boolean = false) =
         spatial = null,
         title = title
     )
+
+fun DataService.extractPrefixedFormats(): List<String> {
+    val mutableList = mutableListOf<String>()
+        fdkFormat?.forEach { format ->
+            mutableList.add("${format.type} ${format.code}")
+        }
+    return mutableList
+}

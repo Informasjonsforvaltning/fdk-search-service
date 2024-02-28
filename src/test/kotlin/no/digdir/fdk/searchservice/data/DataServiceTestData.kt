@@ -14,6 +14,7 @@ val TEST_NULL_DATA_SERVICE = DataService(
     title = null,
     keyword = null,
     description = null,
+    fdkFormat = null
 )
 
 val TEST_DATA_SERVICE_HIT_ALL_FIELDS = TEST_NULL_DATA_SERVICE.copy(
@@ -101,5 +102,8 @@ val TEST_DATA_SERVICE_HIT_ALL_FIELDS = TEST_NULL_DATA_SERVICE.copy(
             "NB Test keyword > prefLabel",
             "NN Test keyword > prefLabel",
             "EN Test keyword > prefLabel")
+    ),
+    fdkFormat = listOf(
+        MediaTypeOrExtent(name = null, uri = null, type = MediaTypeOrExtentType.MEDIA_TYPE, code = "turtle"),
     )
 )
