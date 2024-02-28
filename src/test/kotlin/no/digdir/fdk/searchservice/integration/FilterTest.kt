@@ -412,7 +412,6 @@ class FilterTest: ApiTestContext() {
             }
 
             Assertions.assertTrue(allFormatsValid)
-
         }
     }
 }
