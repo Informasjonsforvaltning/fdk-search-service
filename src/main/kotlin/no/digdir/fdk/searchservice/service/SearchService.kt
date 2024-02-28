@@ -193,6 +193,19 @@ class SearchService(
 
         ).flatten()
 
+    private fun QueryFields.exactPaths(): List<String> =
+        listOf(
+            if (title) languagePaths("title", 30)
+            else emptyList(),
+
+            if (description) languagePaths("description")
+            else emptyList(),
+
+            if (keyword) languagePaths("keyword", 5)
+            else emptyList(),
+
+        ).flatten()
+
     private fun languagePaths(basePath: String, boost: Int? = null): List<String> =
         listOf("$basePath.nb${if (boost != null) "^$boost" else ""}",
             "$basePath.nn${if (boost != null) "^$boost" else ""}",
