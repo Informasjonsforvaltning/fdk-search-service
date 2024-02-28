@@ -20,9 +20,9 @@ data class Service(
     val spatial: List<ReferenceDataCode>?,
     val harvest: HarvestMetadata?,
     val isGroupedBy: List<String>?,
-    val isClassifiedBy: List<SkosConcept>?,
-    val isDescribedAt: List<SkosConcept>?,
-    val relation: List<Service>?,
-    val requires: List<Service>?,
-    val subject: List<SkosConcept>?
+    val isClassifiedBy: List<ObjectWithURI>?,
+    val isDescribedAt: List<ObjectWithURI>?,
+    val relation: List<ObjectWithURI>?,
+    val requires: List<ObjectWithURI>?,
+    val subject: List<ObjectWithURI>?
 )
