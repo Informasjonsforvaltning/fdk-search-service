@@ -27,6 +27,7 @@ class FilterTest: ApiTestContext() {
     private val SEARCH_FILTER = SearchFilters(null, null, null,
         null, null, null, null, null)
     private val DATASETS_PATH = "/search/datasets"
+    private val DATASERVICES_PATH = "/search/dataservices"
 
     @Nested
     inner class IsOpen {
@@ -392,6 +393,26 @@ class FilterTest: ApiTestContext() {
             val result: List<SearchObject> = mapper.readValue(response["body"] as String)
             Assertions.assertEquals(0, result.size)
         }
+
+        @Test
+        fun `filter data services on format`() {
+            val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(
+                formats = SearchFilter(value = listOf("MEDIA_TYPE turtle"))
+            )))
+            val response = requestApi(DATASERVICES_PATH, port, searchBody, HttpMethod.POST)
+            Assertions.assertEquals(200, response["status"])
+
+            val result: List<SearchObject> = mapper.readValue(response["body"] as String)
+            Assertions.assertTrue(result.isNotEmpty())
+
+            val validValues = listOf("MEDIA_TYPE turtle")
+
+            val allFormatsValid = result.all { dataset ->
+                dataset.fdkFormatPrefixed?.all { validValues.contains(it) } ?: false
+            }
+
+            Assertions.assertTrue(allFormatsValid)
+
+        }
     }
 }
-
