@@ -27,8 +27,8 @@ class ConceptSearchTest: ApiTestContext() {
     private val CONCEPTS_PATH = "/search/concepts"
     private val SEARCH_QUERY = "test"
     private val SEARCH_QUERY_NO_HITS = "nohits"
-    private val SEARCH_QUERYS_HIT_ALL_FIELDS =
-        listOf("identifier", "publisher","definition","prefLabel", "harvest", "collection")
+    private val SEARCH_QUERYS_HIT_ALL_SEARCH_FIELDS =
+        listOf("definition","prefLabel")
     private val searchFilters = SearchFilters(null, null, null,
         null, null, null, null, null)
     private val mapper = jacksonObjectMapper()
@@ -76,8 +76,8 @@ class ConceptSearchTest: ApiTestContext() {
     }
 
     @Test
-    fun `search and hit all fields successfully`() {
-        SEARCH_QUERYS_HIT_ALL_FIELDS.forEach {
+    fun `search and hit all search fields successfully`() {
+        SEARCH_QUERYS_HIT_ALL_SEARCH_FIELDS.forEach {
             val searchBody = mapper.writeValueAsString(SearchOperation(it, searchFilters))
             val response = requestApi(CONCEPTS_PATH, port, searchBody, POST)
             Assertions.assertEquals(200, response["status"])

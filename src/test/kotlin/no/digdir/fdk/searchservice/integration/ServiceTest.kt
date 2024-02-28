@@ -27,10 +27,9 @@ class ServiceSearchTest : ApiTestContext() {
     private val SERVICES_PATH = "/search/services"
     private val SEARCH_QUERY = "test"
     private val SEARCH_QUERY_NO_HITS = "nohits"
-    private val SEARCH_QUERYS_HIT_ALL_UNCONDITIONAL_FIELDS =
-        listOf("uri", "title", "catalog", "description", "keyword", "euDataThemes", "losTheme", "spatial", "harvest")
-    private val SEARCH_QUERYS_OWNED_BY = "ownedBy"
-    private val SEARCH_QUERYS_HAS_COMPETANT_AUTHORITY = "hasCompetantAuthority"
+    private val SEARCH_QUERYS_HIT_ALL_UNCONDITIONAL_SEARCH_FIELDS =
+        listOf("title", "description", "keyword")
+    private val SEARCH_QUERYS_KEYWORD = "keyword"
     private val mapper = jacksonObjectMapper()
     private val searchFilters = SearchFilters(
         null, null, null,
@@ -80,8 +79,8 @@ class ServiceSearchTest : ApiTestContext() {
     }
 
     @Test
-    fun `hit all unconditional fields`() {
-        SEARCH_QUERYS_HIT_ALL_UNCONDITIONAL_FIELDS.forEach {
+    fun `hit all unconditional search fields`() {
+        SEARCH_QUERYS_HIT_ALL_UNCONDITIONAL_SEARCH_FIELDS.forEach {
             val searchBody = mapper.writeValueAsString(SearchOperation(it, searchFilters))
             val response = requestApi(SERVICES_PATH, port, searchBody, POST)
             Assertions.assertEquals(200, response["status"])
@@ -92,8 +91,8 @@ class ServiceSearchTest : ApiTestContext() {
     }
 
     @Test
-    fun `hit ownedBy field`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERYS_OWNED_BY, searchFilters))
+    fun `hit keyword field`() {
+        val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERYS_KEYWORD, searchFilters))
         val response = requestApi(SERVICES_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 

@@ -26,17 +26,18 @@ class SearchService(
 
     private fun SearchOperation.toElasticQuery(searchTypes: List<SearchType>?): Query {
         val builder = NativeQuery.builder()
-        if (!query.isNullOrBlank()) builder.addFieldsQuery(query)
+        if (!query.isNullOrBlank()) builder.addFieldsQuery(fields, query)
         builder.addFilters(filters, searchTypes)
         return builder.build()
     }
 
-    private fun NativeQueryBuilder.addFieldsQuery(queryValue: String) {
+    private fun NativeQueryBuilder.addFieldsQuery(queryFields: QueryFields, queryValue: String) {
         withQuery { queryBuilder ->
             queryBuilder.bool { boolBuilder ->
                 boolBuilder.should {
                     it.multiMatch { matchBuilder ->
                         matchBuilder
+                            .fields(queryFields.exactPaths())
                             .query(queryValue)
                             .operator(Operator.And)
                             .type(TextQueryType.BoolPrefix)
@@ -65,13 +66,13 @@ class SearchService(
             }
         })
 
-        searchTypes?.forEach { searchTypes ->
+        searchTypes?.forEach { searchType ->
             queryFilters.add(
                 DSLQuery.of { queryBuilder ->
                     queryBuilder.term { termBuilder ->
                         termBuilder
                             .field("searchType.keyword")
-                            .value(FieldValue.of(searchTypes.name))
+                            .value(FieldValue.of(searchType.name))
                     }
                 })
         }
@@ -168,6 +169,24 @@ class SearchService(
 
         return queryFilters
     }
+
+    private fun QueryFields.exactPaths(): List<String> =
+        listOf(
+            if (title) languagePaths("title", 30)
+            else emptyList(),
+
+            if (description) languagePaths("description")
+            else emptyList(),
+
+            if (keyword) languagePaths("keyword", 5)
+            else emptyList(),
+
+        ).flatten()
+
+    private fun languagePaths(basePath: String, boost: Int? = null): List<String> =
+        listOf("$basePath.nb${if (boost != null) "^$boost" else ""}",
+            "$basePath.nn${if (boost != null) "^$boost" else ""}",
+            "$basePath.en${if (boost != null) "^$boost" else ""}")
 
     private fun SearchHits<SearchObject>.toSearchObjectList(): List<SearchObject> = this.map { it.content }.toList()
 }
