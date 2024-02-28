@@ -43,6 +43,15 @@ class SearchService(
                             .type(TextQueryType.BoolPrefix)
                     }
                 }
+                boolBuilder.should {
+                    it.multiMatch { matchBuilder ->
+                        matchBuilder
+                            .fields(queryFields.exactPaths())
+                            .query(queryValue)
+                            .operator(Operator.And)
+                            .type(TextQueryType.BoolPrefix)
+                    }
+                }
             }
         }
     }
@@ -183,6 +192,19 @@ class SearchService(
     private fun QueryFields.prefixMatchPaths(): List<String> =
         listOf(
             if (title) languagePaths("title", 15)
+            else emptyList(),
+
+            if (description) languagePaths("description")
+            else emptyList(),
+
+            if (keyword) languagePaths("keyword", 5)
+            else emptyList(),
+
+        ).flatten()
+
+    private fun QueryFields.exactPaths(): List<String> =
+        listOf(
+            if (title) languagePaths("title", 30)
             else emptyList(),
 
             if (description) languagePaths("description")
