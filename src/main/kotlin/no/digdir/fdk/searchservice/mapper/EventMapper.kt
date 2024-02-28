@@ -28,9 +28,6 @@ fun Event.toSearchObject(timestamp: Long, deleted: Boolean = false) =
 private fun Event.getRelations(): List<Relation> {
     val relations: MutableList<Relation> = mutableListOf()
 
-    mayTrigger?.forEach {
-        relations.add(Relation(uri = it, type = RelationType.mayTrigger))
-    }
 
     subject?.forEach {
         relations.add(Relation(uri = it, type = RelationType.subject))

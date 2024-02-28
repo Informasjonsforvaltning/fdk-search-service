@@ -34,39 +34,14 @@ data class ReferenceDataCode(
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class ConformsTo(
-  val uri: String?,
-  val prefLabel: LocalizedStrings?,
-)
-
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class InSeries(
-  val id: String?,
-  val uri: String?,
-  val title: LocalizedStrings?,
-)
-
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class Subject(
-  val identifier: String?,
-  val uri: String?,
-  val prefLabel: LocalizedStrings?,
-  val definition: LocalizedStrings?
-)
-
-@JsonIgnoreProperties(ignoreUnknown = true)
 data class Reference(
   val referenceType: ReferenceDataCode?,
   val source: SkosConcept?
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class SkosConcept(
-  val uri: String?,
-  val prefLabel: LocalizedStrings?,
-  val extraType: String?,
-  val broader: List<String>?,
-  val narrower: List<String>
+data class ObjectWithURI(
+  val uri: String?
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
