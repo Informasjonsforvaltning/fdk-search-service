@@ -23,7 +23,7 @@ data class Dataset(
     val distribution: List<Distribution>?,
     val conformsTo: List<ObjectWithURI>?,
     val inSeries: InSeries?,
-    val informationModel: List<SkosConcept>?,
+    val informationModel: List<ObjectWithURI>?,
     val references: List<Reference>?,
-    val subject: List<Subject>?
+    val subject: List<ObjectWithURI>?
 )
