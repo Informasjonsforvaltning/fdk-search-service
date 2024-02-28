@@ -33,7 +33,7 @@ fun Dataset.extractPrefixedFormats(): List<String> {
     return mutableList
 }
 
-private fun Dataset.getRelations(): List<Relation> {
+fun Dataset.getRelations(): List<Relation> {
     val relations: MutableList<Relation> = mutableListOf()
 
     conformsTo?.forEach {

@@ -29,7 +29,7 @@ data class LosNode(
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class ReferenceDataCode(
     val uri: String?,
-    val code: String,
+    val code: String?,
     val prefLabel: LocalizedStrings?,
 )
 

@@ -106,3 +106,11 @@ val TEST_INFORMATION_MODEL_HIT_ALL_FIELDS = TEST_NULL_INFORMATION_MODEL.copy(
             "Test harvest > firstHarvested",
             listOf("Test harvest > changed")),
 )
+
+val INFORMATION_MODEL_WITH_RELATIONS = TEST_NULL_INFORMATION_MODEL.copy(
+    replaces = "replaces_uri",
+    hasPart = "hasPart_uri",
+    isReplacedBy = "isReplacedBy_uri",
+    isPartOf = "isPartOf_uri",
+    subjects = listOf("subjects_uri")
+)

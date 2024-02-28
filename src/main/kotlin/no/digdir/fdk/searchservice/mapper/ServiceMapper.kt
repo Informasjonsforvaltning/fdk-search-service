@@ -30,7 +30,7 @@ private fun Service.getOrganization() = if (hasCompetantAuthority.isNullOrEmpty(
 }
 
 
-private fun Service.getRelations(): List<Relation> {
+fun Service.getRelations(): List<Relation> {
     val relations: MutableList<Relation> = mutableListOf()
 
     isGroupedBy?.forEach {

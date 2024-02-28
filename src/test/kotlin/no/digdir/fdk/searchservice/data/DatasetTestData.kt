@@ -192,3 +192,27 @@ val TEST_DATASET_HIT_IS_OPEN = TEST_DATASET_HIT_ALL_FIELDS.copy(
     isOpenData = true,
     conformsTo = listOf(ObjectWithURI(uri=TEST_DATASET_FILTERS.uri))
 )
+
+val basePath = "http://purl.org/dc/terms"
+val DATASET_WITH_RELATIONS = TEST_NULL_DATASET.copy(
+    subject = listOf(ObjectWithURI(uri = "subject_uri")),
+    conformsTo = listOf(ObjectWithURI(uri = "conformsTo_uri")),
+    inSeries = ObjectWithURI(uri = "inSeries_uri"),
+    informationModel = listOf(ObjectWithURI(uri = "informationModel_uri")),
+    references = listOf(
+        Reference(referenceType = ReferenceDataCode(code = null, prefLabel = null, uri = "$basePath/source"), source = (ObjectWithURI(uri = "references_uri"))),
+        Reference(referenceType = ReferenceDataCode(code = null, prefLabel = null, uri = "$basePath/hasVersion"), source = (ObjectWithURI(uri = "references_uri"))),
+        Reference(referenceType = ReferenceDataCode(code = null, prefLabel = null, uri = "$basePath/isVersionOf"), source = (ObjectWithURI(uri = "references_uri"))),
+        Reference(referenceType = ReferenceDataCode(code = null, prefLabel = null, uri = "$basePath/isPartOf"), source = (ObjectWithURI(uri = "references_uri"))),
+        Reference(referenceType = ReferenceDataCode(code = null, prefLabel = null, uri = "$basePath/hasPart"), source = (ObjectWithURI(uri = "references_uri"))),
+        Reference(referenceType = ReferenceDataCode(code = null, prefLabel = null, uri = "$basePath/references"), source = (ObjectWithURI(uri = "references_uri"))),
+        Reference(referenceType = ReferenceDataCode(code = null, prefLabel = null, uri = "$basePath/isReferencedBy"), source = (ObjectWithURI(uri = "references_uri"))),
+        Reference(referenceType = ReferenceDataCode(code = null, prefLabel = null, uri = "$basePath/replaces"), source = (ObjectWithURI(uri = "references_uri"))),
+        Reference(referenceType = ReferenceDataCode(code = null, prefLabel = null, uri = "$basePath/isReplacedBy"), source = (ObjectWithURI(uri = "references_uri"))),
+        Reference(referenceType = ReferenceDataCode(code = null, prefLabel = null, uri = "$basePath/requires"), source = (ObjectWithURI(uri = "references_uri"))),
+        Reference(referenceType = ReferenceDataCode(code = null, prefLabel = null, uri = "$basePath/isRequiredBy"), source = (ObjectWithURI(uri = "references_uri"))),
+        Reference(referenceType = ReferenceDataCode(code = null, prefLabel = null, uri = "$basePath/relation"), source = (ObjectWithURI(uri = "references_uri"))),
+        Reference(referenceType = ReferenceDataCode(code = null, prefLabel = null, uri = null), source = (ObjectWithURI(uri = "references_uri")))
+    )
+)
+

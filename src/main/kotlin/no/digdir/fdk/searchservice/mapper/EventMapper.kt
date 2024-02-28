@@ -23,7 +23,7 @@ fun Event.toSearchObject(timestamp: Long, deleted: Boolean = false) =
         relations = getRelations()
     )
 
-private fun Event.getRelations(): List<Relation> {
+fun Event.getRelations(): List<Relation> {
     val relations: MutableList<Relation> = mutableListOf()
 
 

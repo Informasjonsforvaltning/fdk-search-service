@@ -23,7 +23,7 @@ fun Concept.toSearchObject(timestamp: Long, deleted: Boolean = false) =
         relations = getRelations()
     )
 
-private fun Concept.getRelations(): List<Relation> {
+fun Concept.getRelations(): List<Relation> {
     val relations: MutableList<Relation> = mutableListOf()
 
     associativeRelation?.forEach {

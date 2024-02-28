@@ -35,7 +35,7 @@ fun DataService.extractPrefixedFormats(): List<String> {
     return mutableList
 }
 
-private fun DataService.getRelations(): List<Relation> {
+fun DataService.getRelations(): List<Relation> {
     val relations: MutableList<Relation> = mutableListOf()
 
     conformsTo?.forEach {

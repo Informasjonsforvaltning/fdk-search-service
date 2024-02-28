@@ -109,3 +109,8 @@ val TEST_DATA_SERVICE_HIT_ALL_FIELDS = TEST_NULL_DATA_SERVICE.copy(
         MediaTypeOrExtent(name = null, uri = null, type = MediaTypeOrExtentType.MEDIA_TYPE, code = "turtle"),
     )
 )
+
+val DATASERVICE_WITH_RELATIONS = TEST_NULL_DATA_SERVICE.copy(
+    servesDataset = listOf("servesDataset_uri"),
+    conformsTo = listOf(ObjectWithURI(uri = "conformsTo_uri"))
+)

@@ -23,7 +23,7 @@ fun InformationModel.toSearchObject(timestamp: Long, deleted: Boolean = false) =
         relations = getRelations()
     )
 
-private fun InformationModel.getRelations(): List<Relation> {
+fun InformationModel.getRelations(): List<Relation> {
     val relations: MutableList<Relation> = mutableListOf()
 
 

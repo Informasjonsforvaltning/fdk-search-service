@@ -74,3 +74,22 @@ val TEST_CONCEPT_HIT_ALL_FIELDS = TEST_NULL_CONCEPT.copy(
             "EN Test publisher > prefLabel"))
     ),
 )
+
+val CONCEPT_WITH_RELATIONS = TEST_NULL_CONCEPT.copy(
+    collection = Collection(description = null, id = null, publisher = null, label = null, uri = "collection_uri"),
+    memberOf = listOf("memberOf_uri"),
+    replaces = listOf("replaces_uri"),
+    seeAlso = listOf("seeAlso_uri"),
+    associativeRelation = listOf(AssociativeRelation(description = null, related = "associativeRelation_uri")),
+    partitiveRelation = listOf(
+        PartitiveRelation(description = null, hasPart = null, isPartOf = "partitiveRelation_isPartOf_uri"),
+        PartitiveRelation(description = null, hasPart = "partitiveRelation_hasPart_uri", isPartOf = null)
+    ),
+    isReplacedBy = listOf("isReplacedBy_uri"),
+    closeMatch = listOf("closeMatch_uri"),
+    exactMatch = listOf("exactMatch_uri"),
+    genericRelation = listOf(
+        GenericRelation(divisioncriterion = null, generalizes = null, specializes = "genericRelation_specializes_uri"),
+        GenericRelation(divisioncriterion = null, generalizes = "genericRelation_generalizes_uri", specializes = null)
+    )
+)
