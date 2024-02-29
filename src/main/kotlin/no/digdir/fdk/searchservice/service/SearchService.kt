@@ -170,7 +170,7 @@ class SearchService(
         return queryFilters
     }
 
-    private fun QueryFields.exactPaths(): List<String> =
+    private fun QueryFields.prefixMatchPaths(): List<String> =
         listOf(
             if (title) languagePaths("title", 30)
             else emptyList(),
