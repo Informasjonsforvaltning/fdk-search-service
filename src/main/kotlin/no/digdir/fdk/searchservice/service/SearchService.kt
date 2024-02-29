@@ -198,10 +198,10 @@ class SearchService(
             if (title) languagePaths("title", 30)
             else emptyList(),
 
-            if (description) languagePaths("description")
+            if (description) languagePaths("description", 5)
             else emptyList(),
 
-            if (keyword) languagePaths("keyword", 5)
+            if (keyword) languagePaths("keyword", 10)
             else emptyList(),
 
         ).flatten()
