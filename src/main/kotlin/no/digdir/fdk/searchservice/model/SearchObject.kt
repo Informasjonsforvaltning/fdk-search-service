@@ -56,7 +56,6 @@ enum class RelationType {
     inSeries,
     informationModel,
     subject,
-    mayTrigger,
     hasPart,
     isPartOf,
     subjects,

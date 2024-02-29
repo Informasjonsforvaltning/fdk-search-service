@@ -77,7 +77,7 @@ val TEST_SEARCH_OBJECT_AND_HIT_ALL_FIELDS = TEST_NULL_SEARCH_OBJECT.copy(
     ),
     fdkFormatPrefixed = listOf("Test fdkFormatPrefixed"),
     metadata = Metadata(
-        firstHarvested = "Test harvest > firstHarvested",
+        firstHarvested = "2024-02-21T11:00:05Z",
         changed = listOf(
             "Test harvest > changed 1",
             "Test harvest > changed 2"

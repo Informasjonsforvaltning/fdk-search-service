@@ -30,7 +30,7 @@ class InformationModelSearchTest: ApiTestContext() {
     private val SEARCH_QUERYS_HIT_ALL_SEARCH_FIELDS =
         listOf("title", "description", "keyword")
     private val searchFilters = SearchFilters(null, null, null,
-        null, null, null, null, null, null)
+        null, null, null, null, null, null, null)
     private val mapper = jacksonObjectMapper()
 
     @Test

@@ -50,7 +50,7 @@ val TEST_CONCEPT_HIT_ALL_FIELDS = TEST_NULL_CONCEPT.copy(
         "NN Test prefLabel",
         "EN Test prefLabel"),
     harvest =  HarvestMetadata(
-            "Test harvest > firstHarvested",
+        "2022-02-15T11:00:05Z",
             listOf("Test harvest > changed")),
     collection = Collection(
         id = "Test collection > id 1021",

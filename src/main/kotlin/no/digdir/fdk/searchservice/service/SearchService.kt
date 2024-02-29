@@ -3,6 +3,7 @@ package no.digdir.fdk.searchservice.service
 import co.elastic.clients.elasticsearch._types.FieldValue
 import co.elastic.clients.elasticsearch._types.query_dsl.Operator
 import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType
+import co.elastic.clients.json.JsonData
 import no.digdir.fdk.searchservice.model.*
 import org.springframework.data.elasticsearch.client.elc.NativeQuery
 import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder
@@ -11,6 +12,7 @@ import org.springframework.data.elasticsearch.core.SearchHits
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates
 import org.springframework.data.elasticsearch.core.query.Query
 import org.springframework.stereotype.Service
+import java.time.Instant
 import co.elastic.clients.elasticsearch._types.query_dsl.Query as DSLQuery
 
 @Service
@@ -173,6 +175,16 @@ class SearchService(
                     termBuilder
                         .field("relations.uri.keyword")
                         .value(FieldValue.of(relation.value))
+                }
+            })
+        }
+
+        filters?.last_x_days?.let { daysAgo ->
+            queryFilters.add(DSLQuery.of { queryBuilder ->
+                queryBuilder.range { rangeBuilder ->
+                    rangeBuilder
+                        .field("metadata.firstHarvested")
+                        .gte(JsonData.of("now-${daysAgo.value}d/d"))
                 }
             })
         }

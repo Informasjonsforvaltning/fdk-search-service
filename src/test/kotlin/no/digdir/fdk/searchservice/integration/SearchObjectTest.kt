@@ -31,7 +31,7 @@ class SearchObjectTest: ApiTestContext() {
         listOf("title", "description", "keyword")
     private val mapper = jacksonObjectMapper()
     private val searchFilters = SearchFilters(null, null, null,
-        null, null, null, null, null, null)
+        null, null, null, null, null, null, null)
 
     @Test
     fun `search with at least one hit`() {
