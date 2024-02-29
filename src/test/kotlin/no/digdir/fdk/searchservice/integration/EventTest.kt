@@ -27,8 +27,8 @@ class EventSearchTest: ApiTestContext() {
     private val EVENTS_PATH = "/search/events"
     private val SEARCH_QUERY = "test"
     private val SEARCH_QUERY_NO_HITS = "nohits"
-    private val SEARCH_QUERYS_HIT_ALL_FIELDS =
-        listOf("uri", "title","catalog","description", "harvest")
+    private val SEARCH_QUERYS_HIT_ALL_SEARCH_FIELDS =
+        listOf("title", "description")
     private val searchFilters = SearchFilters(null, null, null,
         null, null, null, null, null, null)
     private val mapper = jacksonObjectMapper()
@@ -76,8 +76,8 @@ class EventSearchTest: ApiTestContext() {
     }
 
     @Test
-    fun `search and hit all fields successfully`() {
-        SEARCH_QUERYS_HIT_ALL_FIELDS.forEach {
+    fun `search and hit all search fields successfully`() {
+        SEARCH_QUERYS_HIT_ALL_SEARCH_FIELDS.forEach {
             val searchBody = mapper.writeValueAsString(SearchOperation(it, searchFilters))
             val response = requestApi(EVENTS_PATH, port, searchBody, POST)
             Assertions.assertEquals(200, response["status"])

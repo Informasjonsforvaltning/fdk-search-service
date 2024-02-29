@@ -27,20 +27,8 @@ class SearchObjectTest: ApiTestContext() {
     private val PATH_NONE_EXISTING_RESOURCE = "$PATH/none-existing-resource"
     private val SEARCH_QUERY = "test"
     private val SEARCH_QUERY_NO_HITS = "nohits"
-    private val SEARCH_QUERYS_SUCCESS_ALL_TEXT_FIELDS =
-        listOf("uri",
-            "accessRights",
-            "catalog",
-            "dataTheme",
-            "description",
-            "fdkFormatPrefixed",
-            "harvest",
-            "keyword",
-            "losTheme",
-            "organization",
-            "provenance",
-            "spatial",
-            "title")
+    private val SEARCH_QUERYS_SUCCESS_ALL_SEARCH_FIELDS =
+        listOf("title", "description", "keyword")
     private val mapper = jacksonObjectMapper()
     private val searchFilters = SearchFilters(null, null, null,
         null, null, null, null, null, null)
@@ -76,8 +64,8 @@ class SearchObjectTest: ApiTestContext() {
     }
 
     @Test
-    fun `search and hit all text fields successfully`() {
-        SEARCH_QUERYS_SUCCESS_ALL_TEXT_FIELDS.forEach {
+    fun `search and hit all search fields successfully`() {
+        SEARCH_QUERYS_SUCCESS_ALL_SEARCH_FIELDS.forEach {
             val searchBody = mapper.writeValueAsString(SearchOperation(it, searchFilters))
             val response = requestApi(PATH, port, searchBody, POST)
             Assertions.assertEquals(200, response["status"])

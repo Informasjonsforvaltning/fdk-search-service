@@ -118,6 +118,7 @@ val TEST_SERVICE_HIT_ALL_FIELDS = TEST_NULL_SERVICE.copy(
 val TEST_SERVICE_HIT_OWNED_BY = TEST_SERVICE_HIT_ALL_FIELDS.copy(
         id = "0102",
         uri = "uri 0102",
+        keyword = listOf( LocalizedStrings(nb = "keyword", nn = "keyword", en = "keyword" )),
         ownedBy = listOf( Organization(
                 orgPath = "/STAT/010247858",
                 identifier = "test identifier 0102",

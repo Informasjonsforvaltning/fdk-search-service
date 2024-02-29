@@ -32,18 +32,11 @@ class DataServiceSearchTest : ApiTestContext() {
     )
     private val SEARCH_QUERY = "test"
     private val SEARCH_QUERY_NO_HITS = "nohits"
-    private val SEARCH_QUERYS_HIT_ALL_FIELDS =
+    private val SEARCH_QUERYS_HIT_ALL_SEARCH_FIELDS =
         listOf(
-            "uri",
             "title",
-            "catalog",
             "description",
             "keyword",
-            "theme",
-            "losTheme",
-            "publisher",
-            "accessRights",
-            "harvest"
         )
     private val DATA_SERVICES_PATH = "/search/dataservices"
 
@@ -90,8 +83,8 @@ class DataServiceSearchTest : ApiTestContext() {
     }
 
     @Test
-    fun `search and hit all fields successfully`() {
-        SEARCH_QUERYS_HIT_ALL_FIELDS.forEach {
+    fun `search and hit all search fields successfully`() {
+        SEARCH_QUERYS_HIT_ALL_SEARCH_FIELDS.forEach {
             val searchBody = mapper.writeValueAsString(SearchOperation(it, searchFilters))
             val response = requestApi(DATA_SERVICES_PATH, port, searchBody, POST)
             Assertions.assertEquals(200, response["status"])
