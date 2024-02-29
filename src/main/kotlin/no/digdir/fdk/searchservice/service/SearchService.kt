@@ -203,7 +203,7 @@ class SearchService(
 
         ).flatten()
 
-    private fun QueryFields.exactPaths(): List<String> =
+    private fun QueryFields.phraseMatchPaths(): List<String> =
         listOf(
             if (title) languagePaths("title", 30)
             else emptyList(),
