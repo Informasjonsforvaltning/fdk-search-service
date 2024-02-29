@@ -43,15 +43,16 @@ class SearchService(
                             .type(TextQueryType.BoolPrefix)
                     }
                 }
+
                 boolBuilder.should {
                     it.multiMatch { matchBuilder ->
-                        matchBuilder
-                            .fields(queryFields.exactPaths())
+                        matchBuilder.fields(queryFields.exactPaths())
                             .query(queryValue)
                             .operator(Operator.And)
-                            .type(TextQueryType.BoolPrefix)
+                            .type(TextQueryType.Phrase)
                     }
                 }
+
             }
         }
     }
