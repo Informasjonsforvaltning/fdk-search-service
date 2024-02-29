@@ -37,7 +37,7 @@ class SearchService(
                 boolBuilder.should {
                     it.multiMatch { matchBuilder ->
                         matchBuilder
-                            .fields(queryFields.exactPaths())
+                            .fields(queryFields.prefixMatchPaths())
                             .query(queryValue)
                             .operator(Operator.And)
                             .type(TextQueryType.BoolPrefix)
