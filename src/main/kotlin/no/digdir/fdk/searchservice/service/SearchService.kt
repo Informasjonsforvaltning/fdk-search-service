@@ -172,7 +172,7 @@ class SearchService(
 
     private fun QueryFields.prefixMatchPaths(): List<String> =
         listOf(
-            if (title) languagePaths("title", 30)
+            if (title) languagePaths("title", 15)
             else emptyList(),
 
             if (description) languagePaths("description")
