@@ -14,7 +14,12 @@ val TEST_NULL_INFORMATION_MODEL = InformationModel(
     losTheme = null,
     publisher = null,
     accessRights = null,
-    harvest = null
+    harvest = null,
+    replaces = null,
+    hasPart = null,
+    isReplacedBy = null,
+    isPartOf = null,
+    subjects = null
 )
 
 val TEST_INFORMATION_MODEL_HIT_ALL_FIELDS = TEST_NULL_INFORMATION_MODEL.copy(
@@ -100,4 +105,12 @@ val TEST_INFORMATION_MODEL_HIT_ALL_FIELDS = TEST_NULL_INFORMATION_MODEL.copy(
     harvest =  HarvestMetadata(
             "Test harvest > firstHarvested",
             listOf("Test harvest > changed")),
+)
+
+val INFORMATION_MODEL_WITH_RELATIONS = TEST_NULL_INFORMATION_MODEL.copy(
+    replaces = "replaces_uri",
+    hasPart = "hasPart_uri",
+    isReplacedBy = "isReplacedBy_uri",
+    isPartOf = "isPartOf_uri",
+    subjects = listOf("subjects_uri")
 )

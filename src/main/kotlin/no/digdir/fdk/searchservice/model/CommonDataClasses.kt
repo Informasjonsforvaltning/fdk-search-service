@@ -29,8 +29,39 @@ data class LosNode(
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class ReferenceDataCode(
     val uri: String?,
-    val code: String,
+    val code: String?,
     val prefLabel: LocalizedStrings?,
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class Reference(
+  val referenceType: ReferenceDataCode?,
+  val source: ObjectWithURI?
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class ObjectWithURI(
+  val uri: String?
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class AssociativeRelation(
+  val description: LocalizedStrings?,
+  val related: String?,
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class GenericRelation(
+  val divisioncriterion: LocalizedStrings?,
+  val generalizes: String?,
+  val specializes: String?
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class PartitiveRelation(
+  val description: LocalizedStrings?,
+  val hasPart: String?,
+  val isPartOf: String?
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

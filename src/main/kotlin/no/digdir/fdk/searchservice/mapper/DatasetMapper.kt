@@ -1,8 +1,6 @@
 package no.digdir.fdk.searchservice.mapper
 
-import no.digdir.fdk.searchservice.model.Dataset
-import no.digdir.fdk.searchservice.model.SearchObject
-import no.digdir.fdk.searchservice.model.SearchType
+import no.digdir.fdk.searchservice.model.*
 
 fun Dataset.toSearchObject(timestamp: Long, deleted: Boolean = false) =
     SearchObject(
@@ -21,7 +19,8 @@ fun Dataset.toSearchObject(timestamp: Long, deleted: Boolean = false) =
         provenance = provenance,
         searchType = SearchType.DATASET,
         spatial = spatial,
-        title = title
+        title = title,
+        relations = getRelations()
     )
 
 fun Dataset.extractPrefixedFormats(): List<String> {
@@ -32,4 +31,49 @@ fun Dataset.extractPrefixedFormats(): List<String> {
         }
     }
     return mutableList
+}
+
+fun Dataset.getRelations(): List<Relation> {
+    val relations: MutableList<Relation> = mutableListOf()
+
+    conformsTo?.forEach {
+        relations.add(Relation(uri = it.uri, type = RelationType.conformsTo))
+    }
+
+    inSeries?.let {
+        relations.add(Relation(uri = it.uri, type = RelationType.inSeries))
+    }
+
+    informationModel?.forEach {
+        relations.add(Relation(uri = it.uri, type = RelationType.informationModel))
+    }
+
+    references?.forEach {
+        relations.add(Relation(uri = it.source?.uri, type = it.uriToRelationType() ?: RelationType.relation))
+    }
+
+    subject?.forEach {
+        relations.add(Relation(uri = it.uri, type = RelationType.subject))
+    }
+
+    return relations
+}
+
+private fun Reference.uriToRelationType(): RelationType? {
+    val basePath = "http://purl.org/dc/terms";
+    return when (referenceType?.uri) {
+        "$basePath/source" -> RelationType.source
+        "$basePath/hasVersion" -> RelationType.hasVersion
+        "$basePath/isVersionOf" -> RelationType.isVersionOf
+        "$basePath/isPartOf" -> RelationType.isPartOf
+        "$basePath/hasPart" -> RelationType.hasPart
+        "$basePath/references" -> RelationType.references
+        "$basePath/isReferencedBy" -> RelationType.isReferencedBy
+        "$basePath/replaces" -> RelationType.replaces
+        "$basePath/isReplacedBy" -> RelationType.isReplacedBy
+        "$basePath/requires" -> RelationType.requires
+        "$basePath/isRequiredBy" -> RelationType.isRequiredBy
+        "$basePath/relation" -> RelationType.relation
+        else -> null
+    }
 }

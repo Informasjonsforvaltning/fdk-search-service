@@ -8,7 +8,8 @@ val TEST_NULL_EVENT = Event(
     harvest = null,
     catalog = null,
     title = null,
-    description = null
+    description = null,
+    subject = null,
 )
 
 val TEST_EVENT = TEST_NULL_EVENT.copy(
@@ -63,3 +64,5 @@ val TEST_EVENT_HIT_ALL_FIELDS = TEST_NULL_EVENT.copy(
                 "Test harvest > firstHarvested",
                 listOf("Test harvest > changed")),
 )
+
+val EVENT_WITH_RELATIONS = TEST_NULL_EVENT.copy(subject = listOf("subject_uri"))

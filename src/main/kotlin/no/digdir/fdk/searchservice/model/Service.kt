@@ -19,4 +19,10 @@ data class Service(
     val hasCompetantAuthority: List<Organization>?,
     val spatial: List<ReferenceDataCode>?,
     val harvest: HarvestMetadata?,
+    val isGroupedBy: List<String>?,
+    val isClassifiedBy: List<ObjectWithURI>?,
+    val isDescribedAt: List<ObjectWithURI>?,
+    val relation: List<ObjectWithURI>?,
+    val requires: List<ObjectWithURI>?,
+    val subject: List<ObjectWithURI>?
 )

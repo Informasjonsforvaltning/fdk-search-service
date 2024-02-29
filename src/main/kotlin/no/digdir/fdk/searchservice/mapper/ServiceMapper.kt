@@ -1,8 +1,6 @@
 package no.digdir.fdk.searchservice.mapper
 
-import no.digdir.fdk.searchservice.model.SearchObject
-import no.digdir.fdk.searchservice.model.SearchType
-import no.digdir.fdk.searchservice.model.Service
+import no.digdir.fdk.searchservice.model.*
 
 fun Service.toSearchObject(timestamp: Long, deleted: Boolean = false) =
     SearchObject(
@@ -21,11 +19,43 @@ fun Service.toSearchObject(timestamp: Long, deleted: Boolean = false) =
         provenance = null,
         searchType = SearchType.SERVICE,
         spatial = spatial,
-        title = title
+        title = title,
+        relations = getRelations()
     )
 
 private fun Service.getOrganization() = if (hasCompetantAuthority.isNullOrEmpty()) {
     ownedBy?.get(0)
 } else {
     hasCompetantAuthority.get(0)
+}
+
+
+fun Service.getRelations(): List<Relation> {
+    val relations: MutableList<Relation> = mutableListOf()
+
+    isGroupedBy?.forEach {
+        relations.add(Relation(uri = it, type = RelationType.isGroupedBy))
+    }
+
+    isClassifiedBy?.forEach {
+        relations.add(Relation(uri = it.uri, type = RelationType.isClassifiedBy))
+    }
+
+    isDescribedAt?.forEach {
+        relations.add(Relation(uri = it.uri, type = RelationType.isDescribedAt))
+    }
+
+    relation?.forEach {
+        relations.add(Relation(uri = it.uri, type = RelationType.relation))
+    }
+
+    subject?.forEach {
+        relations.add(Relation(uri = it.uri, type = RelationType.subject))
+    }
+
+    requires?.forEach {
+        relations.add(Relation(uri = it.uri, type = RelationType.requires))
+    }
+
+    return relations
 }

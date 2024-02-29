@@ -18,4 +18,9 @@ data class InformationModel(
     val publisher: Organization?,
     val accessRights: ReferenceDataCode?,
     val harvest: HarvestMetadata?,
+    val hasPart: String?,
+    val isPartOf: String?,
+    val isReplacedBy: String?,
+    val replaces: String?,
+    val subjects: List<String>?
 )

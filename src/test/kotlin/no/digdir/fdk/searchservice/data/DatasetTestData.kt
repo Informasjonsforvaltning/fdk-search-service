@@ -17,7 +17,12 @@ val TEST_NULL_DATASET = Dataset(
     provenance = null,
     harvest = null,
     catalog = null,
-    distribution = null
+    distribution = null,
+    subject = null,
+    conformsTo = null,
+    inSeries = null,
+    informationModel = null,
+    references = null
 )
 
 val TEST_DATASET_HIT_ALL_FIELDS = TEST_NULL_DATASET.copy(
@@ -124,14 +129,10 @@ val TEST_DATASET_HIT_ALL_FIELDS = TEST_NULL_DATASET.copy(
         ))
 )
 
-val TEST_DATASET_HIT_IS_OPEN = TEST_DATASET_HIT_ALL_FIELDS.copy(
-    id = "2",
-    isOpenData = true
-)
-
 val TEST_DATASET_FILTERS = TEST_DATASET_HIT_ALL_FIELDS.copy(
     id = "3",
     isOpenData = true,
+    uri = "dataset.id3.uri",
     provenance = ReferenceDataCode(
         uri = "provenance > uri",
         code = "BRUKER",
@@ -185,3 +186,33 @@ val TEST_DATASET_FILTERS = TEST_DATASET_HIT_ALL_FIELDS.copy(
         ))
     )
 )
+
+val TEST_DATASET_HIT_IS_OPEN = TEST_DATASET_HIT_ALL_FIELDS.copy(
+    id = "2",
+    isOpenData = true,
+    conformsTo = listOf(ObjectWithURI(uri=TEST_DATASET_FILTERS.uri))
+)
+
+val basePath = "http://purl.org/dc/terms"
+val DATASET_WITH_RELATIONS = TEST_NULL_DATASET.copy(
+    subject = listOf(ObjectWithURI(uri = "subject_uri")),
+    conformsTo = listOf(ObjectWithURI(uri = "conformsTo_uri")),
+    inSeries = ObjectWithURI(uri = "inSeries_uri"),
+    informationModel = listOf(ObjectWithURI(uri = "informationModel_uri")),
+    references = listOf(
+        Reference(referenceType = ReferenceDataCode(code = null, prefLabel = null, uri = "$basePath/source"), source = (ObjectWithURI(uri = "source_uri"))),
+        Reference(referenceType = ReferenceDataCode(code = null, prefLabel = null, uri = "$basePath/hasVersion"), source = (ObjectWithURI(uri = "has_version_uri"))),
+        Reference(referenceType = ReferenceDataCode(code = null, prefLabel = null, uri = "$basePath/isVersionOf"), source = (ObjectWithURI(uri = "is_version_of_uri"))),
+        Reference(referenceType = ReferenceDataCode(code = null, prefLabel = null, uri = "$basePath/isPartOf"), source = (ObjectWithURI(uri = "is_part_of_uri"))),
+        Reference(referenceType = ReferenceDataCode(code = null, prefLabel = null, uri = "$basePath/hasPart"), source = (ObjectWithURI(uri = "has_part_uri"))),
+        Reference(referenceType = ReferenceDataCode(code = null, prefLabel = null, uri = "$basePath/references"), source = (ObjectWithURI(uri = "references_uri"))),
+        Reference(referenceType = ReferenceDataCode(code = null, prefLabel = null, uri = "$basePath/isReferencedBy"), source = (ObjectWithURI(uri = "is_referenced_by_uri"))),
+        Reference(referenceType = ReferenceDataCode(code = null, prefLabel = null, uri = "$basePath/replaces"), source = (ObjectWithURI(uri = "replaces_uri"))),
+        Reference(referenceType = ReferenceDataCode(code = null, prefLabel = null, uri = "$basePath/isReplacedBy"), source = (ObjectWithURI(uri = "is_replaced_by_uri"))),
+        Reference(referenceType = ReferenceDataCode(code = null, prefLabel = null, uri = "$basePath/requires"), source = (ObjectWithURI(uri = "requires_uri"))),
+        Reference(referenceType = ReferenceDataCode(code = null, prefLabel = null, uri = "$basePath/isRequiredBy"), source = (ObjectWithURI(uri = "is_required_by_uri"))),
+        Reference(referenceType = ReferenceDataCode(code = null, prefLabel = null, uri = "$basePath/relation"), source = (ObjectWithURI(uri = "relation_uri"))),
+        Reference(referenceType = ReferenceDataCode(code = null, prefLabel = null, uri = null), source = (ObjectWithURI(uri = "missing_type_uri")))
+    )
+)
+

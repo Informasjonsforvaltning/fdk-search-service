@@ -14,7 +14,13 @@ val TEST_NULL_SERVICE = Service(
     spatial = null,
     hasCompetantAuthority = null,
     ownedBy = null,
-    euDataThemes = null
+    euDataThemes = null,
+    subject = null,
+    relation = null,
+    requires = null,
+    isDescribedAt = null,
+    isGroupedBy = null,
+    isClassifiedBy = null
 )
 
 val TEST_SERVICE = TEST_NULL_SERVICE.copy(
@@ -137,4 +143,13 @@ val TEST_SERVICE_HIT_HAS_COMPETANT_AUTHORITY =  TEST_NULL_SERVICE.copy(
                         "NN Test hasCompetantAuthority > prefLabel",
                         "EN Test hasCompetantAuthority > prefLabel"),
         ))
+)
+
+val SERVICE_WITH_RELATIONS = TEST_NULL_SERVICE.copy(
+    subject = listOf(ObjectWithURI(uri = "subject_uri")),
+    relation = listOf(ObjectWithURI(uri = "relation_uri")),
+    requires = listOf(ObjectWithURI(uri = "requires_uri")),
+    isDescribedAt = listOf(ObjectWithURI(uri = "isDescribedAt_uri")),
+    isGroupedBy = listOf("isGroupedBy_uri"),
+    isClassifiedBy = listOf(ObjectWithURI(uri = "isClassifiedBy_uri")),
 )
