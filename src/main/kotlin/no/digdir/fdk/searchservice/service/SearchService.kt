@@ -46,7 +46,7 @@ class SearchService(
 
                 boolBuilder.should {
                     it.multiMatch { matchBuilder ->
-                        matchBuilder.fields(queryFields.exactPaths())
+                        matchBuilder.fields(queryFields.phraseMatchPaths())
                             .query(queryValue)
                             .operator(Operator.And)
                             .type(TextQueryType.Phrase)
