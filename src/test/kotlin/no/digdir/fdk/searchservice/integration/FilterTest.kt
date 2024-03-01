@@ -29,6 +29,7 @@ class FilterTest: ApiTestContext() {
         null, null, null, null, null, null, null)
     private val DATASETS_PATH = "/search/datasets"
     private val DATASERVICES_PATH = "/search/dataservices"
+    private val ALL_RESOURCES_PATH = "/search"
 
     @Nested
     inner class IsOpen {
@@ -474,6 +475,29 @@ class FilterTest: ApiTestContext() {
 
             val result: List<SearchObject> = mapper.readValue(response["body"] as String)
             Assertions.assertEquals(0, result.size)
+        }
+    }
+
+    @Nested
+    inner class Sorting {
+        @Test
+        fun `sorting on descending firstHarvested returns correct order`() {
+            val searchBody = mapper.writeValueAsString(
+                SearchOperation(
+                sort = SortField(
+                    field = SortFieldEnum.FIRST_HARVESTED, direction = SortDirection.DESC)
+                )
+            )
+
+            val response = requestApi(ALL_RESOURCES_PATH, port, searchBody, HttpMethod.POST)
+            Assertions.assertEquals(200, response["status"])
+
+            val result: List<SearchObject> = mapper.readValue(response["body"] as String)
+            Assertions.assertNotEquals(0, result.size)
+
+            val expectedResult = result.sortedByDescending { it.metadata?.firstHarvested }
+
+            Assertions.assertTrue(expectedResult == result)
         }
     }
 }
