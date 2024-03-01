@@ -26,7 +26,7 @@ import org.springframework.test.context.ContextConfiguration
 class FilterTest: ApiTestContext() {
     private val mapper = jacksonObjectMapper()
     private val SEARCH_FILTER = SearchFilters(null, null, null,
-        null, null, null, null, null, null)
+        null, null, null, null, null, null, null)
     private val DATASETS_PATH = "/search/datasets"
     private val DATASERVICES_PATH = "/search/dataservices"
 
@@ -444,6 +444,31 @@ class FilterTest: ApiTestContext() {
             val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(
                 relations = SearchFilter("1234"))
             ))
+            val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
+            Assertions.assertEquals(200, response["status"])
+
+            val result: List<SearchObject> = mapper.readValue(response["body"] as String)
+            Assertions.assertEquals(0, result.size)
+        }
+    }
+
+    @Nested
+    inner class Last_x_days {
+        @Test
+        fun `filter datasets on harvested last 7 days`() {
+            val searchBody =
+                mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(last_x_days = SearchFilter(7))))
+            val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
+            Assertions.assertEquals(200, response["status"])
+
+            val result: List<SearchObject> = mapper.readValue(response["body"] as String)
+            Assertions.assertNotEquals(0, result.size)
+        }
+
+        @Test
+        fun `filter datasets on harvested 1 day ago should return no hits`() {
+            val searchBody =
+                mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(last_x_days = SearchFilter(1))))
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 

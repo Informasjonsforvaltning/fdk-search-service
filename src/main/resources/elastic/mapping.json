@@ -27,6 +27,13 @@
           }
         }
       }
+    },
+    "metadata": {
+      "properties": {
+        "firstHarvested": {
+          "type": "date"
+        }
+      }
     }
   }
 }

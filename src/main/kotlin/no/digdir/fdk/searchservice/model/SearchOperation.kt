@@ -26,7 +26,8 @@ data class SearchFilters(
     val los: SearchFilter<String>?,
     val orgPath: SearchFilter<String>?,
     val formats: SearchFilter<List<String>>?,
-    val relations: SearchFilter<String>?
+    val relations: SearchFilter<String>?,
+    val last_x_days: SearchFilter<Int>?
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)

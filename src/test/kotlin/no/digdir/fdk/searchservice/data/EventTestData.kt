@@ -19,7 +19,7 @@ val TEST_EVENT = TEST_NULL_EVENT.copy(
         "NN Test prefLabel",
         "EN Test prefLabel"),
     harvest =  HarvestMetadata(
-        "Test harvest > firstHarvested",
+        "2022-02-15T11:00:05Z",
         listOf("Test harvest > changed")),
     description = LocalizedStrings(
         "NB Test collection > description",
@@ -61,7 +61,7 @@ val TEST_EVENT_HIT_ALL_FIELDS = TEST_NULL_EVENT.copy(
                 "NN Test description",
                 "EN Test description"),
         harvest =  HarvestMetadata(
-                "Test harvest > firstHarvested",
+            "2022-02-15T11:00:05Z",
                 listOf("Test harvest > changed")),
 )
 

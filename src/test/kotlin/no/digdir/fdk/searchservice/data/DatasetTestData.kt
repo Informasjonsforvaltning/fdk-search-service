@@ -1,6 +1,11 @@
 package no.digdir.fdk.searchservice.data
 
 import no.digdir.fdk.searchservice.model.*
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 val TEST_NULL_DATASET = Dataset(
     id = "0",
@@ -101,7 +106,7 @@ val TEST_DATASET_HIT_ALL_FIELDS = TEST_NULL_DATASET.copy(
             "EN Test provenance > prefLabel")
     ),
     harvest = HarvestMetadata(
-            firstHarvested = "Test harvest > firstHarvested",
+            firstHarvested = LocalDateTime.now().minusDays(2).format(DateTimeFormatter.ISO_LOCAL_DATE),
             changed = listOf(
                     "Test harvest > changed 1",
                     "Test harvest > changed 2")

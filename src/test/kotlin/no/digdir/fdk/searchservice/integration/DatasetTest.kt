@@ -32,7 +32,7 @@ class SearchDatasetTest: ApiTestContext() {
     private val mapper = jacksonObjectMapper()
     private val searchFilters = SearchFilters(
         null, null, null,
-        null, null, null, null, null, null
+        null, null, null, null, null, null, null
     )
 
     @Test
