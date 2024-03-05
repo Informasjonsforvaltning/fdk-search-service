@@ -493,7 +493,7 @@ class FilterTest: ApiTestContext() {
             Assertions.assertEquals(200, response["status"])
 
             val result: List<SearchObject> = mapper.readValue(response["body"] as String)
-            Assertions.assertNotEquals(0, result.size)
+            Assertions.assertTrue(1 < result.size)
 
             val expectedResult = result.sortedByDescending { it.metadata?.firstHarvested }
 
