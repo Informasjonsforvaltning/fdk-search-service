@@ -74,6 +74,13 @@ class SearchService(
         }
     }
 
+    private fun NativeQueryBuilder.addSorting(sort: SortField) {
+        withSort { sortBuilder ->
+          sortBuilder.field { fieldBuilder ->
+            fieldBuilder.field(sort.sortField()).order(sort.sortDirection())
+          }
+        }
+
     private fun SortField.sortField(): String =
         when (field) {
             SortFieldEnum.FIRST_HARVESTED -> "metadata.firstHarvested"
