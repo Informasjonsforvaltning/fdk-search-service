@@ -1,6 +1,7 @@
 package no.digdir.fdk.searchservice.service
 
 import co.elastic.clients.elasticsearch._types.FieldValue
+import co.elastic.clients.elasticsearch._types.SortOrder
 import co.elastic.clients.elasticsearch._types.query_dsl.Operator
 import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType
 import co.elastic.clients.json.JsonData
@@ -28,9 +29,23 @@ class SearchService(
 
     private fun SearchOperation.toElasticQuery(searchTypes: List<SearchType>?): Query {
         val builder = NativeQuery.builder()
-        if (!query.isNullOrBlank()) builder.addFieldsQuery(fields, query)
+
         builder.addFilters(filters, searchTypes)
+
+        if (sort != null) builder.addSorting(sort)
+
+        if (!query.isNullOrBlank()) builder.addFieldsQuery(fields, query)
+
+
         return builder.build()
+    }
+
+    private fun NativeQueryBuilder.addFilters(filters: SearchFilters?, searchTypes: List<SearchType>?) {
+        withFilter { queryBuilder ->
+            queryBuilder.bool { boolBuilder ->
+                boolBuilder.must(createQueryFilters(filters, searchTypes))
+            }
+        }
     }
 
     private fun NativeQueryBuilder.addFieldsQuery(queryFields: QueryFields, queryValue: String) {
@@ -54,18 +69,29 @@ class SearchService(
                             .type(TextQueryType.Phrase)
                     }
                 }
-
+                boolBuilder.minimumShouldMatch("1")
             }
         }
     }
 
-    private fun NativeQueryBuilder.addFilters(filters: SearchFilters?, searchTypes: List<SearchType>?) {
-        withFilter { queryBuilder ->
-            queryBuilder.bool { boolBuilder ->
-                boolBuilder.must(createQueryFilters(filters, searchTypes))
+    private fun NativeQueryBuilder.addSorting(sort: SortField) {
+        withSort { sortBuilder ->
+            sortBuilder.field { fieldBuilder ->
+                fieldBuilder.field(sort.sortField()).order(sort.sortDirection())
             }
         }
     }
+
+    private fun SortField.sortField(): String =
+        when (field) {
+            SortFieldEnum.FIRST_HARVESTED -> "metadata.firstHarvested"
+        }
+
+    private fun SortField.sortDirection(): SortOrder =
+        when (direction) {
+            SortDirection.ASC -> SortOrder.Asc
+            else -> SortOrder.Desc
+        }
 
     private fun createQueryFilters(filters: SearchFilters?, searchTypes: List<SearchType>?): List<DSLQuery> {
         val queryFilters = mutableListOf<DSLQuery>()

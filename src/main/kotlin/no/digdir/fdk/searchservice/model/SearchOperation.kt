@@ -5,8 +5,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class SearchOperation(
     val query: String? = null,
-    val filters: SearchFilters,
+    val filters: SearchFilters? = null,
     val fields: QueryFields = QueryFields(),
+    val sort: SortField? = null,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -29,6 +30,20 @@ data class SearchFilters(
     val relations: SearchFilter<String>?,
     val last_x_days: SearchFilter<Int>?
 )
+
+class SortField(
+    val field: SortFieldEnum,
+    val direction: SortDirection,
+)
+
+enum class SortFieldEnum {
+    FIRST_HARVESTED
+}
+
+enum class SortDirection {
+    ASC,
+    DESC,
+}
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 class SearchFilter<T>(
