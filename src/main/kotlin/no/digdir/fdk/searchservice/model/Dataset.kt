@@ -23,7 +23,6 @@ data class Dataset(
     val distribution: List<Distribution>?,
     val conformsTo: List<ObjectWithURI>?,
     val inSeries: ObjectWithURI?,
-    val informationModel: List<ObjectWithURI>?,
     val references: List<Reference>?,
     val subject: List<ObjectWithURI>?
 )

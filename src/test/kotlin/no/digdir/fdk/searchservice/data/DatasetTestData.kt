@@ -26,7 +26,6 @@ val TEST_NULL_DATASET = Dataset(
     subject = null,
     conformsTo = null,
     inSeries = null,
-    informationModel = null,
     references = null
 )
 
@@ -203,7 +202,6 @@ val DATASET_WITH_RELATIONS = TEST_NULL_DATASET.copy(
     subject = listOf(ObjectWithURI(uri = "subject_uri")),
     conformsTo = listOf(ObjectWithURI(uri = "conformsTo_uri")),
     inSeries = ObjectWithURI(uri = "inSeries_uri"),
-    informationModel = listOf(ObjectWithURI(uri = "informationModel_uri")),
     references = listOf(
         Reference(referenceType = ReferenceDataCode(code = null, prefLabel = null, uri = "$basePath/source"), source = (ObjectWithURI(uri = "source_uri"))),
         Reference(referenceType = ReferenceDataCode(code = null, prefLabel = null, uri = "$basePath/hasVersion"), source = (ObjectWithURI(uri = "has_version_uri"))),
