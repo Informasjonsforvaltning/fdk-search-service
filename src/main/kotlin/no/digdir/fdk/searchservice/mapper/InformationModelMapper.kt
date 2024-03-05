@@ -45,7 +45,7 @@ fun InformationModel.getRelations(): List<Relation> {
 
 
     subjects?.forEach {
-        relations.add(Relation(uri = it, type = RelationType.subjects))
+        relations.add(Relation(uri = it, type = RelationType.subject))
     }
 
     return relations
