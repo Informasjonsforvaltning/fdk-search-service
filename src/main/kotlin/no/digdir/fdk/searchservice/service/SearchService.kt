@@ -76,10 +76,11 @@ class SearchService(
 
     private fun NativeQueryBuilder.addSorting(sort: SortField) {
         withSort { sortBuilder ->
-          sortBuilder.field { fieldBuilder ->
-            fieldBuilder.field(sort.sortField()).order(sort.sortDirection())
-          }
+            sortBuilder.field { fieldBuilder ->
+                fieldBuilder.field(sort.sortField()).order(sort.sortDirection())
+            }
         }
+    }
 
     private fun SortField.sortField(): String =
         when (field) {
