@@ -6,6 +6,7 @@ import co.elastic.clients.elasticsearch._types.query_dsl.Operator
 import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType
 import co.elastic.clients.json.JsonData
 import no.digdir.fdk.searchservice.model.*
+import org.springframework.data.domain.Pageable
 import org.springframework.data.elasticsearch.client.elc.NativeQuery
 import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations
@@ -13,29 +14,37 @@ import org.springframework.data.elasticsearch.core.SearchHits
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates
 import org.springframework.data.elasticsearch.core.query.Query
 import org.springframework.stereotype.Service
-import java.time.Instant
+import kotlin.math.ceil
+import kotlin.math.roundToLong
 import co.elastic.clients.elasticsearch._types.query_dsl.Query as DSLQuery
 
 @Service
 class SearchService(
     private val elasticSearchOperations: ElasticsearchOperations
 ) {
-    fun search(search: SearchOperation, searchTypes: List<SearchType>?): List<SearchObject> =
-        elasticSearchOperations.search(
-            search.toElasticQuery(searchTypes),
-            SearchObject::class.java,
-            IndexCoordinates.of(SEARCH_INDEX_NAME)
-        ).toSearchObjectList()
+    fun search(search: SearchOperation, searchTypes: List<SearchType>?): SearchResult =
+        elasticSearchOperations
+            .search(
+                search.toElasticQuery(searchTypes),
+                SearchObject::class.java,
+                IndexCoordinates.of(SEARCH_INDEX_NAME)
+            )
+            .toPaginatedSearchResult(search.pagination)
 
     private fun SearchOperation.toElasticQuery(searchTypes: List<SearchType>?): Query {
         val builder = NativeQuery.builder()
-
-        builder.addFilters(filters, searchTypes)
 
         if (sort != null) builder.addSorting(sort)
 
         if (!query.isNullOrBlank()) builder.addFieldsQuery(fields, query)
 
+        builder
+            .withPageable(
+                Pageable
+                    .ofSize(pagination.getSize())
+                    .withPage(pagination.getPage())
+            )
+            .addFilters(filters, searchTypes)
 
         return builder.build()
     }
@@ -259,5 +268,20 @@ class SearchService(
             "$basePath.nn${if (boost != null) "^$boost" else ""}",
             "$basePath.en${if (boost != null) "^$boost" else ""}")
 
-    private fun SearchHits<SearchObject>.toSearchObjectList(): List<SearchObject> = this.map { it.content }.toList()
+    private fun SearchHits<SearchObject>.toPaginatedSearchResult(
+        pagination: Pagination
+    ): SearchResult =
+        map { it.content }
+            .toList()
+            .let {
+                SearchResult(
+                    hits = it,
+                    page = PageMeta(
+                        currentPage = pagination.getPage(),
+                        size = it.size,
+                        totalElements = totalHits,
+                        totalPages = ceil(totalHits.toDouble() / pagination.getSize()).roundToLong()
+                    )
+                )
+            }
 }
