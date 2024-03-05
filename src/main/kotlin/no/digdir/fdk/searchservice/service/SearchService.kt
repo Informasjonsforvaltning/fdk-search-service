@@ -32,13 +32,7 @@ class SearchService(
 
         builder.addFilters(filters, searchTypes)
 
-        if (sort != null) {
-            builder.withSort { sortBuilder ->
-                sortBuilder.field { fieldBuilder ->
-                    fieldBuilder.field(sort.sortField()).order(sort.sortDirection())
-                }
-            }
-        }
+        if (sort != null) builder.addSorting(sort)
 
         if (!query.isNullOrBlank()) builder.addFieldsQuery(fields, query)
 
