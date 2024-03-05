@@ -3,8 +3,8 @@ package no.digdir.fdk.searchservice.integration
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.digdir.fdk.searchservice.model.SearchFilters
-import no.digdir.fdk.searchservice.model.SearchObject
 import no.digdir.fdk.searchservice.model.SearchOperation
+import no.digdir.fdk.searchservice.model.SearchResult
 import no.digdir.fdk.searchservice.model.SearchType
 import no.digdir.fdk.searchservice.utils.ApiTestContext
 import no.digdir.fdk.searchservice.utils.requestApi
@@ -41,8 +41,8 @@ class SearchDatasetTest: ApiTestContext() {
         val response = requestApi(DATASETS_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
-        val result: List<SearchObject> = mapper.readValue(response["body"] as String)
-        Assertions.assertTrue(result.size > 0)
+        val result: SearchResult = mapper.readValue(response["body"] as String)
+        Assertions.assertTrue(result.hits.size > 0)
     }
 
     @Test
@@ -51,8 +51,8 @@ class SearchDatasetTest: ApiTestContext() {
         val response = requestApi(DATASETS_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
-        val result: List<SearchObject> = mapper.readValue(response["body"] as String)
-        result.forEach {
+        val result: SearchResult = mapper.readValue(response["body"] as String)
+        result.hits.forEach {
             Assertions.assertTrue(it.searchType == SearchType.DATASET)
         }
     }
@@ -63,8 +63,8 @@ class SearchDatasetTest: ApiTestContext() {
         val response = requestApi(DATASETS_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
-        val result: List<SearchObject> = mapper.readValue(response["body"] as String)
-        Assertions.assertEquals(0, result.size)
+        val result: SearchResult = mapper.readValue(response["body"] as String)
+        Assertions.assertEquals(0, result.hits.size)
     }
 
     @Test
@@ -73,8 +73,8 @@ class SearchDatasetTest: ApiTestContext() {
         val response = requestApi(DATASETS_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
-        val result: List<SearchObject> = mapper.readValue(response["body"] as String)
-        Assertions.assertNotEquals(0, result.size)
+        val result: SearchResult = mapper.readValue(response["body"] as String)
+        Assertions.assertNotEquals(0, result.hits.size)
     }
 
     @Test
@@ -84,8 +84,8 @@ class SearchDatasetTest: ApiTestContext() {
             val response = requestApi(DATASETS_PATH, port, searchBody, POST)
             Assertions.assertEquals(200, response["status"])
 
-            val result: List<SearchObject> = mapper.readValue(response["body"] as String)
-            if (result.isEmpty()) Assertions.fail<String>("No hit for query: $it")
+            val result: SearchResult = mapper.readValue(response["body"] as String)
+            if (result.hits.isEmpty()) Assertions.fail<String>("No hit for query: $it")
         }
     }
 }

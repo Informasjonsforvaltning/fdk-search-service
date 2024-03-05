@@ -3,8 +3,8 @@ package no.digdir.fdk.searchservice.integration
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.digdir.fdk.searchservice.model.SearchFilters
-import no.digdir.fdk.searchservice.model.SearchObject
 import no.digdir.fdk.searchservice.model.SearchOperation
+import no.digdir.fdk.searchservice.model.SearchResult
 import no.digdir.fdk.searchservice.model.SearchType
 import no.digdir.fdk.searchservice.utils.ApiTestContext
 import no.digdir.fdk.searchservice.utils.requestApi
@@ -39,8 +39,8 @@ class EventSearchTest: ApiTestContext() {
         val response = requestApi(EVENTS_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
-        val result: List<SearchObject> = mapper.readValue(response["body"] as String)
-        Assertions.assertTrue(result.isNotEmpty())
+        val result: SearchResult = mapper.readValue(response["body"] as String)
+        Assertions.assertTrue(result.hits.isNotEmpty())
     }
 
     @Test
@@ -49,8 +49,8 @@ class EventSearchTest: ApiTestContext() {
         val response = requestApi(EVENTS_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
-        val result: List<SearchObject> = mapper.readValue(response["body"] as String)
-        result.forEach {
+        val result: SearchResult = mapper.readValue(response["body"] as String)
+        result.hits.forEach {
             Assertions.assertTrue(it.searchType == SearchType.EVENT)
         }
     }
@@ -61,8 +61,8 @@ class EventSearchTest: ApiTestContext() {
         val response = requestApi(EVENTS_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
-        val result: List<SearchObject> = mapper.readValue(response["body"] as String)
-        Assertions.assertTrue(result.isEmpty())
+        val result: SearchResult = mapper.readValue(response["body"] as String)
+        Assertions.assertTrue(result.hits.isEmpty())
     }
 
     @Test
@@ -71,8 +71,8 @@ class EventSearchTest: ApiTestContext() {
         val response = requestApi(EVENTS_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
-        val result: List<SearchObject> = mapper.readValue(response["body"] as String)
-        Assertions.assertTrue(result.isNotEmpty())
+        val result: SearchResult = mapper.readValue(response["body"] as String)
+        Assertions.assertTrue(result.hits.isNotEmpty())
     }
 
     @Test
@@ -82,8 +82,8 @@ class EventSearchTest: ApiTestContext() {
             val response = requestApi(EVENTS_PATH, port, searchBody, POST)
             Assertions.assertEquals(200, response["status"])
 
-            val result: List<SearchObject> = mapper.readValue(response["body"] as String)
-            if (result.isEmpty()) Assertions.fail<String>("No hit for query: $it")
+            val result: SearchResult = mapper.readValue(response["body"] as String)
+            if (result.hits.isEmpty()) Assertions.fail<String>("No hit for query: $it")
         }
     }
 }
