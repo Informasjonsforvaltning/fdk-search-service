@@ -58,7 +58,6 @@ enum class RelationType {
     subject,
     hasPart,
     isPartOf,
-    subjects,
     isGroupedBy,
     isClassifiedBy,
     isDescribedAt,

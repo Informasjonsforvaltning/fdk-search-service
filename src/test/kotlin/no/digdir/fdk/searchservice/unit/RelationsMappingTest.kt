@@ -70,7 +70,7 @@ val expectedInformationModelRelations = listOf(
     Relation(uri = "hasPart_uri", type=RelationType.hasPart),
     Relation(uri = "isReplacedBy_uri", type=RelationType.isReplacedBy),
     Relation(uri = "isPartOf_uri", type=RelationType.isPartOf),
-    Relation(uri = "subjects_uri", type=RelationType.subjects)
+    Relation(uri = "subjects_uri", type=RelationType.subject)
 )
 
 val expectedConceptRelations = listOf(
