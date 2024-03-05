@@ -54,7 +54,6 @@ enum class RelationType {
     conformsTo,
     servesDataset,
     inSeries,
-    informationModel,
     subject,
     hasPart,
     isPartOf,

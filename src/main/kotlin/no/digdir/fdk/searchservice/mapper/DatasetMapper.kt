@@ -44,10 +44,6 @@ fun Dataset.getRelations(): List<Relation> {
         relations.add(Relation(uri = it.uri, type = RelationType.inSeries))
     }
 
-    informationModel?.forEach {
-        relations.add(Relation(uri = it.uri, type = RelationType.informationModel))
-    }
-
     references?.forEach {
         relations.add(Relation(uri = it.source?.uri, type = it.uriToRelationType() ?: RelationType.relation))
     }

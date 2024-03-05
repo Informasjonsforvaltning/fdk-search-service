@@ -45,7 +45,6 @@ val expectedDatasetRelations = listOf(
     Relation(uri = "subject_uri", type=RelationType.subject),
     Relation(uri = "conformsTo_uri", type=RelationType.conformsTo),
     Relation(uri = "inSeries_uri", type=RelationType.inSeries),
-    Relation(uri = "informationModel_uri", type=RelationType.informationModel),
     Relation(uri = "source_uri", type=RelationType.source),
     Relation(uri = "has_version_uri", type=RelationType.hasVersion),
     Relation(uri = "is_version_of_uri", type=RelationType.isVersionOf),
