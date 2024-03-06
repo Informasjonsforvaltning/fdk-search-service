@@ -53,7 +53,7 @@ class SuggestionTest: ApiTestContext() {
     @Test
     fun `get suggestions for services and events`() {
         val response = requestApi(
-            "$SUGGESTIONS_PATH/public_services_and_events?q=title",
+            "$SUGGESTIONS_PATH/public-services-and-events?q=title",
             port, null, GET
         )
         Assertions.assertEquals(200, response["status"])

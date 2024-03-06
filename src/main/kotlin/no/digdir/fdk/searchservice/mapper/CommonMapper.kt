@@ -28,6 +28,7 @@ fun String.pathVariableToSearchType(): List<SearchType>? =
         "informationmodels" -> listOf(SearchType.INFORMATION_MODEL)
         "services" -> listOf(SearchType.SERVICE)
         "events" -> listOf(SearchType.EVENT)
-        "public_services_and_events" -> listOf(SearchType.SERVICE, SearchType.EVENT)
+        "public-services-and-events" -> listOf(SearchType.SERVICE, SearchType.EVENT)
+        "services-and-events" -> listOf(SearchType.SERVICE, SearchType.EVENT)
         else -> null
     }
