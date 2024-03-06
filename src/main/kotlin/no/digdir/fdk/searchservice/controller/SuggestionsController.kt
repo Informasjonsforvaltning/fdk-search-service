@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
+@CrossOrigin
 @RequestMapping(value = ["/suggestions"], produces = ["application/json"])
 class SuggestionsController(
     private val suggestionService: SuggestionService
