@@ -7,6 +7,7 @@
           "fields": {
             "keyword": {
               "type": "text",
+              "fielddata": true,
               "analyzer": "path_analyzer",
               "search_analyzer": "keyword"
             }
@@ -21,6 +22,7 @@
           "fields": {
             "keyword": {
               "type": "text",
+              "fielddata": true,
               "analyzer": "path_analyzer",
               "search_analyzer": "keyword"
             }

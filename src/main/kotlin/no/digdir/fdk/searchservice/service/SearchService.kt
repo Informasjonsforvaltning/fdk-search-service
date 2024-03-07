@@ -2,13 +2,19 @@ package no.digdir.fdk.searchservice.service
 
 import co.elastic.clients.elasticsearch._types.FieldValue
 import co.elastic.clients.elasticsearch._types.SortOrder
+import co.elastic.clients.elasticsearch._types.aggregations.Aggregate
+import co.elastic.clients.elasticsearch._types.aggregations.AggregationBuilders
+import co.elastic.clients.elasticsearch._types.aggregations.LongTermsAggregate
+import co.elastic.clients.elasticsearch._types.aggregations.StringTermsAggregate
 import co.elastic.clients.elasticsearch._types.query_dsl.Operator
 import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType
 import co.elastic.clients.json.JsonData
 import no.digdir.fdk.searchservice.model.*
 import org.springframework.data.domain.Pageable
+import org.springframework.data.elasticsearch.client.elc.ElasticsearchAggregation
 import org.springframework.data.elasticsearch.client.elc.NativeQuery
 import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder
+import org.springframework.data.elasticsearch.core.AggregationsContainer
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations
 import org.springframework.data.elasticsearch.core.SearchHits
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates
@@ -33,7 +39,8 @@ class SearchService(
 
     private fun SearchOperation.toElasticQuery(searchTypes: List<SearchType>?): Query {
         val builder = NativeQuery.builder()
-                .withPageable(pagination.toPageable())
+            .withPageable(pagination.toPageable())
+            .addAggregations()
 
         if (sort != null) builder.addSorting(sort)
 
@@ -85,6 +92,59 @@ class SearchService(
                 boolBuilder.filter(createQueryFilters(filters, searchTypes))
             }
         }
+    }
+
+    private fun NativeQueryBuilder.addAggregations(): NativeQueryBuilder {
+        withAggregation(
+            FilterFields.AccessRights.aggregationName(),
+            AggregationBuilders.terms { builder ->
+                builder.field(FilterFields.AccessRights.jsonPath())
+            }
+        )
+        withAggregation(
+            FilterFields.DataTheme.aggregationName(),
+            AggregationBuilders.terms { builder ->
+                builder.field(FilterFields.DataTheme.jsonPath())
+            }
+        )
+        withAggregation(
+            FilterFields.Format.aggregationName(),
+            AggregationBuilders.terms { builder ->
+                builder.field(FilterFields.Format.jsonPath())
+            }
+        )
+        withAggregation(
+            FilterFields.LosTheme.aggregationName(),
+            AggregationBuilders.terms { builder ->
+                builder.field(FilterFields.LosTheme.jsonPath())
+            }
+        )
+        withAggregation(
+            FilterFields.OrgPath.aggregationName(),
+            AggregationBuilders.terms { builder ->
+                builder.field(FilterFields.OrgPath.jsonPath())
+            }
+        )
+        withAggregation(
+            FilterFields.OpenData.aggregationName(),
+            AggregationBuilders.terms { builder ->
+                builder.field(FilterFields.OpenData.jsonPath())
+            }
+        )
+        withAggregation(
+            FilterFields.Provenance.aggregationName(),
+            AggregationBuilders.terms { builder ->
+                builder.field(FilterFields.Provenance.jsonPath())
+            }
+        )
+        withAggregation(
+            FilterFields.Spatial.aggregationName(),
+            AggregationBuilders.terms { builder ->
+                builder.field(FilterFields.Spatial.jsonPath())
+            }
+        )
+
+        return this
     }
 
     private fun NativeQueryBuilder.addSorting(sort: SortField) {
@@ -272,6 +332,41 @@ class SearchService(
             "$basePath.nn${if (boost != null) "^$boost" else ""}",
             "$basePath.en${if (boost != null) "^$boost" else ""}")
 
+    private fun StringTermsAggregate.toBucketCounts(): List<BucketCount> =
+        buckets().array().map {
+            BucketCount(
+                key = it.key().stringValue(),
+                count = it.docCount()
+            )
+        }
+
+    private fun LongTermsAggregate.toOpenDataCounts(): List<BucketCount> =
+        buckets().array().map {
+            BucketCount(
+                key = it.keyAsString() ?: "null",
+                count = it.docCount()
+            )
+        }
+
+    private fun Aggregate.toBucketCounts(aggregateName: String): List<BucketCount> =
+        when(aggregateName) {
+            FilterFields.AccessRights.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
+            FilterFields.DataTheme.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
+            FilterFields.Format.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
+            FilterFields.LosTheme.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
+            FilterFields.OrgPath.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
+            FilterFields.OpenData.aggregationName() -> (_get() as LongTermsAggregate).toOpenDataCounts()
+            FilterFields.Provenance.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
+            FilterFields.Spatial.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
+            else -> emptyList()
+        }
+
+    fun AggregationsContainer<*>.toAggregationCounts(): Map<String, List<BucketCount>> {
+        val aggregations = aggregations() as List<ElasticsearchAggregation>
+        return aggregations.map { it.aggregation() }
+            .associate { it.name to it.aggregate.toBucketCounts(it.name) }
+    }
+
     private fun SearchHits<SearchObject>.toSearchResult(
         pagination: Pagination
     ): SearchResult =
@@ -280,6 +375,7 @@ class SearchService(
             .let {
                 SearchResult(
                     hits = it,
+                    aggregations = aggregations.toAggregationCounts(),
                     page = PageMeta(
                         currentPage = pagination.getPage(),
                         size = it.size,
@@ -302,6 +398,21 @@ class SearchService(
         FilterFields.Relations -> "relations.uri.keyword"
         FilterFields.SearchType -> "searchType.keyword"
         FilterFields.Spatial -> "spatial.prefLabel.nb.keyword"
+    }
+
+    private fun FilterFields.aggregationName(): String = when(this) {
+        FilterFields.AccessRights -> "accessRights"
+        FilterFields.DataTheme -> "dataTheme"
+        FilterFields.Deleted -> "deleted"
+        FilterFields.FirstHarvested -> "firstHarvested"
+        FilterFields.Format -> "format"
+        FilterFields.LosTheme -> "losTheme"
+        FilterFields.OpenData -> "openData"
+        FilterFields.OrgPath -> "orgPath"
+        FilterFields.Provenance -> "provenance"
+        FilterFields.Relations -> "relations"
+        FilterFields.SearchType -> "searchType"
+        FilterFields.Spatial -> "spatial"
     }
 
 }
