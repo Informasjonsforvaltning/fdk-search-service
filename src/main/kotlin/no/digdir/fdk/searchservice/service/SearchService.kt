@@ -29,35 +29,30 @@ class SearchService(
                 SearchObject::class.java,
                 IndexCoordinates.of(SEARCH_INDEX_NAME)
             )
-            .toPaginatedSearchResult(search.pagination)
+            .toSearchResult(search.pagination)
 
     private fun SearchOperation.toElasticQuery(searchTypes: List<SearchType>?): Query {
         val builder = NativeQuery.builder()
+                .withPageable(pagination.toPageable())
 
         if (sort != null) builder.addSorting(sort)
 
-        if (!query.isNullOrBlank()) builder.addFieldsQuery(fields, query)
-
-        builder
-            .withPageable(
-                Pageable
-                    .ofSize(pagination.getSize())
-                    .withPage(pagination.getPage())
-            )
-            .addFilters(filters, searchTypes)
+        if (query.isNullOrBlank()) builder.addEmptyQueryWithFilters(filters, searchTypes)
+        else builder.addFilteredQuery(fields, query, filters, searchTypes)
 
         return builder.build()
     }
 
-    private fun NativeQueryBuilder.addFilters(filters: SearchFilters?, searchTypes: List<SearchType>?) {
-        withFilter { queryBuilder ->
-            queryBuilder.bool { boolBuilder ->
-                boolBuilder.must(createQueryFilters(filters, searchTypes))
-            }
-        }
-    }
+    private fun Pagination.toPageable(): Pageable =
+        Pageable.ofSize(getSize())
+            .withPage(getPage())
 
-    private fun NativeQueryBuilder.addFieldsQuery(queryFields: QueryFields, queryValue: String) {
+    private fun NativeQueryBuilder.addFilteredQuery(
+        queryFields: QueryFields,
+        queryValue: String,
+        filters: SearchFilters?,
+        searchTypes: List<SearchType>?
+    ) {
         withQuery { queryBuilder ->
             queryBuilder.bool { boolBuilder ->
                 boolBuilder.should {
@@ -79,6 +74,15 @@ class SearchService(
                     }
                 }
                 boolBuilder.minimumShouldMatch("1")
+                boolBuilder.filter(createQueryFilters(filters, searchTypes))
+            }
+        }
+    }
+
+    private fun NativeQueryBuilder.addEmptyQueryWithFilters(filters: SearchFilters?, searchTypes: List<SearchType>?) {
+        withQuery { queryBuilder ->
+            queryBuilder.bool { boolBuilder ->
+                boolBuilder.filter(createQueryFilters(filters, searchTypes))
             }
         }
     }
@@ -93,7 +97,7 @@ class SearchService(
 
     private fun SortField.sortField(): String =
         when (field) {
-            SortFieldEnum.FIRST_HARVESTED -> "metadata.firstHarvested"
+            SortFieldEnum.FIRST_HARVESTED -> FilterFields.FirstHarvested.jsonPath()
         }
 
     private fun SortField.sortDirection(): SortOrder =
@@ -108,7 +112,7 @@ class SearchService(
         queryFilters.add(DSLQuery.of { queryBuilder ->
             queryBuilder.term { termBuilder ->
                 termBuilder
-                    .field("metadata.deleted")
+                    .field(FilterFields.Deleted.jsonPath())
                     .value(FieldValue.of(false))
             }
         })
@@ -118,7 +122,7 @@ class SearchService(
                 DSLQuery.of { queryBuilder ->
                     queryBuilder.term { termBuilder ->
                         termBuilder
-                            .field("searchType.keyword")
+                            .field(FilterFields.SearchType.jsonPath())
                             .value(FieldValue.of(searchType.name))
                     }
                 })
@@ -128,7 +132,7 @@ class SearchService(
             queryFilters.add(DSLQuery.of { queryBuilder ->
                 queryBuilder.term { termBuilder ->
                     termBuilder
-                        .field("isOpenData")
+                        .field(FilterFields.OpenData.jsonPath())
                         .value(FieldValue.of(opendata.value))
                 }
             })
@@ -138,7 +142,7 @@ class SearchService(
             queryFilters.add(DSLQuery.of { queryBuilder ->
                 queryBuilder.term { termBuilder ->
                     termBuilder
-                        .field("accessRights.code.keyword")
+                        .field(FilterFields.AccessRights.jsonPath())
                         .value(FieldValue.of(accessRights.value))
                 }
             })
@@ -149,7 +153,7 @@ class SearchService(
                 queryFilters.add(DSLQuery.of { queryBuilder ->
                     queryBuilder.term { termBuilder ->
                         termBuilder
-                            .field("dataTheme.code.keyword")
+                            .field(FilterFields.DataTheme.jsonPath())
                             .value(FieldValue.of(themeValue))
                     }
                 })
@@ -160,7 +164,7 @@ class SearchService(
             queryFilters.add(DSLQuery.of { queryBuilder ->
                 queryBuilder.term { termBuilder ->
                     termBuilder
-                        .field("provenance.code.keyword")
+                        .field(FilterFields.Provenance.jsonPath())
                         .value(FieldValue.of(provenance.value))
                 }
             })
@@ -173,7 +177,7 @@ class SearchService(
                 queryFilters.add(DSLQuery.of { queryBuilder ->
                     queryBuilder.term { termBuilder ->
                         termBuilder
-                            .field("spatial.prefLabel.nb.keyword")
+                            .field(FilterFields.Spatial.jsonPath())
                             .value(FieldValue.of(spatialValue))
                     }
                 })
@@ -187,7 +191,7 @@ class SearchService(
                 queryFilters.add(DSLQuery.of { queryBuilder ->
                     queryBuilder.term { termBuilder ->
                         termBuilder
-                            .field("losTheme.losPaths.keyword")
+                            .field(FilterFields.LosTheme.jsonPath())
                             .value(FieldValue.of(losValue))
                     }
                 })
@@ -198,7 +202,7 @@ class SearchService(
             queryFilters.add(DSLQuery.of { queryBuilder ->
                 queryBuilder.term { termBuilder ->
                     termBuilder
-                        .field("organization.orgPath.keyword")
+                        .field(FilterFields.OrgPath.jsonPath())
                         .value(FieldValue.of(orgPath.value))
                 }
             })
@@ -208,7 +212,7 @@ class SearchService(
                 queryFilters.add(DSLQuery.of { queryBuilder ->
                     queryBuilder.match { matchBuilder ->
                         matchBuilder
-                            .field("fdkFormatPrefixed.keyword")
+                            .field(FilterFields.Format.jsonPath())
                             .query(FieldValue.of(formatValue))
                     }
                 })
@@ -218,7 +222,7 @@ class SearchService(
             queryFilters.add(DSLQuery.of { queryBuilder ->
                 queryBuilder.term { termBuilder ->
                     termBuilder
-                        .field("relations.uri.keyword")
+                        .field(FilterFields.Relations.jsonPath())
                         .value(FieldValue.of(relation.value))
                 }
             })
@@ -228,7 +232,7 @@ class SearchService(
             queryFilters.add(DSLQuery.of { queryBuilder ->
                 queryBuilder.range { rangeBuilder ->
                     rangeBuilder
-                        .field("metadata.firstHarvested")
+                        .field(FilterFields.FirstHarvested.jsonPath())
                         .gte(JsonData.of("now-${daysAgo.value}d/d"))
                 }
             })
@@ -268,7 +272,7 @@ class SearchService(
             "$basePath.nn${if (boost != null) "^$boost" else ""}",
             "$basePath.en${if (boost != null) "^$boost" else ""}")
 
-    private fun SearchHits<SearchObject>.toPaginatedSearchResult(
+    private fun SearchHits<SearchObject>.toSearchResult(
         pagination: Pagination
     ): SearchResult =
         map { it.content }
@@ -284,4 +288,25 @@ class SearchService(
                     )
                 )
             }
+
+    private fun FilterFields.jsonPath(): String = when(this) {
+        FilterFields.AccessRights -> "accessRights.code.keyword"
+        FilterFields.DataTheme -> "dataTheme.code.keyword"
+        FilterFields.Deleted -> "metadata.deleted"
+        FilterFields.FirstHarvested -> "metadata.firstHarvested"
+        FilterFields.Format -> "fdkFormatPrefixed.keyword"
+        FilterFields.LosTheme -> "losTheme.losPaths.keyword"
+        FilterFields.OpenData -> "isOpenData"
+        FilterFields.OrgPath -> "organization.orgPath.keyword"
+        FilterFields.Provenance -> "provenance.code.keyword"
+        FilterFields.Relations -> "relations.uri.keyword"
+        FilterFields.SearchType -> "searchType.keyword"
+        FilterFields.Spatial -> "spatial.prefLabel.nb.keyword"
+    }
+
+}
+
+private enum class FilterFields {
+    AccessRights, DataTheme, Deleted, FirstHarvested, Format, LosTheme,
+    OpenData, OrgPath, Provenance, Relations, SearchType, Spatial
 }
