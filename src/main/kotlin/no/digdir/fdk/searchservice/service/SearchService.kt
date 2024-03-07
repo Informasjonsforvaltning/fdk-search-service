@@ -188,7 +188,7 @@ class SearchService(
                 })
         }
 
-        filters?.opendata?.let { opendata ->
+        filters?.openData?.let { opendata ->
             queryFilters.add(DSLQuery.of { queryBuilder ->
                 queryBuilder.term { termBuilder ->
                     termBuilder
@@ -208,7 +208,7 @@ class SearchService(
             })
         }
 
-        filters?.theme?.value?.let { themes ->
+        filters?.dataTheme?.value?.let { themes ->
             themes.forEach { themeValue ->
                 queryFilters.add(DSLQuery.of { queryBuilder ->
                     queryBuilder.term { termBuilder ->
@@ -244,7 +244,7 @@ class SearchService(
             }
         }
 
-        filters?.los?.let { los ->
+        filters?.losTheme?.let { los ->
             val losThemeList = los.value.split(",").map { it.trim() }
 
             losThemeList.forEach { losValue ->
@@ -288,7 +288,7 @@ class SearchService(
             })
         }
 
-        filters?.last_x_days?.let { daysAgo ->
+        filters?.lastXDays?.let { daysAgo ->
             queryFilters.add(DSLQuery.of { queryBuilder ->
                 queryBuilder.range { rangeBuilder ->
                     rangeBuilder

@@ -20,16 +20,16 @@ class QueryFields(
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class SearchFilters(
-    val opendata: SearchFilter<Boolean>?,
+    val openData: SearchFilter<Boolean>?,
     val accessRights: SearchFilter<String>?,
-    val theme: SearchFilter<List<String>>?,
+    val dataTheme: SearchFilter<List<String>>?,
     val spatial: SearchFilter<String>?,
     val provenance: SearchFilter<String>?,
-    val los: SearchFilter<String>?,
+    val losTheme: SearchFilter<String>?,
     val orgPath: SearchFilter<String>?,
     val formats: SearchFilter<List<String>>?,
     val relations: SearchFilter<String>?,
-    val last_x_days: SearchFilter<Int>?
+    val lastXDays: SearchFilter<Int>?
 )
 
 class SortField(

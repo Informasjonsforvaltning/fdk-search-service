@@ -40,7 +40,7 @@ class Aggregations: ApiTestContext() {
 
     @Test
     fun `filter openData = true only aggregates resources with openData = true`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(opendata = SearchFilter(true))))
+        val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(openData = SearchFilter(true))))
         val response = requestApi(PATH, port, searchBody, HttpMethod.POST)
         Assertions.assertEquals(200, response["status"])
 
