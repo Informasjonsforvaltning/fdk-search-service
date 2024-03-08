@@ -226,9 +226,7 @@ class SearchService(
         }
 
         filters?.spatial?.let { spatial ->
-            val filterList = spatial.value.split(",").map { it.trim() }
-
-            filterList.forEach { spatialValue ->
+            spatial.value.forEach { spatialValue ->
                 queryFilters.add(DSLQuery.of { queryBuilder ->
                     queryBuilder.term { termBuilder ->
                         termBuilder
@@ -240,9 +238,7 @@ class SearchService(
         }
 
         filters?.losTheme?.let { los ->
-            val losThemeList = los.value.split(",").map { it.trim() }
-
-            losThemeList.forEach { losValue ->
+            los.value.forEach { losValue ->
                 queryFilters.add(DSLQuery.of { queryBuilder ->
                     queryBuilder.term { termBuilder ->
                         termBuilder
