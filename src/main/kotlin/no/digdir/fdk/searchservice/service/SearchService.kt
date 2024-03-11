@@ -10,7 +10,6 @@ import co.elastic.clients.elasticsearch._types.query_dsl.Operator
 import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType
 import co.elastic.clients.json.JsonData
 import no.digdir.fdk.searchservice.model.*
-import org.springframework.data.domain.Pageable
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchAggregation
 import org.springframework.data.elasticsearch.client.elc.NativeQuery
 import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder
@@ -49,10 +48,6 @@ class SearchService(
 
         return builder.build()
     }
-
-    private fun Pagination.toPageable(): Pageable =
-        Pageable.ofSize(getSize())
-            .withPage(getPage())
 
     private fun NativeQueryBuilder.addFilteredQuery(
         queryFields: QueryFields,
