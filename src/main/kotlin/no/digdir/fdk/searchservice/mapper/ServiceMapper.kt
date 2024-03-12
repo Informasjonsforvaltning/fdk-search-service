@@ -2,7 +2,7 @@ package no.digdir.fdk.searchservice.mapper
 
 import no.digdir.fdk.searchservice.model.*
 
-fun Service.toSearchObject(timestamp: Long, deleted: Boolean = false) =
+fun Service.toSearchObject(id: String, timestamp: Long, deleted: Boolean = false) =
     SearchObject(
         id = id,
         uri = uri,

@@ -2,10 +2,10 @@ package no.digdir.fdk.searchservice.mapper
 
 import no.digdir.fdk.searchservice.model.*
 
-fun Concept.toSearchObject(timestamp: Long, deleted: Boolean = false) =
+fun Concept.toSearchObject(id: String, timestamp: Long, deleted: Boolean = false) =
     SearchObject(
         id = id,
-        uri = identifier,
+        uri = uri,
         accessRights = null,
         catalog = collection?.toCatalog(),
         dataTheme = null,

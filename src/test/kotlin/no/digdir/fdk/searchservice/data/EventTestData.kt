@@ -3,7 +3,6 @@ package no.digdir.fdk.searchservice.data
 import no.digdir.fdk.searchservice.model.*
 
 val TEST_NULL_EVENT = Event(
-    id = "0",
     uri = "null.com",
     harvest = null,
     catalog = null,
@@ -13,7 +12,6 @@ val TEST_NULL_EVENT = Event(
 )
 
 val TEST_EVENT = TEST_NULL_EVENT.copy(
-    id = "111",
     title = LocalizedStrings(
         "NB Test prefLabel, title",
         "NN Test prefLabel",
@@ -28,7 +26,6 @@ val TEST_EVENT = TEST_NULL_EVENT.copy(
 )
 
 val TEST_EVENT_HIT_ALL_FIELDS = TEST_NULL_EVENT.copy(
-        id = "1061",
         uri = "uri 1061",
         title = LocalizedStrings(
                 "NB title",

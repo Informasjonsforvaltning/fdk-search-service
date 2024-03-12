@@ -6,7 +6,7 @@ import no.digdir.fdk.searchservice.model.SearchObject
 import no.digdir.fdk.searchservice.model.SearchType
 import no.digdir.fdk.searchservice.model.*
 
-fun DataService.toSearchObject(timestamp: Long, deleted: Boolean = false) =
+fun DataService.toSearchObject(id: String, timestamp: Long, deleted: Boolean = false) =
     SearchObject(
         id = id,
         uri = uri,

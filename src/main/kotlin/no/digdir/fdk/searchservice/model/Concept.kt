@@ -6,9 +6,7 @@ import org.springframework.data.annotation.Id
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Concept(
-    @Id
-    val id: String,
-    val identifier: String,
+    val uri: String,
     val collection: Collection?,
     val publisher: Organization?,
     val definition: Definition?,
