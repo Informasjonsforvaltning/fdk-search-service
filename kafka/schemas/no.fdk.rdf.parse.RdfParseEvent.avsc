@@ -13,6 +13,6 @@
         },
         {"name": "fdkId", "type": "string"},
         {"name": "data", "type": "string"},
-        {"name": "timestamp", "type": "long", "logicalType": "timestamp-millis"}
+        {"name": "timestamp", "type": "long"}
     ]
 }

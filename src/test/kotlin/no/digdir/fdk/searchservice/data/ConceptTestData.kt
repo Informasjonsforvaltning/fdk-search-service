@@ -5,8 +5,7 @@ import no.digdir.fdk.searchservice.model.Collection
 
 // ids start from 20 to avoid conflicts with the ids in the test data for the other types
 val TEST_NULL_CONCEPT = Concept(
-    id = "1020",
-    identifier = "identifier 1020",
+    uri = "null concept uri",
     publisher = null,
     definition = null,
     prefLabel = null,
@@ -23,8 +22,6 @@ val TEST_NULL_CONCEPT = Concept(
     genericRelation = null)
 
 val TEST_CONCEPT_HIT_ALL_FIELDS = TEST_NULL_CONCEPT.copy(
-    id = "1021",
-    identifier = "identifier 1021",
     publisher = Organization(
         orgPath = "/STAT/102117858",
         identifier = "Test publisher > identifier 1021",

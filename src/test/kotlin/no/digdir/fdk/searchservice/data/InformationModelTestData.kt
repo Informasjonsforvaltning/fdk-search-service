@@ -4,7 +4,6 @@ import no.digdir.fdk.searchservice.model.*
 
 // ids start from 80 to avoid conflicts with the ids in the test data for the other types
 val TEST_NULL_INFORMATION_MODEL = InformationModel(
-    id = "1080",
     uri = "uri 80",
     title = null,
     catalog = null,
@@ -23,7 +22,6 @@ val TEST_NULL_INFORMATION_MODEL = InformationModel(
 )
 
 val TEST_INFORMATION_MODEL_HIT_ALL_FIELDS = TEST_NULL_INFORMATION_MODEL.copy(
-    id = "1081",
     uri = "uri 81",
     title = LocalizedStrings(
         "NB title",

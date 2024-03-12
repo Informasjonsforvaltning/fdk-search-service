@@ -17,7 +17,7 @@ public class DataServiceEvent extends org.apache.avro.specific.SpecificRecordBas
   private static final long serialVersionUID = 2590928636081223559L;
 
 
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"DataServiceEvent\",\"namespace\":\"no.fdk.dataservice\",\"fields\":[{\"name\":\"type\",\"type\":{\"type\":\"enum\",\"name\":\"DataServiceEventType\",\"symbols\":[\"DATA_SERVICE_HARVESTED\",\"DATA_SERVICE_REASONED\",\"DATA_SERVICE_REMOVED\"]}},{\"name\":\"fdkId\",\"type\":\"string\"},{\"name\":\"graph\",\"type\":\"string\"},{\"name\":\"timestamp\",\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"DataServiceEvent\",\"namespace\":\"no.fdk.dataservice\",\"fields\":[{\"name\":\"type\",\"type\":{\"type\":\"enum\",\"name\":\"DataServiceEventType\",\"symbols\":[\"DATA_SERVICE_HARVESTED\",\"DATA_SERVICE_REASONED\",\"DATA_SERVICE_REMOVED\"]}},{\"name\":\"fdkId\",\"type\":\"string\"},{\"name\":\"graph\",\"type\":\"string\"},{\"name\":\"timestamp\",\"type\":\"long\"}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static final SpecificData MODEL$ = new SpecificData();

@@ -3,7 +3,6 @@ package no.digdir.fdk.searchservice.data
 import no.digdir.fdk.searchservice.model.*
 
 val TEST_NULL_SERVICE = Service(
-    id = "0",
     uri = "null.com",
     harvest = null,
     losTheme = null,
@@ -24,7 +23,6 @@ val TEST_NULL_SERVICE = Service(
 )
 
 val TEST_SERVICE = TEST_NULL_SERVICE.copy(
-    id = "678",
     title = LocalizedStrings(
         "NB Test prefLabel, title",
         "NN Test prefLabel",
@@ -39,7 +37,6 @@ val TEST_SERVICE = TEST_NULL_SERVICE.copy(
 )
 
 val TEST_SERVICE_HIT_ALL_FIELDS = TEST_NULL_SERVICE.copy(
-        id = "0101",
         uri = "uri 0101",
         title = LocalizedStrings(
                 "NB title",
@@ -116,7 +113,6 @@ val TEST_SERVICE_HIT_ALL_FIELDS = TEST_NULL_SERVICE.copy(
 )
 
 val TEST_SERVICE_HIT_OWNED_BY = TEST_SERVICE_HIT_ALL_FIELDS.copy(
-        id = "0102",
         uri = "uri 0102",
         keyword = listOf( LocalizedStrings(nb = "keyword", nn = "keyword", en = "keyword" )),
         ownedBy = listOf( Organization(
@@ -132,7 +128,6 @@ val TEST_SERVICE_HIT_OWNED_BY = TEST_SERVICE_HIT_ALL_FIELDS.copy(
 )
 
 val TEST_SERVICE_HIT_HAS_COMPETANT_AUTHORITY =  TEST_NULL_SERVICE.copy(
-        id = "0103",
         uri = "uri 0103",
         hasCompetantAuthority = listOf( Organization(
                 orgPath = "/STAT/103417858",

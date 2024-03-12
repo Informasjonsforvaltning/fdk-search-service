@@ -28,18 +28,18 @@ abstract class ApiTestContext {
         repository.saveAll(
             listOf(
                 TEST_SEARCH_OBJECT_AND_HIT_ALL_FIELDS,
-                TEST_DATASET_HIT_ALL_FIELDS.toSearchObject(System.currentTimeMillis()),
-                TEST_DATASET_HIT_IS_OPEN.toSearchObject(System.currentTimeMillis()),
-                TEST_CONCEPT_HIT_ALL_FIELDS.toSearchObject(System.currentTimeMillis()),
-                TEST_DATA_SERVICE_HIT_ALL_FIELDS.toSearchObject(System.currentTimeMillis()),
-                TEST_EVENT_HIT_ALL_FIELDS.toSearchObject(System.currentTimeMillis()),
-                TEST_INFORMATION_MODEL_HIT_ALL_FIELDS.toSearchObject(System.currentTimeMillis()),
-                TEST_SERVICE_HIT_ALL_FIELDS.toSearchObject(System.currentTimeMillis()),
-                TEST_SERVICE_HIT_OWNED_BY.toSearchObject(System.currentTimeMillis()),
-                TEST_SERVICE_HIT_HAS_COMPETANT_AUTHORITY.toSearchObject(System.currentTimeMillis()),
-                TEST_DATASET_FILTERS.toSearchObject(System.currentTimeMillis()),
-                TEST_SERVICE.toSearchObject(System.currentTimeMillis()),
-                TEST_EVENT.toSearchObject(System.currentTimeMillis())
+                TEST_DATASET_HIT_ALL_FIELDS.toSearchObject("1", System.currentTimeMillis()),
+                TEST_DATASET_HIT_IS_OPEN.toSearchObject("2", System.currentTimeMillis()),
+                TEST_CONCEPT_HIT_ALL_FIELDS.toSearchObject("1021", System.currentTimeMillis()),
+                TEST_DATA_SERVICE_HIT_ALL_FIELDS.toSearchObject("456", System.currentTimeMillis()),
+                TEST_EVENT_HIT_ALL_FIELDS.toSearchObject("1061", System.currentTimeMillis()),
+                TEST_INFORMATION_MODEL_HIT_ALL_FIELDS.toSearchObject("1081", System.currentTimeMillis()),
+                TEST_SERVICE_HIT_ALL_FIELDS.toSearchObject("0101", System.currentTimeMillis()),
+                TEST_SERVICE_HIT_OWNED_BY.toSearchObject("0102", System.currentTimeMillis()),
+                TEST_SERVICE_HIT_HAS_COMPETANT_AUTHORITY.toSearchObject("0103", System.currentTimeMillis()),
+                TEST_DATASET_FILTERS.toSearchObject("3", System.currentTimeMillis()),
+                TEST_SERVICE.toSearchObject("678", System.currentTimeMillis()),
+                TEST_EVENT.toSearchObject("111", System.currentTimeMillis())
             ))
     }
 

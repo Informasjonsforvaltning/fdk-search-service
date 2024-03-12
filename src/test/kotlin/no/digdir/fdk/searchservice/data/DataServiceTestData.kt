@@ -3,7 +3,6 @@ package no.digdir.fdk.searchservice.data
 import no.digdir.fdk.searchservice.model.*
 
 val TEST_NULL_DATA_SERVICE = DataService(
-    id = "0",
     uri = "null.com",
     publisher = null,
     harvest = null,
@@ -20,7 +19,6 @@ val TEST_NULL_DATA_SERVICE = DataService(
 )
 
 val TEST_DATA_SERVICE_HIT_ALL_FIELDS = TEST_NULL_DATA_SERVICE.copy(
-    id = "456",
     uri = "http://localhost:5000/catalogs/456",
     publisher = Organization(
         orgPath = "/STAT/972417858",

@@ -3,7 +3,7 @@
  *
  * DO NOT EDIT DIRECTLY
  */
-package no.fdk.concept;
+package no.fdk.informationmodel;
 
 import org.apache.avro.generic.GenericArray;
 import org.apache.avro.specific.SpecificData;
@@ -13,26 +13,26 @@ import org.apache.avro.message.BinaryMessageDecoder;
 import org.apache.avro.message.SchemaStore;
 
 @org.apache.avro.specific.AvroGenerated
-public class ConceptEvent extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = -4999731554501596190L;
+public class InformationModelEvent extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
+  private static final long serialVersionUID = 1318015414789035945L;
 
 
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"ConceptEvent\",\"namespace\":\"no.fdk.concept\",\"fields\":[{\"name\":\"type\",\"type\":{\"type\":\"enum\",\"name\":\"ConceptEventType\",\"symbols\":[\"CONCEPT_HARVESTED\",\"CONCEPT_REASONED\",\"CONCEPT_REMOVED\"]}},{\"name\":\"fdkId\",\"type\":\"string\"},{\"name\":\"graph\",\"type\":\"string\"},{\"name\":\"timestamp\",\"type\":\"long\"}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"InformationModelEvent\",\"namespace\":\"no.fdk.informationmodel\",\"fields\":[{\"name\":\"type\",\"type\":{\"type\":\"enum\",\"name\":\"InformationModelEventType\",\"symbols\":[\"INFORMATION_MODEL_HARVESTED\",\"INFORMATION_MODEL_REASONED\",\"INFORMATION_MODEL_REMOVED\"]}},{\"name\":\"fdkId\",\"type\":\"string\"},{\"name\":\"graph\",\"type\":\"string\"},{\"name\":\"timestamp\",\"type\":\"long\"}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static final SpecificData MODEL$ = new SpecificData();
 
-  private static final BinaryMessageEncoder<ConceptEvent> ENCODER =
+  private static final BinaryMessageEncoder<InformationModelEvent> ENCODER =
       new BinaryMessageEncoder<>(MODEL$, SCHEMA$);
 
-  private static final BinaryMessageDecoder<ConceptEvent> DECODER =
+  private static final BinaryMessageDecoder<InformationModelEvent> DECODER =
       new BinaryMessageDecoder<>(MODEL$, SCHEMA$);
 
   /**
    * Return the BinaryMessageEncoder instance used by this class.
    * @return the message encoder used by this class
    */
-  public static BinaryMessageEncoder<ConceptEvent> getEncoder() {
+  public static BinaryMessageEncoder<InformationModelEvent> getEncoder() {
     return ENCODER;
   }
 
@@ -40,7 +40,7 @@ public class ConceptEvent extends org.apache.avro.specific.SpecificRecordBase im
    * Return the BinaryMessageDecoder instance used by this class.
    * @return the message decoder used by this class
    */
-  public static BinaryMessageDecoder<ConceptEvent> getDecoder() {
+  public static BinaryMessageDecoder<InformationModelEvent> getDecoder() {
     return DECODER;
   }
 
@@ -49,12 +49,12 @@ public class ConceptEvent extends org.apache.avro.specific.SpecificRecordBase im
    * @param resolver a {@link SchemaStore} used to find schemas by fingerprint
    * @return a BinaryMessageDecoder instance for this class backed by the given SchemaStore
    */
-  public static BinaryMessageDecoder<ConceptEvent> createDecoder(SchemaStore resolver) {
+  public static BinaryMessageDecoder<InformationModelEvent> createDecoder(SchemaStore resolver) {
     return new BinaryMessageDecoder<>(MODEL$, SCHEMA$, resolver);
   }
 
   /**
-   * Serializes this ConceptEvent to a ByteBuffer.
+   * Serializes this InformationModelEvent to a ByteBuffer.
    * @return a buffer holding the serialized data for this instance
    * @throws java.io.IOException if this instance could not be serialized
    */
@@ -63,17 +63,17 @@ public class ConceptEvent extends org.apache.avro.specific.SpecificRecordBase im
   }
 
   /**
-   * Deserializes a ConceptEvent from a ByteBuffer.
+   * Deserializes a InformationModelEvent from a ByteBuffer.
    * @param b a byte buffer holding serialized data for an instance of this class
-   * @return a ConceptEvent instance decoded from the given buffer
+   * @return a InformationModelEvent instance decoded from the given buffer
    * @throws java.io.IOException if the given bytes could not be deserialized into an instance of this class
    */
-  public static ConceptEvent fromByteBuffer(
+  public static InformationModelEvent fromByteBuffer(
       java.nio.ByteBuffer b) throws java.io.IOException {
     return DECODER.decode(b);
   }
 
-  private no.fdk.concept.ConceptEventType type;
+  private no.fdk.informationmodel.InformationModelEventType type;
   private java.lang.CharSequence fdkId;
   private java.lang.CharSequence graph;
   private long timestamp;
@@ -83,7 +83,7 @@ public class ConceptEvent extends org.apache.avro.specific.SpecificRecordBase im
    * to their default values from the schema.  If that is desired then
    * one should use <code>newBuilder()</code>.
    */
-  public ConceptEvent() {}
+  public InformationModelEvent() {}
 
   /**
    * All-args constructor.
@@ -92,7 +92,7 @@ public class ConceptEvent extends org.apache.avro.specific.SpecificRecordBase im
    * @param graph The new value for graph
    * @param timestamp The new value for timestamp
    */
-  public ConceptEvent(no.fdk.concept.ConceptEventType type, java.lang.CharSequence fdkId, java.lang.CharSequence graph, java.lang.Long timestamp) {
+  public InformationModelEvent(no.fdk.informationmodel.InformationModelEventType type, java.lang.CharSequence fdkId, java.lang.CharSequence graph, java.lang.Long timestamp) {
     this.type = type;
     this.fdkId = fdkId;
     this.graph = graph;
@@ -122,7 +122,7 @@ public class ConceptEvent extends org.apache.avro.specific.SpecificRecordBase im
   @SuppressWarnings(value="unchecked")
   public void put(int field$, java.lang.Object value$) {
     switch (field$) {
-    case 0: type = (no.fdk.concept.ConceptEventType)value$; break;
+    case 0: type = (no.fdk.informationmodel.InformationModelEventType)value$; break;
     case 1: fdkId = (java.lang.CharSequence)value$; break;
     case 2: graph = (java.lang.CharSequence)value$; break;
     case 3: timestamp = (java.lang.Long)value$; break;
@@ -134,7 +134,7 @@ public class ConceptEvent extends org.apache.avro.specific.SpecificRecordBase im
    * Gets the value of the 'type' field.
    * @return The value of the 'type' field.
    */
-  public no.fdk.concept.ConceptEventType getType() {
+  public no.fdk.informationmodel.InformationModelEventType getType() {
     return type;
   }
 
@@ -143,7 +143,7 @@ public class ConceptEvent extends org.apache.avro.specific.SpecificRecordBase im
    * Sets the value of the 'type' field.
    * @param value the value to set.
    */
-  public void setType(no.fdk.concept.ConceptEventType value) {
+  public void setType(no.fdk.informationmodel.InformationModelEventType value) {
     this.type = value;
   }
 
@@ -199,47 +199,47 @@ public class ConceptEvent extends org.apache.avro.specific.SpecificRecordBase im
   }
 
   /**
-   * Creates a new ConceptEvent RecordBuilder.
-   * @return A new ConceptEvent RecordBuilder
+   * Creates a new InformationModelEvent RecordBuilder.
+   * @return A new InformationModelEvent RecordBuilder
    */
-  public static no.fdk.concept.ConceptEvent.Builder newBuilder() {
-    return new no.fdk.concept.ConceptEvent.Builder();
+  public static no.fdk.informationmodel.InformationModelEvent.Builder newBuilder() {
+    return new no.fdk.informationmodel.InformationModelEvent.Builder();
   }
 
   /**
-   * Creates a new ConceptEvent RecordBuilder by copying an existing Builder.
+   * Creates a new InformationModelEvent RecordBuilder by copying an existing Builder.
    * @param other The existing builder to copy.
-   * @return A new ConceptEvent RecordBuilder
+   * @return A new InformationModelEvent RecordBuilder
    */
-  public static no.fdk.concept.ConceptEvent.Builder newBuilder(no.fdk.concept.ConceptEvent.Builder other) {
+  public static no.fdk.informationmodel.InformationModelEvent.Builder newBuilder(no.fdk.informationmodel.InformationModelEvent.Builder other) {
     if (other == null) {
-      return new no.fdk.concept.ConceptEvent.Builder();
+      return new no.fdk.informationmodel.InformationModelEvent.Builder();
     } else {
-      return new no.fdk.concept.ConceptEvent.Builder(other);
+      return new no.fdk.informationmodel.InformationModelEvent.Builder(other);
     }
   }
 
   /**
-   * Creates a new ConceptEvent RecordBuilder by copying an existing ConceptEvent instance.
+   * Creates a new InformationModelEvent RecordBuilder by copying an existing InformationModelEvent instance.
    * @param other The existing instance to copy.
-   * @return A new ConceptEvent RecordBuilder
+   * @return A new InformationModelEvent RecordBuilder
    */
-  public static no.fdk.concept.ConceptEvent.Builder newBuilder(no.fdk.concept.ConceptEvent other) {
+  public static no.fdk.informationmodel.InformationModelEvent.Builder newBuilder(no.fdk.informationmodel.InformationModelEvent other) {
     if (other == null) {
-      return new no.fdk.concept.ConceptEvent.Builder();
+      return new no.fdk.informationmodel.InformationModelEvent.Builder();
     } else {
-      return new no.fdk.concept.ConceptEvent.Builder(other);
+      return new no.fdk.informationmodel.InformationModelEvent.Builder(other);
     }
   }
 
   /**
-   * RecordBuilder for ConceptEvent instances.
+   * RecordBuilder for InformationModelEvent instances.
    */
   @org.apache.avro.specific.AvroGenerated
-  public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<ConceptEvent>
-    implements org.apache.avro.data.RecordBuilder<ConceptEvent> {
+  public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<InformationModelEvent>
+    implements org.apache.avro.data.RecordBuilder<InformationModelEvent> {
 
-    private no.fdk.concept.ConceptEventType type;
+    private no.fdk.informationmodel.InformationModelEventType type;
     private java.lang.CharSequence fdkId;
     private java.lang.CharSequence graph;
     private long timestamp;
@@ -253,7 +253,7 @@ public class ConceptEvent extends org.apache.avro.specific.SpecificRecordBase im
      * Creates a Builder by copying an existing Builder.
      * @param other The existing Builder to copy.
      */
-    private Builder(no.fdk.concept.ConceptEvent.Builder other) {
+    private Builder(no.fdk.informationmodel.InformationModelEvent.Builder other) {
       super(other);
       if (isValidValue(fields()[0], other.type)) {
         this.type = data().deepCopy(fields()[0].schema(), other.type);
@@ -274,10 +274,10 @@ public class ConceptEvent extends org.apache.avro.specific.SpecificRecordBase im
     }
 
     /**
-     * Creates a Builder by copying an existing ConceptEvent instance
+     * Creates a Builder by copying an existing InformationModelEvent instance
      * @param other The existing instance to copy.
      */
-    private Builder(no.fdk.concept.ConceptEvent other) {
+    private Builder(no.fdk.informationmodel.InformationModelEvent other) {
       super(SCHEMA$, MODEL$);
       if (isValidValue(fields()[0], other.type)) {
         this.type = data().deepCopy(fields()[0].schema(), other.type);
@@ -301,7 +301,7 @@ public class ConceptEvent extends org.apache.avro.specific.SpecificRecordBase im
       * Gets the value of the 'type' field.
       * @return The value.
       */
-    public no.fdk.concept.ConceptEventType getType() {
+    public no.fdk.informationmodel.InformationModelEventType getType() {
       return type;
     }
 
@@ -311,7 +311,7 @@ public class ConceptEvent extends org.apache.avro.specific.SpecificRecordBase im
       * @param value The value of 'type'.
       * @return This builder.
       */
-    public no.fdk.concept.ConceptEvent.Builder setType(no.fdk.concept.ConceptEventType value) {
+    public no.fdk.informationmodel.InformationModelEvent.Builder setType(no.fdk.informationmodel.InformationModelEventType value) {
       validate(fields()[0], value);
       this.type = value;
       fieldSetFlags()[0] = true;
@@ -331,7 +331,7 @@ public class ConceptEvent extends org.apache.avro.specific.SpecificRecordBase im
       * Clears the value of the 'type' field.
       * @return This builder.
       */
-    public no.fdk.concept.ConceptEvent.Builder clearType() {
+    public no.fdk.informationmodel.InformationModelEvent.Builder clearType() {
       type = null;
       fieldSetFlags()[0] = false;
       return this;
@@ -351,7 +351,7 @@ public class ConceptEvent extends org.apache.avro.specific.SpecificRecordBase im
       * @param value The value of 'fdkId'.
       * @return This builder.
       */
-    public no.fdk.concept.ConceptEvent.Builder setFdkId(java.lang.CharSequence value) {
+    public no.fdk.informationmodel.InformationModelEvent.Builder setFdkId(java.lang.CharSequence value) {
       validate(fields()[1], value);
       this.fdkId = value;
       fieldSetFlags()[1] = true;
@@ -371,7 +371,7 @@ public class ConceptEvent extends org.apache.avro.specific.SpecificRecordBase im
       * Clears the value of the 'fdkId' field.
       * @return This builder.
       */
-    public no.fdk.concept.ConceptEvent.Builder clearFdkId() {
+    public no.fdk.informationmodel.InformationModelEvent.Builder clearFdkId() {
       fdkId = null;
       fieldSetFlags()[1] = false;
       return this;
@@ -391,7 +391,7 @@ public class ConceptEvent extends org.apache.avro.specific.SpecificRecordBase im
       * @param value The value of 'graph'.
       * @return This builder.
       */
-    public no.fdk.concept.ConceptEvent.Builder setGraph(java.lang.CharSequence value) {
+    public no.fdk.informationmodel.InformationModelEvent.Builder setGraph(java.lang.CharSequence value) {
       validate(fields()[2], value);
       this.graph = value;
       fieldSetFlags()[2] = true;
@@ -411,7 +411,7 @@ public class ConceptEvent extends org.apache.avro.specific.SpecificRecordBase im
       * Clears the value of the 'graph' field.
       * @return This builder.
       */
-    public no.fdk.concept.ConceptEvent.Builder clearGraph() {
+    public no.fdk.informationmodel.InformationModelEvent.Builder clearGraph() {
       graph = null;
       fieldSetFlags()[2] = false;
       return this;
@@ -431,7 +431,7 @@ public class ConceptEvent extends org.apache.avro.specific.SpecificRecordBase im
       * @param value The value of 'timestamp'.
       * @return This builder.
       */
-    public no.fdk.concept.ConceptEvent.Builder setTimestamp(long value) {
+    public no.fdk.informationmodel.InformationModelEvent.Builder setTimestamp(long value) {
       validate(fields()[3], value);
       this.timestamp = value;
       fieldSetFlags()[3] = true;
@@ -451,17 +451,17 @@ public class ConceptEvent extends org.apache.avro.specific.SpecificRecordBase im
       * Clears the value of the 'timestamp' field.
       * @return This builder.
       */
-    public no.fdk.concept.ConceptEvent.Builder clearTimestamp() {
+    public no.fdk.informationmodel.InformationModelEvent.Builder clearTimestamp() {
       fieldSetFlags()[3] = false;
       return this;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public ConceptEvent build() {
+    public InformationModelEvent build() {
       try {
-        ConceptEvent record = new ConceptEvent();
-        record.type = fieldSetFlags()[0] ? this.type : (no.fdk.concept.ConceptEventType) defaultValue(fields()[0]);
+        InformationModelEvent record = new InformationModelEvent();
+        record.type = fieldSetFlags()[0] ? this.type : (no.fdk.informationmodel.InformationModelEventType) defaultValue(fields()[0]);
         record.fdkId = fieldSetFlags()[1] ? this.fdkId : (java.lang.CharSequence) defaultValue(fields()[1]);
         record.graph = fieldSetFlags()[2] ? this.graph : (java.lang.CharSequence) defaultValue(fields()[2]);
         record.timestamp = fieldSetFlags()[3] ? this.timestamp : (java.lang.Long) defaultValue(fields()[3]);
@@ -475,8 +475,8 @@ public class ConceptEvent extends org.apache.avro.specific.SpecificRecordBase im
   }
 
   @SuppressWarnings("unchecked")
-  private static final org.apache.avro.io.DatumWriter<ConceptEvent>
-    WRITER$ = (org.apache.avro.io.DatumWriter<ConceptEvent>)MODEL$.createDatumWriter(SCHEMA$);
+  private static final org.apache.avro.io.DatumWriter<InformationModelEvent>
+    WRITER$ = (org.apache.avro.io.DatumWriter<InformationModelEvent>)MODEL$.createDatumWriter(SCHEMA$);
 
   @Override public void writeExternal(java.io.ObjectOutput out)
     throws java.io.IOException {
@@ -484,8 +484,8 @@ public class ConceptEvent extends org.apache.avro.specific.SpecificRecordBase im
   }
 
   @SuppressWarnings("unchecked")
-  private static final org.apache.avro.io.DatumReader<ConceptEvent>
-    READER$ = (org.apache.avro.io.DatumReader<ConceptEvent>)MODEL$.createDatumReader(SCHEMA$);
+  private static final org.apache.avro.io.DatumReader<InformationModelEvent>
+    READER$ = (org.apache.avro.io.DatumReader<InformationModelEvent>)MODEL$.createDatumReader(SCHEMA$);
 
   @Override public void readExternal(java.io.ObjectInput in)
     throws java.io.IOException {
@@ -512,7 +512,7 @@ public class ConceptEvent extends org.apache.avro.specific.SpecificRecordBase im
   {
     org.apache.avro.Schema.Field[] fieldOrder = in.readFieldOrderIfDiff();
     if (fieldOrder == null) {
-      this.type = no.fdk.concept.ConceptEventType.values()[in.readEnum()];
+      this.type = no.fdk.informationmodel.InformationModelEventType.values()[in.readEnum()];
 
       this.fdkId = in.readString(this.fdkId instanceof Utf8 ? (Utf8)this.fdkId : null);
 
@@ -524,7 +524,7 @@ public class ConceptEvent extends org.apache.avro.specific.SpecificRecordBase im
       for (int i = 0; i < 4; i++) {
         switch (fieldOrder[i].pos()) {
         case 0:
-          this.type = no.fdk.concept.ConceptEventType.values()[in.readEnum()];
+          this.type = no.fdk.informationmodel.InformationModelEventType.values()[in.readEnum()];
           break;
 
         case 1:

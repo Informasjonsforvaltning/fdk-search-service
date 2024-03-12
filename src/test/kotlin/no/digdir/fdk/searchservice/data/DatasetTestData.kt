@@ -8,7 +8,6 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 val TEST_NULL_DATASET = Dataset(
-    id = "0",
     uri = "test uri",
     title = null,
     description = null,
@@ -30,7 +29,6 @@ val TEST_NULL_DATASET = Dataset(
 )
 
 val TEST_DATASET_HIT_ALL_FIELDS = TEST_NULL_DATASET.copy(
-    id = "1",
     title = LocalizedStrings(
         "NB Test title",
         "NN Test title",
@@ -134,7 +132,6 @@ val TEST_DATASET_HIT_ALL_FIELDS = TEST_NULL_DATASET.copy(
 )
 
 val TEST_DATASET_FILTERS = TEST_DATASET_HIT_ALL_FIELDS.copy(
-    id = "3",
     isOpenData = true,
     uri = "dataset.id3.uri",
     provenance = ReferenceDataCode(
@@ -192,7 +189,7 @@ val TEST_DATASET_FILTERS = TEST_DATASET_HIT_ALL_FIELDS.copy(
 )
 
 val TEST_DATASET_HIT_IS_OPEN = TEST_DATASET_HIT_ALL_FIELDS.copy(
-    id = "2",
+    uri = "dataset.uri.2",
     isOpenData = true,
     conformsTo = listOf(ObjectWithURI(uri=TEST_DATASET_FILTERS.uri))
 )
