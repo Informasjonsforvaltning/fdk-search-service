@@ -28,7 +28,6 @@ docker-compose up -d
 ```
 If you have problems starting kafka, check if all health checks are ok.
 Make sure number at the end (after 'grep') matches desired topics.
-```
 
 ### Start search service
 Start search service locally using maven. Use Spring profile **develop**.
