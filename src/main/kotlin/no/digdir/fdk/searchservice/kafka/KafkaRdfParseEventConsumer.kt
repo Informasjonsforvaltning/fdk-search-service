@@ -41,7 +41,7 @@ class KafkaRdfParseEventConsumer(
                 index(event, Dataset::class.java) {
                     searchRepository.save(it.toSearchObject("${event.fdkId}", event.timestamp))
                 }
-            } else if (event?.resourceType == RdfParseResourceType.DATASERVICE) {
+            } else if (event?.resourceType == RdfParseResourceType.DATA_SERVICE) {
                 LOGGER.debug("Index dataservice - id: " + event.fdkId)
                 index(event, DataService::class.java) {
                     searchRepository.save(it.toSearchObject("${event.fdkId}", event.timestamp))
@@ -51,7 +51,7 @@ class KafkaRdfParseEventConsumer(
                 index(event, Concept::class.java) {
                     searchRepository.save(it.toSearchObject("${event.fdkId}", event.timestamp))
                 }
-            } else if (event?.resourceType == RdfParseResourceType.INFORMATIONMODEL) {
+            } else if (event?.resourceType == RdfParseResourceType.INFORMATION_MODEL) {
                 LOGGER.debug("Index informationmodel - id: " + event.fdkId)
                 index(event, InformationModel::class.java) {
                     searchRepository.save(it.toSearchObject("${event.fdkId}", event.timestamp))
