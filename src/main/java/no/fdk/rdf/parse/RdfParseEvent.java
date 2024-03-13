@@ -14,10 +14,10 @@ import org.apache.avro.message.SchemaStore;
 
 @org.apache.avro.specific.AvroGenerated
 public class RdfParseEvent extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = -3944095586722051881L;
+  private static final long serialVersionUID = 481287795035291936L;
 
 
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"RdfParseEvent\",\"namespace\":\"no.fdk.rdf.parse\",\"fields\":[{\"name\":\"resourceType\",\"type\":{\"type\":\"enum\",\"name\":\"RdfParseResourceType\",\"symbols\":[\"DATASET\",\"DATASERVICE\",\"CONCEPT\",\"INFORMATIONMODEL\",\"SERVICE\",\"EVENT\"]}},{\"name\":\"fdkId\",\"type\":\"string\"},{\"name\":\"data\",\"type\":\"string\"},{\"name\":\"timestamp\",\"type\":\"long\"}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"RdfParseEvent\",\"namespace\":\"no.fdk.rdf.parse\",\"fields\":[{\"name\":\"resourceType\",\"type\":{\"type\":\"enum\",\"name\":\"RdfParseResourceType\",\"symbols\":[\"DATASET\",\"DATA_SERVICE\",\"CONCEPT\",\"INFORMATION_MODEL\",\"SERVICE\",\"EVENT\"]}},{\"name\":\"fdkId\",\"type\":\"string\"},{\"name\":\"data\",\"type\":\"string\"},{\"name\":\"timestamp\",\"type\":\"long\"}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static final SpecificData MODEL$ = new SpecificData();
