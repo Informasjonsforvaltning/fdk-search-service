@@ -37,10 +37,10 @@ val TEST_CONCEPT_HIT_ALL_FIELDS = TEST_NULL_CONCEPT.copy(
             "NB Test definition > text",
             "NN Test definition > text",
             "EN Test definition > text"),
-        Sources(listOf(TextAndURI(LocalizedStrings(
+        listOf(TextAndURI(LocalizedStrings(
             "NB Test definition > sources > text",
             "NN Test definition > sources > text",
-            "EN Test definition > sources > text")))),
+            "EN Test definition > sources > text"))),
         "Test definition > sourceRelationship"),
     prefLabel = LocalizedStrings(
         "NB Test prefLabel, title",

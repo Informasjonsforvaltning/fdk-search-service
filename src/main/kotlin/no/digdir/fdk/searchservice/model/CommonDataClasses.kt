@@ -72,15 +72,9 @@ data class TextAndURI(
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class Sources(
-    val text: List<TextAndURI>?,
-)
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties(ignoreUnknown = true)
 data class Definition(
     val text: LocalizedStrings?,
-    val sources: Sources?,
+    val sources: List<TextAndURI>?,
     val sourceRelationship: String?,
 )
 
