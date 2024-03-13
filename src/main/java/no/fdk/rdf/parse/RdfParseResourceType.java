@@ -6,8 +6,8 @@
 package no.fdk.rdf.parse;
 @org.apache.avro.specific.AvroGenerated
 public enum RdfParseResourceType implements org.apache.avro.generic.GenericEnumSymbol<RdfParseResourceType> {
-  DATASET, DATASERVICE, CONCEPT, INFORMATIONMODEL, SERVICE, EVENT  ;
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"enum\",\"name\":\"RdfParseResourceType\",\"namespace\":\"no.fdk.rdf.parse\",\"symbols\":[\"DATASET\",\"DATASERVICE\",\"CONCEPT\",\"INFORMATIONMODEL\",\"SERVICE\",\"EVENT\"]}");
+  DATASET, DATA_SERVICE, CONCEPT, INFORMATION_MODEL, SERVICE, EVENT  ;
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"enum\",\"name\":\"RdfParseResourceType\",\"namespace\":\"no.fdk.rdf.parse\",\"symbols\":[\"DATASET\",\"DATA_SERVICE\",\"CONCEPT\",\"INFORMATION_MODEL\",\"SERVICE\",\"EVENT\"]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   @Override
