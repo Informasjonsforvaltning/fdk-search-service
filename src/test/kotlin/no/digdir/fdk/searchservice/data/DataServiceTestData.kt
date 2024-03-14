@@ -58,7 +58,7 @@ val TEST_DATA_SERVICE_HIT_ALL_FIELDS = TEST_NULL_DATA_SERVICE.copy(
                 "NB Test losTheme > name",
                 "NN Test losTheme > name",
                 "EN Test losTheme > name"),
-            losPaths = "familie-og-barn",
+            losPaths = listOf("familie-og-barn"),
         )
     ),
     catalog = Catalog(

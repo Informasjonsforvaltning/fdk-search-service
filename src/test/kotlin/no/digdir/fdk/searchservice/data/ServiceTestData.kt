@@ -94,7 +94,7 @@ val TEST_SERVICE_HIT_ALL_FIELDS = TEST_NULL_SERVICE.copy(
                                 "NB Test losTheme > name",
                                 "NN Test losTheme > name",
                                 "EN Test losTheme > name"),
-                        losPaths = "test",
+                        losPaths = listOf("test"),
                 )
         ),
         spatial = listOf(

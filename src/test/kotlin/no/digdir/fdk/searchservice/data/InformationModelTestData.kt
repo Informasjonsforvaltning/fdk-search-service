@@ -79,7 +79,7 @@ val TEST_INFORMATION_MODEL_HIT_ALL_FIELDS = TEST_NULL_INFORMATION_MODEL.copy(
                 "NB Test losTheme > name",
                 "NN Test losTheme > name",
                 "EN Test losTheme > name"),
-            losPaths = "test",
+            losPaths = listOf("test"),
         )
     ),
     publisher = Organization(

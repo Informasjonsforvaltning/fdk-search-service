@@ -284,7 +284,7 @@ class FilterTest: ApiTestContext() {
             val validValues = listOf("familie-og-barn", "demokrati-og-innbyggerrettigheter/politikk-og-valg")
 
             val allThemesValid = result.hits.all { dataset ->
-                val themeCodes = dataset.losTheme?.map { it.losPaths }
+                val themeCodes = dataset.losTheme?.flatMap { it.losPaths ?: emptySet() }
                 val datasetValid = themeCodes?.containsAll(validValues) ?: false
                 datasetValid
             }
@@ -314,7 +314,7 @@ class FilterTest: ApiTestContext() {
 
             val allThemesValid = result.hits.all { searchObject ->
                 searchObject.losTheme?.any { losNode ->
-                    losNode.losPaths?.startsWith("demokrati-og-innbyggerrettigheter") ?: false
+                    losNode.losPaths?.any { losPath -> losPath.startsWith("demokrati-og-innbyggerrettigheter") } ?: false
                 } ?: false
             }
             Assertions.assertTrue(allThemesValid)

@@ -107,7 +107,7 @@ val TEST_SEARCH_OBJECT_AND_HIT_ALL_FIELDS = TEST_NULL_SEARCH_OBJECT.copy(
                 "NN Test losTheme > name 2",
                 "EN Test losTheme > name 2"
             ),
-            losPaths = "Test"
+            losPaths = listOf("Test")
         )
     ),
     organization = Organization(
