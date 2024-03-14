@@ -172,13 +172,16 @@ class SearchService(
             }
         })
 
-        searchTypes?.forEach { searchType ->
+        if (searchTypes != null) {
             queryFilters.add(
                 DSLQuery.of { queryBuilder ->
-                    queryBuilder.term { termBuilder ->
-                        termBuilder
+                    queryBuilder.terms { termsBuilder ->
+                        termsBuilder
                             .field(FilterFields.SearchType.jsonPath())
-                            .value(FieldValue.of(searchType.name))
+                            .terms { termsQueryBuilder ->
+                                termsQueryBuilder
+                                    .value(searchTypes.map { FieldValue.of(it.name) })
+                            }
                     }
                 })
         }
