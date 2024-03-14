@@ -17,7 +17,7 @@ const val SEARCH_INDEX_NAME = "fdk-search"
 data class SearchObject(
     @Id
     val id: String,
-    val uri: String,
+    val uri: String?,
     val accessRights: ReferenceDataCode?,
     val catalog: Catalog?,
     val dataTheme: Set<EuDataTheme>?,

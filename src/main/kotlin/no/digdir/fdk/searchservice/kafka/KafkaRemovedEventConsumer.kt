@@ -1,6 +1,9 @@
 package no.digdir.fdk.searchservice.kafka
 
 import no.digdir.fdk.searchservice.elastic.SearchRepository
+import no.digdir.fdk.searchservice.model.Metadata
+import no.digdir.fdk.searchservice.model.SearchObject
+import no.digdir.fdk.searchservice.model.SearchType
 import no.fdk.concept.ConceptEvent
 import no.fdk.concept.ConceptEventType
 import no.fdk.dataservice.DataServiceEvent
@@ -17,6 +20,7 @@ import org.apache.avro.specific.SpecificRecord
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Component
@@ -46,22 +50,22 @@ class KafkaRemovedEventConsumer(
             event.let {
                 if (it is DatasetEvent && it.type == DatasetEventType.DATASET_REMOVED) {
                     LOGGER.debug("Remove dataset - id: " + it.fdkId)
-                    searchRepository.markDeletedIfTimestampIsNewer("${it.fdkId}", it.timestamp)
+                    searchRepository.markDeletedIfTimestampIsNewer("${it.fdkId}", it.timestamp, SearchType.DATASET)
                 } else if (it is DataServiceEvent && it.type == DataServiceEventType.DATA_SERVICE_REMOVED) {
                     LOGGER.debug("Remove data-service - id: " + it.fdkId)
-                    searchRepository.markDeletedIfTimestampIsNewer("${it.fdkId}", it.timestamp)
+                    searchRepository.markDeletedIfTimestampIsNewer("${it.fdkId}", it.timestamp, SearchType.DATA_SERVICE)
                 } else if (it is ConceptEvent && it.type == ConceptEventType.CONCEPT_REMOVED) {
                     LOGGER.debug("Remove concept - id: " + it.fdkId)
-                    searchRepository.markDeletedIfTimestampIsNewer("${it.fdkId}", it.timestamp)
+                    searchRepository.markDeletedIfTimestampIsNewer("${it.fdkId}", it.timestamp, SearchType.CONCEPT)
                 } else if (it is InformationModelEvent && it.type == InformationModelEventType.INFORMATION_MODEL_REMOVED) {
                     LOGGER.debug("Remove information-model - id: " + it.fdkId)
-                    searchRepository.markDeletedIfTimestampIsNewer("${it.fdkId}", it.timestamp)
+                    searchRepository.markDeletedIfTimestampIsNewer("${it.fdkId}", it.timestamp, SearchType.INFORMATION_MODEL)
                 } else if (it is ServiceEvent && it.type == ServiceEventType.SERVICE_REMOVED) {
                     LOGGER.debug("Remove service - id: " + it.fdkId)
-                    searchRepository.markDeletedIfTimestampIsNewer("${it.fdkId}", it.timestamp)
+                    searchRepository.markDeletedIfTimestampIsNewer("${it.fdkId}", it.timestamp, SearchType.SERVICE)
                 } else if (it is EventEvent && it.type == EventEventType.EVENT_REMOVED) {
                     LOGGER.debug("Remove event - id: " + it.fdkId)
-                    searchRepository.markDeletedIfTimestampIsNewer("${it.fdkId}", it.timestamp)
+                    searchRepository.markDeletedIfTimestampIsNewer("${it.fdkId}", it.timestamp, SearchType.EVENT)
                 }
             }
             ack.acknowledge()
@@ -70,11 +74,35 @@ class KafkaRemovedEventConsumer(
         }
     }
 
-    private fun SearchRepository.markDeletedIfTimestampIsNewer(id: String, timestamp: Long) {
-        findById(id).ifPresent {
+    private fun SearchRepository.markDeletedIfTimestampIsNewer(id: String, timestamp: Long, searchType: SearchType) {
+        findByIdOrNull(id)?.let {
             if (it.metadata?.timestamp!! < timestamp) {
                 save(it.copy(metadata = it.metadata.copy(deleted = true, timestamp = timestamp)))
             }
+        } ?: run {
+            SearchObject(
+                id = id,
+                metadata = Metadata(
+                    firstHarvested = null,
+                    changed = null,
+                    deleted = true,
+                    timestamp = timestamp),
+                searchType = searchType,
+                uri = null,
+                accessRights = null,
+                catalog = null,
+                dataTheme = null,
+                description = null,
+                fdkFormatPrefixed = null,
+                isOpenData = false,
+                keyword = null,
+                losTheme = null,
+                organization = null,
+                provenance = null,
+                relations = null,
+                spatial = null,
+                title = null
+            ).let { save(it) }
         }
     }
 
