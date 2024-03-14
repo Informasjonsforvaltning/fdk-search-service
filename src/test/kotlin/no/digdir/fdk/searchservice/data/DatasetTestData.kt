@@ -63,7 +63,7 @@ val TEST_DATASET_HIT_ALL_FIELDS = TEST_NULL_DATASET.copy(
                 "NB Test losTheme > name",
                 "NN Test losTheme > name",
                 "EN Test losTheme > name"),
-            losPaths = "familie-og-barn",
+            losPaths = listOf("familie-og-barn"),
         )
     ),
     publisher = Organization(
@@ -165,11 +165,11 @@ val TEST_DATASET_FILTERS = TEST_DATASET_HIT_ALL_FIELDS.copy(
     losTheme = listOf(
         LosNode(
             name = null,
-            losPaths = "familie-og-barn",
+            losPaths = listOf("familie-og-barn"),
         ),
         LosNode(
             name = null,
-            losPaths = "demokrati-og-innbyggerrettigheter/politikk-og-valg",
+            losPaths = listOf("demokrati-og-innbyggerrettigheter/politikk-og-valg"),
         ),
     ),
     publisher = Organization(

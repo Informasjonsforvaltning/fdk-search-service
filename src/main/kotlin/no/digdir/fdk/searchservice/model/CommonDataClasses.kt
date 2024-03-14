@@ -22,7 +22,7 @@ data class EuDataTheme(
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class LosNode(
     val name: LocalizedStrings?,
-    val losPaths: String?
+    val losPaths: List<String>?
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
