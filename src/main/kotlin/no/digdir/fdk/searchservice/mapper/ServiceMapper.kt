@@ -8,17 +8,17 @@ fun Service.toSearchObject(id: String, timestamp: Long, deleted: Boolean = false
         uri = uri,
         accessRights = null,
         catalog = catalog,
-        dataTheme = euDataThemes,
+        dataTheme = euDataThemes?.toSet(),
         description = description,
         fdkFormatPrefixed = null,
         metadata = harvest?.toMetadata(timestamp, deleted),
         isOpenData = null,
-        keyword = keyword,
-        losTheme = losTheme,
+        keyword = keyword?.toSet(),
+        losTheme = losTheme?.toSet(),
         organization = getOrganization(),
         provenance = null,
         searchType = SearchType.SERVICE,
-        spatial = spatial,
+        spatial = spatial?.toSet(),
         title = title,
         relations = getRelations()
     )
@@ -30,8 +30,8 @@ private fun Service.getOrganization() = if (hasCompetantAuthority.isNullOrEmpty(
 }
 
 
-fun Service.getRelations(): List<Relation> {
-    val relations: MutableList<Relation> = mutableListOf()
+fun Service.getRelations(): Set<Relation> {
+    val relations: MutableSet<Relation> = mutableSetOf()
 
     isGroupedBy?.forEach {
         relations.add(Relation(uri = it, type = RelationType.isGroupedBy))

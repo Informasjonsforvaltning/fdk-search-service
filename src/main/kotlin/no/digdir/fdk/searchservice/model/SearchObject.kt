@@ -20,19 +20,19 @@ data class SearchObject(
     val uri: String,
     val accessRights: ReferenceDataCode?,
     val catalog: Catalog?,
-    val dataTheme: List<EuDataTheme>?,
+    val dataTheme: Set<EuDataTheme>?,
     val description: LocalizedStrings?,
-    val fdkFormatPrefixed: List<String>?,
+    val fdkFormatPrefixed: Set<String>?,
     val metadata: Metadata?,
     val isOpenData: Boolean?,
-    val keyword: List<LocalizedStrings>?,
-    val losTheme: List<LosNode>?,
+    val keyword: Set<LocalizedStrings>?,
+    val losTheme: Set<LosNode>?,
     val organization: Organization?,
     val provenance: ReferenceDataCode?,
     val searchType: SearchType,
-    val spatial: List<ReferenceDataCode>?,
+    val spatial: Set<ReferenceDataCode>?,
     val title: LocalizedStrings?,
-    val relations: List<Relation>?
+    val relations: Set<Relation>?
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
