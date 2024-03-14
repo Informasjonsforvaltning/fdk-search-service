@@ -8,13 +8,13 @@ fun InformationModel.toSearchObject(id: String, timestamp: Long, deleted: Boolea
         uri = uri,
         accessRights = accessRights,
         catalog = catalog,
-        dataTheme = theme,
+        dataTheme = theme?.toSet(),
         description = description,
         fdkFormatPrefixed = null,
         metadata = harvest?.toMetadata(timestamp, deleted),
         isOpenData = null,
-        keyword = keyword,
-        losTheme = losTheme,
+        keyword = keyword?.toSet(),
+        losTheme = losTheme?.toSet(),
         organization = publisher,
         provenance = null,
         searchType = SearchType.INFORMATION_MODEL,
@@ -23,8 +23,8 @@ fun InformationModel.toSearchObject(id: String, timestamp: Long, deleted: Boolea
         relations = getRelations()
     )
 
-fun InformationModel.getRelations(): List<Relation> {
-    val relations: MutableList<Relation> = mutableListOf()
+fun InformationModel.getRelations(): Set<Relation> {
+    val relations: MutableSet<Relation> = mutableSetOf()
 
 
     hasPart?.let {

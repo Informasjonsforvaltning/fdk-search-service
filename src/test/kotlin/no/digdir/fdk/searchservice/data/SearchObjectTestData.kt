@@ -60,7 +60,7 @@ val TEST_SEARCH_OBJECT_AND_HIT_ALL_FIELDS = TEST_NULL_SEARCH_OBJECT.copy(
             "EN Test catalog > title"
         )
     ),
-    dataTheme = listOf(
+    dataTheme = setOf(
         EuDataTheme(
             title = LocalizedStrings(
                 "NB Test dataTheme",
@@ -75,7 +75,7 @@ val TEST_SEARCH_OBJECT_AND_HIT_ALL_FIELDS = TEST_NULL_SEARCH_OBJECT.copy(
         "NN Test description",
         "EN Test description"
     ),
-    fdkFormatPrefixed = listOf("Test fdkFormatPrefixed"),
+    fdkFormatPrefixed = setOf("Test fdkFormatPrefixed"),
     metadata = Metadata(
         firstHarvested = "2024-02-21T11:00:05Z",
         changed = listOf(
@@ -85,14 +85,14 @@ val TEST_SEARCH_OBJECT_AND_HIT_ALL_FIELDS = TEST_NULL_SEARCH_OBJECT.copy(
         deleted = false,
         timestamp = System.currentTimeMillis()
     ),
-    keyword = listOf(
+    keyword = setOf(
         LocalizedStrings(
             "NB Test keyword",
             "NN Test keyword",
             "EN Test keyword"
         )
     ),
-    losTheme = listOf(
+    losTheme = setOf(
         LosNode(
             LocalizedStrings(
                 "NB Test losTheme > name 1",
@@ -130,7 +130,7 @@ val TEST_SEARCH_OBJECT_AND_HIT_ALL_FIELDS = TEST_NULL_SEARCH_OBJECT.copy(
             "EN Test provenance > prefLabel"
         )
     ),
-    spatial = listOf(
+    spatial = setOf(
         ReferenceDataCode(
             uri = "Test spatial > uri",
             code = "Test spatial > code",

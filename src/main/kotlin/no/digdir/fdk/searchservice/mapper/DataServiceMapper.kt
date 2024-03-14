@@ -12,13 +12,13 @@ fun DataService.toSearchObject(id: String, timestamp: Long, deleted: Boolean = f
         uri = uri,
         accessRights = accessRights,
         catalog = catalog,
-        dataTheme = theme,
+        dataTheme = theme?.toSet(),
         description = description,
         fdkFormatPrefixed = extractPrefixedFormats(),
         metadata = harvest?.toMetadata(timestamp, deleted),
         isOpenData = null,
-        keyword = keyword,
-        losTheme = losTheme,
+        keyword = keyword?.toSet(),
+        losTheme = losTheme?.toSet(),
         organization = publisher,
         provenance = null,
         searchType = SearchType.DATA_SERVICE,
@@ -27,16 +27,16 @@ fun DataService.toSearchObject(id: String, timestamp: Long, deleted: Boolean = f
         relations = getRelations()
     )
 
-fun DataService.extractPrefixedFormats(): List<String> {
-    val mutableList = mutableListOf<String>()
+fun DataService.extractPrefixedFormats(): Set<String> {
+    val mutableList = mutableSetOf<String>()
         fdkFormat?.forEach { format ->
             mutableList.add("${format.type} ${format.code}")
         }
     return mutableList
 }
 
-fun DataService.getRelations(): List<Relation> {
-    val relations: MutableList<Relation> = mutableListOf()
+fun DataService.getRelations(): Set<Relation> {
+    val relations: MutableSet<Relation> = mutableSetOf()
 
     conformsTo?.forEach {
         relations.add(Relation(uri = it.uri, type = RelationType.conformsTo))

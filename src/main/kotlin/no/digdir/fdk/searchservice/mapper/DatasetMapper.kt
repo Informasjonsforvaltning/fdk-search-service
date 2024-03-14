@@ -8,23 +8,23 @@ fun Dataset.toSearchObject(id: String, timestamp: Long, deleted: Boolean = false
         uri = uri,
         accessRights = accessRights,
         catalog = catalog,
-        dataTheme = theme,
+        dataTheme = theme?.toSet(),
         description = description,
         fdkFormatPrefixed = extractPrefixedFormats(),
         metadata = harvest?.toMetadata(timestamp, deleted),
         isOpenData = isOpenData,
-        keyword = keyword,
-        losTheme = losTheme,
+        keyword = keyword?.toSet(),
+        losTheme = losTheme?.toSet(),
         organization = publisher,
         provenance = provenance,
         searchType = SearchType.DATASET,
-        spatial = spatial,
+        spatial = spatial?.toSet(),
         title = title,
         relations = getRelations()
     )
 
-fun Dataset.extractPrefixedFormats(): List<String> {
-    val mutableList = mutableListOf<String>()
+fun Dataset.extractPrefixedFormats(): Set<String> {
+    val mutableList = mutableSetOf<String>()
     distribution?.forEach { dist ->
         dist.fdkFormat?.forEach { format ->
             mutableList.add("${format.type} ${format.code}")
@@ -33,8 +33,8 @@ fun Dataset.extractPrefixedFormats(): List<String> {
     return mutableList
 }
 
-fun Dataset.getRelations(): List<Relation> {
-    val relations: MutableList<Relation> = mutableListOf()
+fun Dataset.getRelations(): Set<Relation> {
+    val relations: MutableSet<Relation> = mutableSetOf()
 
     conformsTo?.forEach {
         relations.add(Relation(uri = it.uri, type = RelationType.conformsTo))
@@ -56,7 +56,7 @@ fun Dataset.getRelations(): List<Relation> {
 }
 
 private fun Reference.uriToRelationType(): RelationType? {
-    val basePath = "http://purl.org/dc/terms";
+    val basePath = "http://purl.org/dc/terms"
     return when (referenceType?.uri) {
         "$basePath/source" -> RelationType.source
         "$basePath/hasVersion" -> RelationType.hasVersion
