@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 data class LocalizedStrings(
     val nb: String?,
     val nn: String?,
+    val no: String?,
     val en: String?
 )
 

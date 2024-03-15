@@ -28,6 +28,7 @@ val TEST_DATA_SERVICE_HIT_ALL_FIELDS = TEST_NULL_DATA_SERVICE.copy(
         prefLabel = LocalizedStrings(
             "NB Test publisher > prefLabel",
             "NN Test publisher > prefLabel",
+            "NO Test publisher > prefLabel",
             "EN Test publisher > prefLabel"),
     ),
     accessRights = ReferenceDataCode(
@@ -36,6 +37,7 @@ val TEST_DATA_SERVICE_HIT_ALL_FIELDS = TEST_NULL_DATA_SERVICE.copy(
         prefLabel = LocalizedStrings(
             "accessRights > NB Public",
             "accessRights> NN Public",
+            "accessRights > NO Public",
             "accessRights > EN Public"),
     ),
     theme = listOf(
@@ -43,12 +45,14 @@ val TEST_DATA_SERVICE_HIT_ALL_FIELDS = TEST_NULL_DATA_SERVICE.copy(
             title = LocalizedStrings(
                 "NB Test theme > title",
                 "NN Test theme > title",
+                "NO Test theme > title",
                 "EN Test theme > title"),
             code = "ENVI"),
         EuDataTheme(
             title = LocalizedStrings(
                 "NB Test theme > title",
                 "NN Test theme > title",
+                "NO Test theme > title",
                 "EN Test theme > title"),
             code = "REGI")
     ),
@@ -57,6 +61,7 @@ val TEST_DATA_SERVICE_HIT_ALL_FIELDS = TEST_NULL_DATA_SERVICE.copy(
             name = LocalizedStrings(
                 "NB Test losTheme > name",
                 "NN Test losTheme > name",
+                "NO Test losTheme > name",
                 "EN Test losTheme > name"),
             losPaths = listOf("familie-og-barn"),
         )
@@ -65,12 +70,14 @@ val TEST_DATA_SERVICE_HIT_ALL_FIELDS = TEST_NULL_DATA_SERVICE.copy(
         description = LocalizedStrings(
             "NB Test catalog > description",
             "NN Test catalog > description",
+            "NO Test catalog > description",
             "EN Test catalog > description"),
         id = "Test catalog > id",
         uri = "Test catalog > uri",
         title = LocalizedStrings(
             "NB Test catalog > title",
             "NN Test catalog > title",
+            "NO Test catalog > title",
             "EN Test catalog > title"),
         publisher = Organization(
             orgPath = "/PRIVAT/172417858",
@@ -80,27 +87,32 @@ val TEST_DATA_SERVICE_HIT_ALL_FIELDS = TEST_NULL_DATA_SERVICE.copy(
             prefLabel = LocalizedStrings(
                 "NB Test publisher > prefLabel",
                 "NN Test publisher > prefLabel",
+                "NO Test publisher > prefLabel",
                 "EN Test publisher > prefLabel"),
         )),
     title = LocalizedStrings(
         "NB Test prefLabel, title",
         "NN Test prefLabel",
+        "NO Test prefLabel, title",
         "EN Test prefLabel"),
-    harvest =  HarvestMetadata(
+    harvest = HarvestMetadata(
         "2022-02-15T11:00:05Z",
         listOf("Test harvest > changed")),
     description = LocalizedStrings(
         "NB Test collection > description",
         "NN Test collection > description",
+        "NO Test collection > description",
         "EN Test collection > description"),
     keyword = listOf(
         LocalizedStrings(
             "NB Test keyword > prefLabel",
             "NN Test keyword > prefLabel",
+            "NO Test keyword > prefLabel",
             "EN Test keyword > prefLabel"),
         LocalizedStrings(
             "NB Test keyword > prefLabel",
             "NN Test keyword > prefLabel",
+            "NO Test keyword > prefLabel",
             "EN Test keyword > prefLabel")
     ),
     fdkFormat = listOf(

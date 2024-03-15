@@ -30,35 +30,41 @@ val TEST_CONCEPT_HIT_ALL_FIELDS = TEST_NULL_CONCEPT.copy(
         prefLabel = LocalizedStrings(
             "NB Test publisher > prefLabel",
             "NN Test publisher > prefLabel",
+            "NO Test publisher > prefLabel",
             "EN Test publisher > prefLabel"),
     ),
     definition = Definition(
         LocalizedStrings(
             "NB Test definition > text",
             "NN Test definition > text",
+            "NO Test definition > text",
             "EN Test definition > text"),
         listOf(TextAndURI(LocalizedStrings(
             "NB Test definition > sources > text",
             "NN Test definition > sources > text",
+            "NO Test definition > sources > text",
             "EN Test definition > sources > text"))),
         "Test definition > sourceRelationship"),
     prefLabel = LocalizedStrings(
         "NB Test prefLabel, title",
         "NN Test prefLabel",
+        "NO Test prefLabel, title",
         "EN Test prefLabel"),
-    harvest =  HarvestMetadata(
+    harvest = HarvestMetadata(
         "2022-02-15T11:00:05Z",
-            listOf("Test harvest > changed")),
+        listOf("Test harvest > changed")),
     collection = Collection(
         id = "Test collection > id 1021",
         uri = "Test collection > uri 1021",
         label = LocalizedStrings(
             "NB Test collection > label",
             "NN Test collection > label",
+            "NO Test collection > label",
             "EN Test collection > label"),
         description = LocalizedStrings(
             "NB Test collection > description",
             "NN Test collection > description",
+            "NO Test collection > description",
             "EN Test collection > description"),
         publisher = Organization(
             orgPath = "/KOMMUNE/102117858",
@@ -68,7 +74,8 @@ val TEST_CONCEPT_HIT_ALL_FIELDS = TEST_NULL_CONCEPT.copy(
             prefLabel = LocalizedStrings(
                 "NB Test publisher > prefLabel",
                 "NN Test publisher > prefLabel",
-            "EN Test publisher > prefLabel"))
+                "NO Test publisher > prefLabel",
+                "EN Test publisher > prefLabel"))
     ),
 )
 
