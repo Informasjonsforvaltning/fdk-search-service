@@ -43,7 +43,7 @@ val TEST_INFORMATION_MODEL_HIT_ALL_FIELDS = TEST_NULL_INFORMATION_MODEL.copy(
             "EN Test catalog > title"),
         publisher = Organization(
             orgPath = "/PRIVAT/108117858",
-            identifier = "Test publisher > identifier",
+            id = "Test publisher > identifier",
             uri = "Test publisher > uri",
             name = "Test publisher > name",
             prefLabel = LocalizedStrings(
@@ -93,7 +93,7 @@ val TEST_INFORMATION_MODEL_HIT_ALL_FIELDS = TEST_NULL_INFORMATION_MODEL.copy(
     ),
     publisher = Organization(
         orgPath = "/STAT/108117858",
-        identifier = "Test publisher > identifier",
+        id = "Test publisher > identifier",
         uri = "Test publisher > uri",
         name = "Test publisher > name",
         prefLabel = LocalizedStrings(

@@ -47,7 +47,7 @@ val TEST_SEARCH_OBJECT_AND_HIT_ALL_FIELDS = TEST_NULL_SEARCH_OBJECT.copy(
         ),
         publisher = Organization(
             orgPath = "/PRIVAT/972417858",
-            identifier = "Test publisher > identifier",
+            id = "Test publisher > identifier",
             uri = "Test publisher > uri",
             name = "Test publisher > name",
             prefLabel = LocalizedStrings(
@@ -121,7 +121,7 @@ val TEST_SEARCH_OBJECT_AND_HIT_ALL_FIELDS = TEST_NULL_SEARCH_OBJECT.copy(
     ),
     organization = Organization(
         orgPath = "/STAT/100117858",
-        identifier = "Test organization > identifier",
+        id = "Test organization > identifier",
         uri = "Test publisher > uri",
         name = "Test publisher > name",
         prefLabel = LocalizedStrings(

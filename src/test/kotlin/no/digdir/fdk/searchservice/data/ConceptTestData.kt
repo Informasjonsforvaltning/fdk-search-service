@@ -24,7 +24,7 @@ val TEST_NULL_CONCEPT = Concept(
 val TEST_CONCEPT_HIT_ALL_FIELDS = TEST_NULL_CONCEPT.copy(
     publisher = Organization(
         orgPath = "/STAT/102117858",
-        identifier = "Test publisher > identifier 1021",
+        id = "Test publisher > identifier 1021",
         uri = "Test publisher > uri 1021",
         name = "Test publisher > name",
         prefLabel = LocalizedStrings(
@@ -68,7 +68,7 @@ val TEST_CONCEPT_HIT_ALL_FIELDS = TEST_NULL_CONCEPT.copy(
             "EN Test collection > description"),
         publisher = Organization(
             orgPath = "/KOMMUNE/102117858",
-            identifier = "Test publisher > identifier",
+            id = "Test publisher > identifier",
             uri = "Test publisher > uri ",
             name = "Test publisher > name",
             prefLabel = LocalizedStrings(

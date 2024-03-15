@@ -118,7 +118,7 @@ data class Collection(
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Organization(
-    val identifier: String?,
+    val id: String?,
     val uri: String?,
     val orgPath: String?,
     val name: String?,

@@ -22,7 +22,7 @@ val TEST_DATA_SERVICE_HIT_ALL_FIELDS = TEST_NULL_DATA_SERVICE.copy(
     uri = "http://localhost:5000/catalogs/456",
     publisher = Organization(
         orgPath = "/STAT/972417858",
-        identifier = "Test publisher > identifier",
+        id = "Test publisher > identifier",
         uri = "Test publisher > uri",
         name = "Test publisher > name",
         prefLabel = LocalizedStrings(
@@ -81,7 +81,7 @@ val TEST_DATA_SERVICE_HIT_ALL_FIELDS = TEST_NULL_DATA_SERVICE.copy(
             "EN Test catalog > title"),
         publisher = Organization(
             orgPath = "/PRIVAT/172417858",
-            identifier = "Test publisher > identifier",
+            id = "Test publisher > identifier",
             uri = "Test publisher > uri",
             name = "Test publisher > name",
             prefLabel = LocalizedStrings(
