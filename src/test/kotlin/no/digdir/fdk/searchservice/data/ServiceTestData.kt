@@ -60,7 +60,7 @@ val TEST_SERVICE_HIT_ALL_FIELDS = TEST_NULL_SERVICE.copy(
             "EN Test catalog > title"),
         publisher = Organization(
             orgPath = "/PRIVAT/101417858",
-            identifier = "Test publisher > identifier 101",
+            id = "Test publisher > identifier 101",
             uri = "Test publisher > uri 101",
             name = "Test publisher > name",
             prefLabel = LocalizedStrings(
@@ -129,7 +129,7 @@ val TEST_SERVICE_HIT_OWNED_BY = TEST_SERVICE_HIT_ALL_FIELDS.copy(
     keyword = listOf(LocalizedStrings(nb = "keyword", nn = "keyword", no = "keyword", en = "keyword")),
     ownedBy = listOf(Organization(
         orgPath = "/STAT/010247858",
-        identifier = "test identifier 0102",
+        id = "test identifier 0102",
         uri = "test uri 0102",
         name = "test name 0102",
         prefLabel = LocalizedStrings(
@@ -144,7 +144,7 @@ val TEST_SERVICE_HIT_HAS_COMPETANT_AUTHORITY = TEST_NULL_SERVICE.copy(
     uri = "uri 0103",
     hasCompetantAuthority = listOf(Organization(
         orgPath = "/STAT/103417858",
-        identifier = "test identifier 0103",
+        id = "test identifier 0103",
         uri = "test uri 0103",
         name = "test name 0103",
         prefLabel = LocalizedStrings(

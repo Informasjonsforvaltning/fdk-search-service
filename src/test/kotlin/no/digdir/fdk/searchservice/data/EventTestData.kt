@@ -49,7 +49,7 @@ val TEST_EVENT_HIT_ALL_FIELDS = TEST_NULL_EVENT.copy(
             "EN Test catalog > title"),
         publisher = Organization(
             orgPath = "/PRIVAT/106117858",
-            identifier = "Test publisher > identifier",
+            id = "Test publisher > identifier",
             uri = "Test publisher > uri",
             name = "Test publisher > name",
             prefLabel = LocalizedStrings(

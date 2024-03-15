@@ -74,7 +74,7 @@ val TEST_DATASET_HIT_ALL_FIELDS = TEST_NULL_DATASET.copy(
     ),
     publisher = Organization(
         orgPath = "/STAT/272417858",
-        identifier = "Test publisher > identifier",
+        id = "Test publisher > identifier",
         uri = "Test publisher > uri",
         name = "Test publisher > name",
         prefLabel = LocalizedStrings(
@@ -133,7 +133,7 @@ val TEST_DATASET_HIT_ALL_FIELDS = TEST_NULL_DATASET.copy(
             "EN Test catalog > title"),
         publisher = Organization(
             orgPath = "/PRIVAT/172417858",
-            identifier = "Test publisher > identifier",
+            id = "Test publisher > identifier",
             uri = "Test publisher > uri",
             name = "Test publisher > name",
             prefLabel = LocalizedStrings(
@@ -189,7 +189,7 @@ val TEST_DATASET_FILTERS = TEST_DATASET_HIT_ALL_FIELDS.copy(
     ),
     publisher = Organization(
         orgPath = "/FYLKE",
-        identifier = "Test publisher > identifier",
+        id = "Test publisher > identifier",
         uri = "Test publisher > uri",
         name = "Test publisher > name",
         prefLabel = null
