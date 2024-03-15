@@ -26,119 +26,133 @@ val TEST_SERVICE = TEST_NULL_SERVICE.copy(
     title = LocalizedStrings(
         "NB Test prefLabel, title",
         "NN Test prefLabel",
+        "NO Test prefLabel, title",
         "EN Test prefLabel"),
-    harvest =  HarvestMetadata(
+    harvest = HarvestMetadata(
         "2022-02-15T11:00:05Z",
         listOf("Test harvest > changed")),
     description = LocalizedStrings(
         "NB Test collection > description",
         "NN Test collection > description",
+        "NO Test collection > description",
         "EN Test collection > description"),
 )
 
 val TEST_SERVICE_HIT_ALL_FIELDS = TEST_NULL_SERVICE.copy(
-        uri = "uri 0101",
-        title = LocalizedStrings(
-                "NB title",
-                "NN title",
-                "EN title"),
-        catalog = Catalog(
-                description = LocalizedStrings(
-                        "NB Test catalog > description",
-                        "NN Test catalog > description",
-                        "EN Test catalog > description"),
-                id = "Test catalog > id 101",
-                uri = "Test catalog > uri 101",
-                title = LocalizedStrings(
-                        "NB Test catalog > title",
-                        "NN Test catalog > title",
-                        "EN Test catalog > title"),
-                publisher = Organization(
-                        orgPath = "/PRIVAT/101417858",
-                        identifier = "Test publisher > identifier 101",
-                        uri = "Test publisher > uri 101",
-                        name = "Test publisher > name",
-                        prefLabel = LocalizedStrings(
-                                "NB Test publisher > prefLabel",
-                                "NN Test publisher > prefLabel",
-                                "EN Test publisher > prefLabel"),
-                ),
-        ),
+    uri = "uri 0101",
+    title = LocalizedStrings(
+        "NB title",
+        "NN title",
+        "NO title",
+        "EN title"),
+    catalog = Catalog(
         description = LocalizedStrings(
-                "NB Test description",
-                "NN Test description",
-                "EN Test description"),
-        keyword = listOf(
-                LocalizedStrings(
-                        "NB Test keyword",
-                        "NN Test keyword",
-                        "EN Test keyword")
+            "NB Test catalog > description",
+            "NN Test catalog > description",
+            "NO Test catalog > description",
+            "EN Test catalog > description"),
+        id = "Test catalog > id 101",
+        uri = "Test catalog > uri 101",
+        title = LocalizedStrings(
+            "NB Test catalog > title",
+            "NN Test catalog > title",
+            "NO Test catalog > title",
+            "EN Test catalog > title"),
+        publisher = Organization(
+            orgPath = "/PRIVAT/101417858",
+            identifier = "Test publisher > identifier 101",
+            uri = "Test publisher > uri 101",
+            name = "Test publisher > name",
+            prefLabel = LocalizedStrings(
+                "NB Test publisher > prefLabel",
+                "NN Test publisher > prefLabel",
+                "NO Test publisher > prefLabel",
+                "EN Test publisher > prefLabel"),
         ),
-        euDataThemes = listOf(
-                EuDataTheme(
-                        title = LocalizedStrings(
-                                "NB Test euDataThemes > title",
-                                "NN Test euDataThemes > title",
-                                "EN Test euDataThemes > title"),
-                        code = "ENVI"),
-                EuDataTheme(
-                        title = LocalizedStrings(
-                                "NB Test euDataThemes > title",
-                                "NN Test euDataThemes > title",
-                                "EN Test euDataThemes > title"),
-                        code = "REGI")
-        ),
-        losTheme = listOf(
-                LosNode(
-                        name = LocalizedStrings(
-                                "NB Test losTheme > name",
-                                "NN Test losTheme > name",
-                                "EN Test losTheme > name"),
-                        losPaths = listOf("test"),
-                )
-        ),
-        spatial = listOf(
-                ReferenceDataCode(
-                        uri = "Test spatial > uri",
-                        code = "Test spatial > code",
-                        prefLabel = LocalizedStrings(
-                                "NB Test spatial > prefLabel",
-                                "NN Test spatial > prefLabel",
-                                "EN Test spatial > prefLabel"),
-                )
-        ),
-        harvest =  HarvestMetadata(
-            "2022-02-15T11:00:05Z",
-                listOf("Test harvest > changed")),
+    ),
+    description = LocalizedStrings(
+        "NB Test description",
+        "NN Test description",
+        "NO Test description",
+        "EN Test description"),
+    keyword = listOf(
+        LocalizedStrings(
+            "NB Test keyword",
+            "NN Test keyword",
+            "NO Test keyword",
+            "EN Test keyword")
+    ),
+    euDataThemes = listOf(
+        EuDataTheme(
+            title = LocalizedStrings(
+                "NB Test euDataThemes > title",
+                "NN Test euDataThemes > title",
+                "NO Test euDataThemes > title",
+                "EN Test euDataThemes > title"),
+            code = "ENVI"),
+        EuDataTheme(
+            title = LocalizedStrings(
+                "NB Test euDataThemes > title",
+                "NN Test euDataThemes > title",
+                "NO Test euDataThemes > title",
+                "EN Test euDataThemes > title"),
+            code = "REGI")
+    ),
+    losTheme = listOf(
+        LosNode(
+            name = LocalizedStrings(
+                "NB Test losTheme > name",
+                "NN Test losTheme > name",
+                "NO Test losTheme > name",
+                "EN Test losTheme > name"),
+            losPaths = listOf("test"),
+        )
+    ),
+    spatial = listOf(
+        ReferenceDataCode(
+            uri = "Test spatial > uri",
+            code = "Test spatial > code",
+            prefLabel = LocalizedStrings(
+                "NB Test spatial > prefLabel",
+                "NN Test spatial > prefLabel",
+                "NO Test spatial > prefLabel",
+                "EN Test spatial > prefLabel"),
+        )
+    ),
+    harvest = HarvestMetadata(
+        "2022-02-15T11:00:05Z",
+        listOf("Test harvest > changed")),
 )
 
 val TEST_SERVICE_HIT_OWNED_BY = TEST_SERVICE_HIT_ALL_FIELDS.copy(
-        uri = "uri 0102",
-        keyword = listOf( LocalizedStrings(nb = "keyword", nn = "keyword", en = "keyword" )),
-        ownedBy = listOf( Organization(
-                orgPath = "/STAT/010247858",
-                identifier = "test identifier 0102",
-                uri = "test uri 0102",
-                name = "test name 0102",
-                prefLabel = LocalizedStrings(
-                        "NB Test ownedBy > prefLabel",
-                        "NN Test ownedBy > prefLabel",
-                        "EN Test ownedBy > prefLabel"),
-        ))
+    uri = "uri 0102",
+    keyword = listOf(LocalizedStrings(nb = "keyword", nn = "keyword", no = "keyword", en = "keyword")),
+    ownedBy = listOf(Organization(
+        orgPath = "/STAT/010247858",
+        identifier = "test identifier 0102",
+        uri = "test uri 0102",
+        name = "test name 0102",
+        prefLabel = LocalizedStrings(
+            "NB Test ownedBy > prefLabel",
+            "NN Test ownedBy > prefLabel",
+            "NO Test ownedBy > prefLabel",
+            "EN Test ownedBy > prefLabel"),
+    ))
 )
 
-val TEST_SERVICE_HIT_HAS_COMPETANT_AUTHORITY =  TEST_NULL_SERVICE.copy(
-        uri = "uri 0103",
-        hasCompetantAuthority = listOf( Organization(
-                orgPath = "/STAT/103417858",
-                identifier = "test identifier 0103",
-                uri = "test uri 0103",
-                name = "test name 0103",
-                prefLabel = LocalizedStrings(
-                        "NB Test hasCompetantAuthority > prefLabel",
-                        "NN Test hasCompetantAuthority > prefLabel",
-                        "EN Test hasCompetantAuthority > prefLabel"),
-        ))
+val TEST_SERVICE_HIT_HAS_COMPETANT_AUTHORITY = TEST_NULL_SERVICE.copy(
+    uri = "uri 0103",
+    hasCompetantAuthority = listOf(Organization(
+        orgPath = "/STAT/103417858",
+        identifier = "test identifier 0103",
+        uri = "test uri 0103",
+        name = "test name 0103",
+        prefLabel = LocalizedStrings(
+            "NB Test hasCompetantAuthority > prefLabel",
+            "NN Test hasCompetantAuthority > prefLabel",
+            "NO Test hasCompetantAuthority > prefLabel",
+            "EN Test hasCompetantAuthority > prefLabel"),
+    ))
 )
 
 val SERVICE_WITH_RELATIONS = TEST_NULL_SERVICE.copy(

@@ -26,17 +26,20 @@ val TEST_INFORMATION_MODEL_HIT_ALL_FIELDS = TEST_NULL_INFORMATION_MODEL.copy(
     title = LocalizedStrings(
         "NB title",
         "NN title",
+        "NO title",
         "EN title"),
     catalog = Catalog(
         description = LocalizedStrings(
             "NB Test catalog > description",
             "NN Test catalog > description",
+            "NO Test catalog > description",
             "EN Test catalog > description"),
         id = "Test catalog > id",
         uri = "Test catalog > uri",
         title = LocalizedStrings(
             "NB Test catalog > title",
             "NN Test catalog > title",
+            "NO Test catalog > title",
             "EN Test catalog > title"),
         publisher = Organization(
             orgPath = "/PRIVAT/108117858",
@@ -46,17 +49,20 @@ val TEST_INFORMATION_MODEL_HIT_ALL_FIELDS = TEST_NULL_INFORMATION_MODEL.copy(
             prefLabel = LocalizedStrings(
                 "NB Test publisher > prefLabel",
                 "NN Test publisher > prefLabel",
+                "NO Test publisher > prefLabel",
                 "EN Test publisher > prefLabel"),
         ),
     ),
     description = LocalizedStrings(
         "NB Test description",
         "NN Test description",
+        "NO Test description",
         "EN Test description"),
     keyword = listOf(
         LocalizedStrings(
             "NB Test keyword",
             "NN Test keyword",
+            "NO Test keyword",
             "EN Test keyword")
     ),
     theme = listOf(
@@ -64,12 +70,14 @@ val TEST_INFORMATION_MODEL_HIT_ALL_FIELDS = TEST_NULL_INFORMATION_MODEL.copy(
             title = LocalizedStrings(
                 "NB Test theme > title",
                 "NN Test theme > title",
+                "NO Test theme > title",
                 "EN Test theme > title"),
             code = "ENVI"),
         EuDataTheme(
             title = LocalizedStrings(
                 "NB Test theme > title",
                 "NN Test theme > title",
+                "NO Test theme > title",
                 "EN Test theme > title"),
             code = "REGI")
     ),
@@ -78,6 +86,7 @@ val TEST_INFORMATION_MODEL_HIT_ALL_FIELDS = TEST_NULL_INFORMATION_MODEL.copy(
             name = LocalizedStrings(
                 "NB Test losTheme > name",
                 "NN Test losTheme > name",
+                "NO Test losTheme > name",
                 "EN Test losTheme > name"),
             losPaths = listOf("test"),
         )
@@ -90,6 +99,7 @@ val TEST_INFORMATION_MODEL_HIT_ALL_FIELDS = TEST_NULL_INFORMATION_MODEL.copy(
         prefLabel = LocalizedStrings(
             "NB Test publisher > prefLabel",
             "NN Test publisher > prefLabel",
+            "NO Test publisher > prefLabel",
             "EN Test publisher > prefLabel"),
     ),
     accessRights = ReferenceDataCode(
@@ -98,11 +108,12 @@ val TEST_INFORMATION_MODEL_HIT_ALL_FIELDS = TEST_NULL_INFORMATION_MODEL.copy(
         prefLabel = LocalizedStrings(
             "NB Test accessRights > prefLabel",
             "NN Test accessRights > prefLabel",
+            "NO Test accessRights > prefLabel",
             "EN Test accessRights > prefLabel"),
     ),
-    harvest =  HarvestMetadata(
+    harvest = HarvestMetadata(
         "2022-02-15T11:00:05Z",
-            listOf("Test harvest > changed")),
+        listOf("Test harvest > changed")),
 )
 
 val INFORMATION_MODEL_WITH_RELATIONS = TEST_NULL_INFORMATION_MODEL.copy(

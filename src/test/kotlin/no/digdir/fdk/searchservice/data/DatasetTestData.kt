@@ -32,15 +32,18 @@ val TEST_DATASET_HIT_ALL_FIELDS = TEST_NULL_DATASET.copy(
     title = LocalizedStrings(
         "NB Test title",
         "NN Test title",
+        "NO Test title",
         "EN Test title"),
     description = LocalizedStrings(
         "NB Test description",
         "NN Test description",
+        "NO Test description",
         "EN Test description"),
     keyword = listOf(
         LocalizedStrings(
             "NB Test keyword",
             "NN Test keyword",
+            "NO Test keyword",
             "EN Test keyword")
     ),
     theme = listOf(
@@ -48,12 +51,14 @@ val TEST_DATASET_HIT_ALL_FIELDS = TEST_NULL_DATASET.copy(
             title = LocalizedStrings(
                 "NB Test theme > title",
                 "NN Test theme > title",
+                "NO Test theme > title",
                 "EN Test theme > title"),
             code = "ENVI"),
         EuDataTheme(
             title = LocalizedStrings(
                 "NB Test theme > title",
                 "NN Test theme > title",
+                "NO Test theme > title",
                 "EN Test theme > title"),
             code = "REGI")
     ),
@@ -62,6 +67,7 @@ val TEST_DATASET_HIT_ALL_FIELDS = TEST_NULL_DATASET.copy(
             name = LocalizedStrings(
                 "NB Test losTheme > name",
                 "NN Test losTheme > name",
+                "NO Test losTheme > name",
                 "EN Test losTheme > name"),
             losPaths = listOf("familie-og-barn"),
         )
@@ -74,6 +80,7 @@ val TEST_DATASET_HIT_ALL_FIELDS = TEST_NULL_DATASET.copy(
         prefLabel = LocalizedStrings(
             "NB Test publisher > prefLabel",
             "NN Test publisher > prefLabel",
+            "NO Test publisher > prefLabel",
             "EN Test publisher > prefLabel"),
     ),
     accessRights = ReferenceDataCode(
@@ -82,6 +89,7 @@ val TEST_DATASET_HIT_ALL_FIELDS = TEST_NULL_DATASET.copy(
         prefLabel = LocalizedStrings(
             "NB Test accessRights > prefLabel",
             "NN Test accessRights > prefLabel",
+            "NO Test accessRights > prefLabel",
             "EN Test accessRights > prefLabel")
     ),
     spatial = listOf(
@@ -91,6 +99,7 @@ val TEST_DATASET_HIT_ALL_FIELDS = TEST_NULL_DATASET.copy(
             prefLabel = LocalizedStrings(
                 "NB Test spatial > prefLabel",
                 "NN Test spatial > prefLabel",
+                "NO Test spatial > prefLabel",
                 "EN Test spatial > prefLabel")
         )
     ),
@@ -100,24 +109,27 @@ val TEST_DATASET_HIT_ALL_FIELDS = TEST_NULL_DATASET.copy(
         prefLabel = LocalizedStrings(
             "NB Test provenance > prefLabel",
             "NN Test provenance > prefLabel",
+            "NO Test provenance > prefLabel",
             "EN Test provenance > prefLabel")
     ),
     harvest = HarvestMetadata(
-            firstHarvested = LocalDateTime.now().minusDays(2).format(DateTimeFormatter.ISO_LOCAL_DATE),
-            changed = listOf(
-                    "Test harvest > changed 1",
-                    "Test harvest > changed 2")
+        firstHarvested = LocalDateTime.now().minusDays(2).format(DateTimeFormatter.ISO_LOCAL_DATE),
+        changed = listOf(
+            "Test harvest > changed 1",
+            "Test harvest > changed 2")
     ),
     catalog = Catalog(
         description = LocalizedStrings(
             "NB Test catalog > description",
             "NN Test catalog > description",
+            "NO Test catalog > description",
             "EN Test catalog > description"),
         id = "Test catalog > id",
         uri = "Test catalog > uri",
         title = LocalizedStrings(
             "NB Test catalog > title",
             "NN Test catalog > title",
+            "NO Test catalog > title",
             "EN Test catalog > title"),
         publisher = Organization(
             orgPath = "/PRIVAT/172417858",
@@ -127,6 +139,7 @@ val TEST_DATASET_HIT_ALL_FIELDS = TEST_NULL_DATASET.copy(
             prefLabel = LocalizedStrings(
                 "NB Test publisher > prefLabel",
                 "NN Test publisher > prefLabel",
+                "NO Test publisher > prefLabel",
                 "EN Test publisher > prefLabel"),
         ))
 )
@@ -140,6 +153,7 @@ val TEST_DATASET_FILTERS = TEST_DATASET_HIT_ALL_FIELDS.copy(
         prefLabel = LocalizedStrings(
             "Bruker",
             "Brukar",
+            "Bruker",
             "User")
     ),
     spatial = listOf(
@@ -149,17 +163,18 @@ val TEST_DATASET_FILTERS = TEST_DATASET_HIT_ALL_FIELDS.copy(
             prefLabel = LocalizedStrings(
                 "Norge",
                 "Noreg",
+                "Norge",
                 "Norway")
         ),
         ReferenceDataCode(
             uri = "spatial > uri",
             code = "123456",
-            prefLabel = LocalizedStrings(nb = "Spania", null ,null )
+            prefLabel = LocalizedStrings(nb = "Spania", null, null, null)
         ),
         ReferenceDataCode(
             uri = "spatial > uri",
             code = "56789",
-            prefLabel = LocalizedStrings(nb = "Sogn og fjordane", null ,null )
+            prefLabel = LocalizedStrings(nb = "Sogn og fjordane", null, null, null)
         )
     ),
     losTheme = listOf(
@@ -181,17 +196,17 @@ val TEST_DATASET_FILTERS = TEST_DATASET_HIT_ALL_FIELDS.copy(
     ),
     distribution = listOf(
         Distribution(
-        listOf(
-            MediaTypeOrExtent(name = null, uri = null, type = MediaTypeOrExtentType.MEDIA_TYPE, code = "tiff"),
-            MediaTypeOrExtent(name = null, uri = null, type = MediaTypeOrExtentType.FILE_TYPE, code = "SHP")
-        ))
+            listOf(
+                MediaTypeOrExtent(name = null, uri = null, type = MediaTypeOrExtentType.MEDIA_TYPE, code = "tiff"),
+                MediaTypeOrExtent(name = null, uri = null, type = MediaTypeOrExtentType.FILE_TYPE, code = "SHP")
+            ))
     )
 )
 
 val TEST_DATASET_HIT_IS_OPEN = TEST_DATASET_HIT_ALL_FIELDS.copy(
     uri = "dataset.uri.2",
     isOpenData = true,
-    conformsTo = listOf(ObjectWithURI(uri=TEST_DATASET_FILTERS.uri))
+    conformsTo = listOf(ObjectWithURI(uri = TEST_DATASET_FILTERS.uri))
 )
 
 val basePath = "http://purl.org/dc/terms"

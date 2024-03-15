@@ -32,6 +32,7 @@ val TEST_SEARCH_OBJECT_AND_HIT_ALL_FIELDS = TEST_NULL_SEARCH_OBJECT.copy(
         prefLabel = LocalizedStrings(
             "NB Test accessRights > prefLabel",
             "NN Test accessRights > prefLabel",
+            "NO Test accessRights > prefLabel",
             "EN Test accessRights > prefLabel"
         )
     ),
@@ -41,6 +42,7 @@ val TEST_SEARCH_OBJECT_AND_HIT_ALL_FIELDS = TEST_NULL_SEARCH_OBJECT.copy(
         description = LocalizedStrings(
             "NB Test catalog > description",
             "NN Test catalog > description",
+            "NO Test catalog > description",
             "EN Test catalog > description"
         ),
         publisher = Organization(
@@ -51,12 +53,14 @@ val TEST_SEARCH_OBJECT_AND_HIT_ALL_FIELDS = TEST_NULL_SEARCH_OBJECT.copy(
             prefLabel = LocalizedStrings(
                 "NB Test publisher > prefLabel",
                 "NN Test publisher > prefLabel",
+                "NO Test publisher > prefLabel",
                 "EN Test publisher > prefLabel"
             ),
         ),
         title = LocalizedStrings(
             "NB Test catalog > title",
             "NN Test catalog > title",
+            "NO Test catalog > title",
             "EN Test catalog > title"
         )
     ),
@@ -65,6 +69,7 @@ val TEST_SEARCH_OBJECT_AND_HIT_ALL_FIELDS = TEST_NULL_SEARCH_OBJECT.copy(
             title = LocalizedStrings(
                 "NB Test dataTheme",
                 "NN Test dataTheme",
+                "NO Test dataTheme",
                 "EN Test dataTheme"
             ),
             code = "Test dataTheme > code"
@@ -73,6 +78,7 @@ val TEST_SEARCH_OBJECT_AND_HIT_ALL_FIELDS = TEST_NULL_SEARCH_OBJECT.copy(
     description = LocalizedStrings(
         "NB Test description",
         "NN Test description",
+        "NO Test description",
         "EN Test description"
     ),
     fdkFormatPrefixed = setOf("Test fdkFormatPrefixed"),
@@ -89,6 +95,7 @@ val TEST_SEARCH_OBJECT_AND_HIT_ALL_FIELDS = TEST_NULL_SEARCH_OBJECT.copy(
         LocalizedStrings(
             "NB Test keyword",
             "NN Test keyword",
+            "NO Test keyword",
             "EN Test keyword"
         )
     ),
@@ -97,6 +104,7 @@ val TEST_SEARCH_OBJECT_AND_HIT_ALL_FIELDS = TEST_NULL_SEARCH_OBJECT.copy(
             LocalizedStrings(
                 "NB Test losTheme > name 1",
                 "NN Test losTheme > name 1",
+                "NO Test losTheme > name 1",
                 "EN Test losTheme > name 1"
             ),
             losPaths = null
@@ -105,6 +113,7 @@ val TEST_SEARCH_OBJECT_AND_HIT_ALL_FIELDS = TEST_NULL_SEARCH_OBJECT.copy(
             LocalizedStrings(
                 "NB Test losTheme > name 2",
                 "NN Test losTheme > name 2",
+                "NO Test losTheme > name 2",
                 "EN Test losTheme > name 2"
             ),
             losPaths = listOf("Test")
@@ -118,6 +127,7 @@ val TEST_SEARCH_OBJECT_AND_HIT_ALL_FIELDS = TEST_NULL_SEARCH_OBJECT.copy(
         prefLabel = LocalizedStrings(
             "NB Test publisher > prefLabel",
             "NN Test publisher > prefLabel",
+            "NO Test publisher > prefLabel",
             "EN Test publisher > prefLabel"
         ),
     ),
@@ -127,6 +137,7 @@ val TEST_SEARCH_OBJECT_AND_HIT_ALL_FIELDS = TEST_NULL_SEARCH_OBJECT.copy(
         prefLabel = LocalizedStrings(
             "NB Test provenance > prefLabel",
             "NN Test provenance > prefLabel",
+            "NO Test provenance > prefLabel",
             "EN Test provenance > prefLabel"
         )
     ),
@@ -137,6 +148,7 @@ val TEST_SEARCH_OBJECT_AND_HIT_ALL_FIELDS = TEST_NULL_SEARCH_OBJECT.copy(
             prefLabel = LocalizedStrings(
                 "NB Test spatial > prefLabel",
                 "NN Test spatial > prefLabel",
+                "NO Test spatial > prefLabel",
                 "EN Test spatial > prefLabel"
             )
         )
@@ -144,6 +156,7 @@ val TEST_SEARCH_OBJECT_AND_HIT_ALL_FIELDS = TEST_NULL_SEARCH_OBJECT.copy(
     title = LocalizedStrings(
         "NB Test title",
         "NN Test title",
+        "NO Test title",
         "EN Test title"
     ),
 )

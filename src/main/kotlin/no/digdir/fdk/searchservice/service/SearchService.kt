@@ -324,6 +324,7 @@ class SearchService(
     private fun languagePaths(basePath: String, boost: Int? = null): List<String> =
         listOf("$basePath.nb${if (boost != null) "^$boost" else ""}",
             "$basePath.nn${if (boost != null) "^$boost" else ""}",
+            "$basePath.no${if (boost != null) "^$boost" else ""}",
             "$basePath.en${if (boost != null) "^$boost" else ""}")
 
     private fun StringTermsAggregate.toBucketCounts(): List<BucketCount> =
