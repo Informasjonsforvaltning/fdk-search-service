@@ -29,7 +29,9 @@ class SuggestionService(
         Suggestion(
             id = id,
             title = title,
+            description = description,
             uri = uri,
+            organization = organization,
             searchType = searchType
         )
 

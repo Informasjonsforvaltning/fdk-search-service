@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 data class Suggestion(
     val id: String,
     val title: LocalizedStrings?,
+    val description: LocalizedStrings?,
     val uri: String?,
+    val organization: Organization?,
     val searchType: SearchType
 )

@@ -34,11 +34,16 @@ class SuggestionTest: ApiTestContext() {
         val result: SuggestionsResult = mapper.readValue(response["body"] as String)
         Assertions.assertNotEquals(0, result.suggestions.size)
 
-        val containsTest = result.suggestions.stream()
-            .allMatch { resource ->
-                resource.title?.nb?.contains("title") ?: false
-            }
-        Assertions.assertTrue(containsTest)
+        Assertions.assertTrue(result.suggestions.stream()
+                .allMatch { resource ->
+                    resource.title?.nb?.contains("title") ?: false
+
+                })
+        Assertions.assertTrue(result.suggestions.stream()
+                .anyMatch { resource ->
+                    resource.description?.nb?.contains("Test description") ?: false &&
+                            resource.organization?.id?.contains("Test publisher") ?: false
+                })
     }
 
     @Test
