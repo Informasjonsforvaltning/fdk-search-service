@@ -1,6 +1,6 @@
 package no.digdir.fdk.searchservice.elastic
 
-import no.digdir.fdk.searchservice.config.ElasticProperties
+import no.digdir.fdk.searchservice.configuration.ElasticProperties
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy
 import org.apache.http.ssl.SSLContextBuilder
 import org.apache.http.ssl.SSLContexts

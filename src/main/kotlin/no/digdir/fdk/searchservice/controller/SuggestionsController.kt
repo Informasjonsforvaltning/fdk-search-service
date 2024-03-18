@@ -1,7 +1,7 @@
 package no.digdir.fdk.searchservice.controller
 
 import no.digdir.fdk.searchservice.mapper.pathVariableToSearchType
-import no.digdir.fdk.searchservice.model.Suggestion
+import no.digdir.fdk.searchservice.model.SuggestionsResult
 import no.digdir.fdk.searchservice.service.SuggestionService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -18,7 +18,7 @@ class SuggestionsController(
         @RequestParam(
             value = "q"
         ) query: String,
-    ): ResponseEntity<List<Suggestion>> =
+    ): ResponseEntity<SuggestionsResult> =
         ResponseEntity(
             suggestionService.suggestResources(query, null),
             HttpStatus.OK
@@ -30,7 +30,7 @@ class SuggestionsController(
     fun suggestionsForSpecificResource(
         @PathVariable searchTypes: String,
         @RequestParam("q") query: String,
-    ): ResponseEntity<List<Suggestion>> = (
+    ): ResponseEntity<SuggestionsResult> = (
         if (searchTypes.pathVariableToSearchType() == null) {
             ResponseEntity.notFound().build()
         } else {
