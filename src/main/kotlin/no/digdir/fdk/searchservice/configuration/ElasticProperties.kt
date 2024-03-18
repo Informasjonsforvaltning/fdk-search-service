@@ -1,4 +1,4 @@
-package no.digdir.fdk.searchservice.config
+package no.digdir.fdk.searchservice.configuration
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 

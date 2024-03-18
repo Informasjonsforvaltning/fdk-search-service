@@ -31,10 +31,10 @@ class SuggestionTest: ApiTestContext() {
         val response = requestApi("$SUGGESTIONS_PATH?q=title", port, null, GET)
         Assertions.assertEquals(200, response["status"])
 
-        val result: List<Suggestion> = mapper.readValue(response["body"] as String)
-        Assertions.assertNotEquals(0, result.size)
+        val result: SuggestionsResult = mapper.readValue(response["body"] as String)
+        Assertions.assertNotEquals(0, result.suggestions.size)
 
-        val containsTest = result.stream()
+        val containsTest = result.suggestions.stream()
             .allMatch { resource ->
                 resource.title?.nb?.contains("title") ?: false
             }
@@ -46,8 +46,8 @@ class SuggestionTest: ApiTestContext() {
         val response = requestApi("$SUGGESTIONS_PATH?q=nonExistingQuery", port, null, GET)
         Assertions.assertEquals(200, response["status"])
 
-        val result: List<Suggestion> = mapper.readValue(response["body"] as String)
-        Assertions.assertEquals(0, result.size)
+        val result: SuggestionsResult = mapper.readValue(response["body"] as String)
+        Assertions.assertEquals(0, result.suggestions.size)
     }
 
     @Test
@@ -58,10 +58,10 @@ class SuggestionTest: ApiTestContext() {
         )
         Assertions.assertEquals(200, response["status"])
 
-        val result: List<Suggestion> = mapper.readValue(response["body"] as String)
-        Assertions.assertTrue(result.size > 1)
+        val result: SuggestionsResult = mapper.readValue(response["body"] as String)
+        Assertions.assertTrue(result.suggestions.size > 1)
 
-        val validResult = result.all { resource ->
+        val validResult = result.suggestions.all { resource ->
             resource.title?.nb?.contains("title") == true &&
                     (resource.searchType == SearchType.SERVICE || resource.searchType == SearchType.EVENT)
         }
@@ -75,10 +75,10 @@ class SuggestionTest: ApiTestContext() {
             val response = requestApi("$SUGGESTIONS_PATH/datasets?q=title", port, null, GET)
             Assertions.assertEquals(200, response["status"])
 
-            val result: List<Suggestion> = mapper.readValue(response["body"] as String)
-            Assertions.assertNotEquals(0, result.size)
+            val result: SuggestionsResult = mapper.readValue(response["body"] as String)
+            Assertions.assertNotEquals(0, result.suggestions.size)
 
-            val validResult = result.all { resource ->
+            val validResult = result.suggestions.all { resource ->
                 resource.title?.nb?.contains("title") == true && resource.searchType == SearchType.DATASET
             }
             Assertions.assertTrue(validResult)
@@ -89,10 +89,10 @@ class SuggestionTest: ApiTestContext() {
             val response = requestApi("$SUGGESTIONS_PATH/concepts?q=title", port, null, GET)
             Assertions.assertEquals(200, response["status"])
 
-            val result: List<Suggestion> = mapper.readValue(response["body"] as String)
-            Assertions.assertNotEquals(0, result.size)
+            val result: SuggestionsResult = mapper.readValue(response["body"] as String)
+            Assertions.assertNotEquals(0, result.suggestions.size)
 
-            val validResult = result.all { resource ->
+            val validResult = result.suggestions.all { resource ->
                 resource.title?.nb?.contains("title") == true && resource.searchType == SearchType.CONCEPT
             }
             Assertions.assertTrue(validResult)
@@ -103,10 +103,10 @@ class SuggestionTest: ApiTestContext() {
             val response = requestApi("$SUGGESTIONS_PATH/dataservices?q=title", port, null, GET)
             Assertions.assertEquals(200, response["status"])
 
-            val result: List<Suggestion> = mapper.readValue(response["body"] as String)
-            Assertions.assertNotEquals(0, result.size)
+            val result: SuggestionsResult = mapper.readValue(response["body"] as String)
+            Assertions.assertNotEquals(0, result.suggestions.size)
 
-            val validResult = result.all { resource ->
+            val validResult = result.suggestions.all { resource ->
                 resource.title?.nb?.contains("title") == true && resource.searchType == SearchType.DATA_SERVICE
             }
             Assertions.assertTrue(validResult)
