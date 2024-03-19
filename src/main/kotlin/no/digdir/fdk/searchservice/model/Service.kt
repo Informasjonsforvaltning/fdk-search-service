@@ -1,8 +1,7 @@
 package no.digdir.fdk.searchservice.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import org.springframework.data.annotation.Id
-
+import com.fasterxml.jackson.annotation.JsonInclude
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Service(
@@ -13,8 +12,8 @@ data class Service(
     val keyword: List<LocalizedStrings>?,
     val euDataThemes: List<EuDataTheme>?,
     val losTheme: List<LosNode>?,
-    val ownedBy: List<Organization>?,
-    val hasCompetantAuthority: List<Organization>?,
+    val ownedBy: List<ServiceOrganization>?,
+    val hasCompetantAuthority: List<ServiceOrganization>?,
     val spatial: List<ReferenceDataCode>?,
     val harvest: HarvestMetadata?,
     val isGroupedBy: List<String>?,
@@ -23,4 +22,13 @@ data class Service(
     val relation: List<ObjectWithURI>?,
     val requires: List<ObjectWithURI>?,
     val subject: List<ObjectWithURI>?
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class ServiceOrganization(
+    val identifier: String?,
+    val uri: String?,
+    val orgPath: String?,
+    val name: LocalizedStrings?,
+    val title: LocalizedStrings?,
 )
