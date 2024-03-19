@@ -15,5 +15,5 @@ RUN adduser -D $USER \
 USER $USER
 WORKDIR $HOME
 
-COPY --chown=app:app /target/app.jar app.jar
+COPY --chown=$USER:$USER /target/app.jar app.jar
 CMD java -jar -XX:+UseZGC $JAVA_OPTS app.jar

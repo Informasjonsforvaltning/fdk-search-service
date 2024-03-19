@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@CrossOrigin
 @RequestMapping(value = ["/search"], produces = ["application/json"])
 class SearchController(
     private val searchService: SearchService

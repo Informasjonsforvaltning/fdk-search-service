@@ -39,6 +39,8 @@ spring:
       ack-mode: manual_immediate
 application:
   prop: 1
+  cors:
+    originPatterns: ${CORS_ORIGIN_PATTERNS}
   elastic:
     username: ${ELASTIC_USERNAME}
     password: ${ELASTIC_PASSWORD}
