@@ -1,14 +1,11 @@
 package no.digdir.fdk.searchservice.integration
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import no.digdir.fdk.searchservice.model.*
+import no.digdir.fdk.searchservice.model.SearchType
+import no.digdir.fdk.searchservice.model.SuggestionsResult
 import no.digdir.fdk.searchservice.utils.ApiTestContext
 import no.digdir.fdk.searchservice.utils.requestApi
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Tag
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.*
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpMethod
 import org.springframework.test.context.ContextConfiguration

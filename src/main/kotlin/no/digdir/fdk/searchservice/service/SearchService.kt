@@ -292,6 +292,16 @@ class SearchService(
             })
         }
 
+        filters?.uri?.value?.forEach { uriValue ->
+            queryFilters.add(DSLQuery.of { queryBuilder ->
+                queryBuilder.term { termBuilder ->
+                    termBuilder
+                        .field(FilterFields.Uri.jsonPath())
+                        .value(FieldValue.of(uriValue))
+                }
+            })
+        }
+
         return queryFilters
     }
 
@@ -356,7 +366,7 @@ class SearchService(
             else -> emptyList()
         }
 
-    fun AggregationsContainer<*>.toAggregationCounts(): Map<String, List<BucketCount>> {
+    private fun AggregationsContainer<*>.toAggregationCounts(): Map<String, List<BucketCount>> {
         val aggregations = aggregations() as List<ElasticsearchAggregation>
         return aggregations.map { it.aggregation() }
             .associate { it.name to it.aggregate.toBucketCounts(it.name) }
@@ -393,6 +403,7 @@ class SearchService(
         FilterFields.Relations -> "relations.uri.keyword"
         FilterFields.SearchType -> "searchType.keyword"
         FilterFields.Spatial -> "spatial.prefLabel.nb.keyword"
+        FilterFields.Uri -> "uri.keyword"
     }
 
     private fun FilterFields.aggregationName(): String = when(this) {
@@ -408,11 +419,12 @@ class SearchService(
         FilterFields.Relations -> "relations"
         FilterFields.SearchType -> "searchType"
         FilterFields.Spatial -> "spatial"
+        FilterFields.Uri -> "uri"
     }
 
 }
 
 private enum class FilterFields {
     AccessRights, DataTheme, Deleted, FirstHarvested, Format, LosTheme,
-    OpenData, OrgPath, Provenance, Relations, SearchType, Spatial
+    OpenData, OrgPath, Provenance, Relations, SearchType, Spatial, Uri
 }

@@ -2,10 +2,16 @@ package no.digdir.fdk.searchservice.integration
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import no.digdir.fdk.searchservice.model.*
+import no.digdir.fdk.searchservice.model.SearchFilter
+import no.digdir.fdk.searchservice.model.SearchOperation
+import no.digdir.fdk.searchservice.model.SearchResult
 import no.digdir.fdk.searchservice.utils.ApiTestContext
+import no.digdir.fdk.searchservice.utils.createEmptySearchFilters
 import no.digdir.fdk.searchservice.utils.requestApi
-import org.junit.jupiter.api.*
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpMethod
 import org.springframework.test.context.ContextConfiguration
@@ -20,8 +26,7 @@ import org.springframework.test.context.ContextConfiguration
 @Tag("integration")
 class Aggregations: ApiTestContext() {
     private val mapper = jacksonObjectMapper()
-    private val SEARCH_FILTER = SearchFilters(null, null, null,
-        null, null, null, null, null, null, null)
+    private val SEARCH_FILTER = createEmptySearchFilters()
     private val PATH = "/search"
 
     @Test

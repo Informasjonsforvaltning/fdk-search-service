@@ -2,11 +2,11 @@ package no.digdir.fdk.searchservice.integration
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import no.digdir.fdk.searchservice.model.SearchFilters
 import no.digdir.fdk.searchservice.model.SearchOperation
 import no.digdir.fdk.searchservice.model.SearchResult
 import no.digdir.fdk.searchservice.model.SearchType
 import no.digdir.fdk.searchservice.utils.ApiTestContext
+import no.digdir.fdk.searchservice.utils.createEmptySearchFilters
 import no.digdir.fdk.searchservice.utils.requestApi
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
@@ -30,10 +30,7 @@ class SearchDatasetTest: ApiTestContext() {
     private val SEARCH_QUERYS_HIT_ALL_SEARCH_FIELDS =
         listOf("title", "description", "keyword")
     private val mapper = jacksonObjectMapper()
-    private val searchFilters = SearchFilters(
-        null, null, null,
-        null, null, null, null, null, null, null
-    )
+    private val searchFilters = createEmptySearchFilters()
 
     @Test
     fun `search datasets with at least one hit`() {

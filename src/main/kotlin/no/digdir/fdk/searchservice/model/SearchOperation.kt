@@ -29,7 +29,8 @@ data class SearchFilters(
     val orgPath: SearchFilter<String>?,
     val formats: SearchFilter<List<String>>?,
     val relations: SearchFilter<String>?,
-    val lastXDays: SearchFilter<Int>?
+    val lastXDays: SearchFilter<Int>?,
+    val uri: SearchFilter<List<String>>?
 )
 
 class SortField(
