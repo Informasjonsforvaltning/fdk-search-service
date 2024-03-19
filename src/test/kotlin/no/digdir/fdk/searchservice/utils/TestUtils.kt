@@ -1,5 +1,6 @@
 package no.digdir.fdk.searchservice.utils
 
+import no.digdir.fdk.searchservice.model.SearchFilters
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -51,4 +52,12 @@ fun requestApi(
             "body" to " "
         )
     }
+}
+
+fun createEmptySearchFilters(): SearchFilters {
+    return SearchFilters(
+        null, null, null,
+        null, null, null, null, null,
+        null, null, null
+    )
 }

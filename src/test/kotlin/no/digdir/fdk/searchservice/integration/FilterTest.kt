@@ -5,6 +5,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import no.digdir.fdk.searchservice.data.TEST_DATASET_FILTERS
 import no.digdir.fdk.searchservice.model.*
 import no.digdir.fdk.searchservice.utils.ApiTestContext
+import no.digdir.fdk.searchservice.utils.createEmptySearchFilters
 import no.digdir.fdk.searchservice.utils.requestApi
 import org.junit.jupiter.api.*
 import org.springframework.boot.test.context.SpringBootTest
@@ -21,8 +22,7 @@ import org.springframework.test.context.ContextConfiguration
 @Tag("integration")
 class FilterTest: ApiTestContext() {
     private val mapper = jacksonObjectMapper()
-    private val SEARCH_FILTER = SearchFilters(null, null, null,
-        null, null, null, null, null, null, null)
+    private val SEARCH_FILTER = createEmptySearchFilters()
     private val DATASETS_PATH = "/search/datasets"
     private val DATASERVICES_PATH = "/search/dataservices"
     private val ALL_RESOURCES_PATH = "/search"
@@ -472,6 +472,31 @@ class FilterTest: ApiTestContext() {
         fun `filter datasets on harvested 1 day ago should return no hits`() {
             val searchBody =
                 mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(lastXDays = SearchFilter(1))))
+            val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
+            Assertions.assertEquals(200, response["status"])
+
+            val result: SearchResult = mapper.readValue(response["body"] as String)
+            Assertions.assertEquals(0, result.hits.size)
+        }
+    }
+
+    @Nested
+    inner class Uris {
+        @Test
+        fun `filter datasets by uri dataset uri 2`() {
+            val searchBody =
+                    mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(uri = SearchFilter(listOf("dataset.uri.2")))))
+            val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
+            Assertions.assertEquals(200, response["status"])
+
+            val result: SearchResult = mapper.readValue(response["body"] as String)
+            Assertions.assertNotEquals(0, result.hits.size)
+        }
+
+        @Test
+        fun `filter by uri should return no hits`() {
+            val searchBody =
+                    mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(uri = SearchFilter(listOf("dataset.uri.doesNotExist")))))
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 

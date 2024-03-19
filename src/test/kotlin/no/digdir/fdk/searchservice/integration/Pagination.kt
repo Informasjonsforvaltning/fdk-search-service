@@ -3,10 +3,10 @@ package no.digdir.fdk.searchservice.integration
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.digdir.fdk.searchservice.model.Pagination
-import no.digdir.fdk.searchservice.model.SearchFilters
 import no.digdir.fdk.searchservice.model.SearchOperation
 import no.digdir.fdk.searchservice.model.SearchResult
 import no.digdir.fdk.searchservice.utils.ApiTestContext
+import no.digdir.fdk.searchservice.utils.createEmptySearchFilters
 import no.digdir.fdk.searchservice.utils.requestApi
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
@@ -26,10 +26,7 @@ import kotlin.test.Test
 class Pagination : ApiTestContext() {
     private val SEARCH_PATH = "/search"
     private val mapper = jacksonObjectMapper()
-    private val SEARCH_FILTER = SearchFilters(
-        null, null, null,
-        null, null, null, null, null, null, null
-    )
+    private val SEARCH_FILTER = createEmptySearchFilters()
 
     @Test
     fun `SearchResult has more than one pages`() {
