@@ -127,12 +127,12 @@ val TEST_SERVICE_HIT_ALL_FIELDS = TEST_NULL_SERVICE.copy(
 val TEST_SERVICE_HIT_OWNED_BY = TEST_SERVICE_HIT_ALL_FIELDS.copy(
     uri = "uri 0102",
     keyword = listOf(LocalizedStrings(nb = "keyword", nn = "keyword", no = "keyword", en = "keyword")),
-    ownedBy = listOf(Organization(
+    ownedBy = listOf(ServiceOrganization(
         orgPath = "/STAT/010247858",
-        id = "test identifier 0102",
+        identifier = "test identifier 0102",
         uri = "test uri 0102",
-        name = "test name 0102",
-        prefLabel = LocalizedStrings(
+        name = LocalizedStrings("test name 0102", null, null, null),
+        title = LocalizedStrings(
             "NB Test ownedBy > prefLabel",
             "NN Test ownedBy > prefLabel",
             "NO Test ownedBy > prefLabel",
@@ -142,12 +142,12 @@ val TEST_SERVICE_HIT_OWNED_BY = TEST_SERVICE_HIT_ALL_FIELDS.copy(
 
 val TEST_SERVICE_HIT_HAS_COMPETANT_AUTHORITY = TEST_NULL_SERVICE.copy(
     uri = "uri 0103",
-    hasCompetantAuthority = listOf(Organization(
+    hasCompetantAuthority = listOf(ServiceOrganization(
         orgPath = "/STAT/103417858",
-        id = "test identifier 0103",
+        identifier = "test identifier 0103",
         uri = "test uri 0103",
-        name = "test name 0103",
-        prefLabel = LocalizedStrings(
+        name = LocalizedStrings("test name 0103", null, null, null),
+        title = LocalizedStrings(
             "NB Test hasCompetantAuthority > prefLabel",
             "NN Test hasCompetantAuthority > prefLabel",
             "NO Test hasCompetantAuthority > prefLabel",

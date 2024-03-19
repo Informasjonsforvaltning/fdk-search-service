@@ -15,7 +15,7 @@ fun Service.toSearchObject(id: String, timestamp: Long, deleted: Boolean = false
         isOpenData = null,
         keyword = keyword?.toSet(),
         losTheme = losTheme?.toSet(),
-        organization = getOrganization(),
+        organization = getOrganization()?.toSearchOrg(),
         provenance = null,
         searchType = SearchType.SERVICE,
         spatial = spatial?.toSet(),
@@ -28,6 +28,15 @@ private fun Service.getOrganization() = if (hasCompetantAuthority.isNullOrEmpty(
 } else {
     hasCompetantAuthority.get(0)
 }
+
+private fun ServiceOrganization.toSearchOrg(): Organization =
+    Organization(
+        id = identifier,
+        uri = uri,
+        orgPath = orgPath,
+        name = name?.nb,
+        prefLabel = title
+    )
 
 
 fun Service.getRelations(): Set<Relation> {
