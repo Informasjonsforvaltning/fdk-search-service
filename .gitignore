@@ -24,3 +24,5 @@ target/
 .vscode/
 
 Local.Dockerfile
+
+.DS_Store
