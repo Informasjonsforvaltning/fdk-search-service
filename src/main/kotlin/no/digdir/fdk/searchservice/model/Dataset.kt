@@ -22,5 +22,6 @@ data class Dataset(
     val conformsTo: List<ObjectWithURI>?,
     val inSeries: ObjectWithURI?,
     val references: List<Reference>?,
-    val subject: List<ObjectWithURI>?
+    val subject: List<ObjectWithURI>?,
+    val specializedType: String?,
 )

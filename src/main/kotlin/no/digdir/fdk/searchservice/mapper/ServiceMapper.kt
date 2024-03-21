@@ -20,7 +20,8 @@ fun Service.toSearchObject(id: String, timestamp: Long, deleted: Boolean = false
         searchType = SearchType.SERVICE,
         spatial = spatial?.toSet(),
         title = title,
-        relations = getRelations()
+        relations = getRelations(),
+        specializedType = null,
     )
 
 private fun Service.getOrganization() = if (hasCompetantAuthority.isNullOrEmpty()) {

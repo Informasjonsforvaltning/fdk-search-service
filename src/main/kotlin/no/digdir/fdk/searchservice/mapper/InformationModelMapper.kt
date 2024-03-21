@@ -20,7 +20,8 @@ fun InformationModel.toSearchObject(id: String, timestamp: Long, deleted: Boolea
         searchType = SearchType.INFORMATION_MODEL,
         spatial = null,
         title = title,
-        relations = getRelations()
+        relations = getRelations(),
+        specializedType = null,
     )
 
 fun InformationModel.getRelations(): Set<Relation> {

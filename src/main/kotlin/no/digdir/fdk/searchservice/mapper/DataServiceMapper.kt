@@ -24,7 +24,8 @@ fun DataService.toSearchObject(id: String, timestamp: Long, deleted: Boolean = f
         searchType = SearchType.DATA_SERVICE,
         spatial = null,
         title = title,
-        relations = getRelations()
+        relations = getRelations(),
+        specializedType = null,
     )
 
 fun DataService.extractPrefixedFormats(): Set<String> {

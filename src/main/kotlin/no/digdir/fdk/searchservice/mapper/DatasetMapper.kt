@@ -20,7 +20,8 @@ fun Dataset.toSearchObject(id: String, timestamp: Long, deleted: Boolean = false
         searchType = SearchType.DATASET,
         spatial = spatial?.toSet(),
         title = title,
-        relations = getRelations()
+        relations = getRelations(),
+        specializedType = getSpecializedType(),
     )
 
 fun Dataset.extractPrefixedFormats(): Set<String> {
@@ -70,6 +71,13 @@ private fun Reference.uriToRelationType(): RelationType? {
         "$basePath/requires" -> RelationType.requires
         "$basePath/isRequiredBy" -> RelationType.isRequiredBy
         "$basePath/relation" -> RelationType.relation
+        else -> null
+    }
+}
+
+fun Dataset.getSpecializedType(): SpecializedType? {
+    return when (specializedType) {
+        "datasetSeries" -> SpecializedType.DATASET_SERIES
         else -> null
     }
 }

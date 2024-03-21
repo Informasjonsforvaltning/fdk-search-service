@@ -101,7 +101,8 @@ class KafkaRemovedEventConsumer(
                 provenance = null,
                 relations = null,
                 spatial = null,
-                title = null
+                title = null,
+                specializedType = null,
             ).let { save(it) }
         }
     }

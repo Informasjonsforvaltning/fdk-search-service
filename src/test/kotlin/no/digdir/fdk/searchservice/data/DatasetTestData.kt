@@ -25,7 +25,8 @@ val TEST_NULL_DATASET = Dataset(
     subject = null,
     conformsTo = null,
     inSeries = null,
-    references = null
+    references = null,
+    specializedType = null,
 )
 
 val TEST_DATASET_HIT_ALL_FIELDS = TEST_NULL_DATASET.copy(
