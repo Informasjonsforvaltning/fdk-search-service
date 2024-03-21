@@ -43,8 +43,8 @@ class SearchService(
 
         if (sort != null) builder.addSorting(sort)
 
-        if (query.isNullOrBlank()) builder.addEmptyQueryWithFilters(filters, searchTypes)
-        else builder.addFilteredQuery(fields, query, filters, searchTypes)
+        if (query.isNullOrBlank()) builder.addEmptyQueryWithFilters(filters, searchTypes, profile)
+        else builder.addFilteredQuery(fields, query, filters, searchTypes, profile)
 
         return builder.build()
     }
@@ -53,7 +53,8 @@ class SearchService(
         queryFields: QueryFields,
         queryValue: String,
         filters: SearchFilters?,
-        searchTypes: List<SearchType>?
+        searchTypes: List<SearchType>?,
+        profile: SearchProfile?
     ) {
         withQuery { queryBuilder ->
             queryBuilder.bool { boolBuilder ->
@@ -76,15 +77,19 @@ class SearchService(
                     }
                 }
                 boolBuilder.minimumShouldMatch("1")
-                boolBuilder.filter(createQueryFilters(filters, searchTypes))
+                boolBuilder.filter(createQueryFilters(filters, searchTypes, profile))
             }
         }
     }
 
-    private fun NativeQueryBuilder.addEmptyQueryWithFilters(filters: SearchFilters?, searchTypes: List<SearchType>?) {
+    private fun NativeQueryBuilder.addEmptyQueryWithFilters(
+        filters: SearchFilters?,
+        searchTypes: List<SearchType>?,
+        profile: SearchProfile?
+    ) {
         withQuery { queryBuilder ->
             queryBuilder.bool { boolBuilder ->
-                boolBuilder.filter(createQueryFilters(filters, searchTypes))
+                boolBuilder.filter(createQueryFilters(filters, searchTypes, profile))
             }
         }
     }
@@ -161,7 +166,11 @@ class SearchService(
             else -> SortOrder.Desc
         }
 
-    private fun createQueryFilters(filters: SearchFilters?, searchTypes: List<SearchType>?): List<DSLQuery> {
+    private fun createQueryFilters(
+        filters: SearchFilters?,
+        searchTypes: List<SearchType>?,
+        profile: SearchProfile?
+    ): List<DSLQuery> {
         val queryFilters = mutableListOf<DSLQuery>()
 
         queryFilters.add(DSLQuery.of { queryBuilder ->
@@ -302,6 +311,8 @@ class SearchService(
             })
         }
 
+        if (profile == SearchProfile.TRANSPORT) queryFilters.add(filtersForProfile(profile))
+
         return queryFilters
     }
 
@@ -389,6 +400,28 @@ class SearchService(
                     )
                 )
             }
+
+    private val transportProfileLosValues =
+        listOf(
+            FieldValue.of("trafikk-og-transport/mobilitetstilbud"),
+            FieldValue.of("trafikk-og-transport/trafikkinformasjon"),
+            FieldValue.of("trafikk-og-transport/veg-og-vegregulering"),
+            FieldValue.of("trafikk-og-transport/yrkestransport"),
+        )
+
+    private fun filtersForProfile(profile: SearchProfile) = when(profile) {
+        SearchProfile.TRANSPORT -> {
+            co.elastic.clients.elasticsearch._types.query_dsl.Query.of { queryBuilder ->
+                queryBuilder.terms { termsBuilder ->
+                    termsBuilder
+                        .field(FilterFields.LosTheme.jsonPath())
+                        .terms { termsQueryBuilder ->
+                            termsQueryBuilder.value(transportProfileLosValues)
+                        }
+                }
+            }
+        }
+    }
 
     private fun FilterFields.jsonPath(): String = when(this) {
         FilterFields.AccessRights -> "accessRights.code.keyword"

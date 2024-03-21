@@ -70,6 +70,10 @@ val TEST_DATASET_HIT_ALL_FIELDS = TEST_NULL_DATASET.copy(
                 "NO Test losTheme > name",
                 "EN Test losTheme > name"),
             losPaths = listOf("familie-og-barn"),
+        ),
+        LosNode(
+            name = null,
+            losPaths = listOf("trafikk-og-transport/mobilitetstilbud")
         )
     ),
     publisher = Organization(
