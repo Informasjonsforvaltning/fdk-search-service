@@ -20,7 +20,8 @@ fun Concept.toSearchObject(id: String, timestamp: Long, deleted: Boolean = false
         searchType = SearchType.CONCEPT,
         spatial = null,
         title = prefLabel,
-        relations = getRelations()
+        relations = getRelations(),
+        specializedType = null,
     )
 
 fun Concept.getRelations(): Set<Relation> {

@@ -14,3 +14,9 @@ enum class MediaTypeOrExtentType {
     MEDIA_TYPE,
     FILE_TYPE
 }
+
+enum class SpecializedType {
+    DATASET_SERIES,
+    LIFE_EVENT,
+    BUSINESS_EVENT,
+}

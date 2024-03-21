@@ -20,7 +20,8 @@ fun Event.toSearchObject(id: String, timestamp: Long, deleted: Boolean = false) 
         searchType = SearchType.EVENT,
         spatial = null,
         title = title,
-        relations = getRelations()
+        relations = getRelations(),
+        specializedType = getSpecializedType(),
     )
 
 fun Event.getRelations(): Set<Relation> {
@@ -32,4 +33,12 @@ fun Event.getRelations(): Set<Relation> {
     }
 
     return relations
+}
+
+fun Event.getSpecializedType(): SpecializedType? {
+    return when (specializedType) {
+        "life_event" -> SpecializedType.LIFE_EVENT
+        "business_event" -> SpecializedType.BUSINESS_EVENT
+        else -> null
+    }
 }
