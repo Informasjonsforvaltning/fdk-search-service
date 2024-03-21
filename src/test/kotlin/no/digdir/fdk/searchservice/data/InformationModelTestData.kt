@@ -89,6 +89,10 @@ val TEST_INFORMATION_MODEL_HIT_ALL_FIELDS = TEST_NULL_INFORMATION_MODEL.copy(
                 "NO Test losTheme > name",
                 "EN Test losTheme > name"),
             losPaths = listOf("test"),
+        ),
+        LosNode(
+            name = null,
+            losPaths = listOf("trafikk-og-transport/mobilitetstilbud")
         )
     ),
     publisher = Organization(

@@ -9,6 +9,7 @@ data class SearchOperation(
     val fields: QueryFields = QueryFields(),
     val sort: SortField? = null,
     val pagination: Pagination = Pagination(),
+    val profile: SearchProfile? = null
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -45,6 +46,10 @@ enum class SortFieldEnum {
 enum class SortDirection {
     ASC,
     DESC,
+}
+
+enum class SearchProfile {
+    TRANSPORT,
 }
 
 @JsonIgnoreProperties(ignoreUnknown = true)
