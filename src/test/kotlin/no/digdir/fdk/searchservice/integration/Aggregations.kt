@@ -65,4 +65,14 @@ class Aggregations: ApiTestContext() {
         Assertions.assertEquals("PUBLIC", result.aggregations["accessRights"]?.first()?.key)
     }
 
+    @Test
+    fun `aggregations can be larger than the default size 10`() {
+        val searchBody = mapper.writeValueAsString(SearchOperation())
+        val response = requestApi(PATH, port, searchBody, HttpMethod.POST)
+        Assertions.assertEquals(200, response["status"])
+
+        val result: SearchResult = mapper.readValue(response["body"] as String)
+        Assertions.assertTrue(10 < (result.aggregations["orgPath"]?.size ?: 0))
+    }
+
 }
