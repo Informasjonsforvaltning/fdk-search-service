@@ -85,4 +85,16 @@ class EventSearchTest: ApiTestContext() {
             if (result.hits.isEmpty()) Assertions.fail<String>("No hit for query: $it")
         }
     }
+
+    @Test
+    fun `events uses org data from catalog`() {
+        SEARCH_QUERYS_HIT_ALL_SEARCH_FIELDS.forEach {
+            val searchBody = mapper.writeValueAsString(SearchOperation("NB title 1061", searchFilters))
+            val response = requestApi(EVENTS_PATH, port, searchBody, POST)
+            Assertions.assertEquals(200, response["status"])
+
+            val result: SearchResult = mapper.readValue(response["body"] as String)
+           Assertions.assertTrue(result.hits.any { it.organization?.orgPath == "/PRIVAT/111222333/333222111" })
+        }
+    }
 }

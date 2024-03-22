@@ -31,10 +31,10 @@ val TEST_EVENT = TEST_NULL_EVENT.copy(
 val TEST_EVENT_HIT_ALL_FIELDS = TEST_NULL_EVENT.copy(
     uri = "uri 1061",
     title = LocalizedStrings(
-        "NB title",
-        "NN title",
-        "NO title",
-        "EN title"),
+        "NB title 1061",
+        "NN title 1061",
+        "NO title 1061",
+        "EN title 1061"),
     catalog = Catalog(
         description = LocalizedStrings(
             "NB Test catalog > description",
@@ -49,7 +49,7 @@ val TEST_EVENT_HIT_ALL_FIELDS = TEST_NULL_EVENT.copy(
             "NO Test catalog > title",
             "EN Test catalog > title"),
         publisher = Organization(
-            orgPath = "/PRIVAT/106117858",
+            orgPath = "/PRIVAT/111222333/333222111",
             id = "Test publisher > identifier",
             uri = "Test publisher > uri",
             name = "Test publisher > name",
