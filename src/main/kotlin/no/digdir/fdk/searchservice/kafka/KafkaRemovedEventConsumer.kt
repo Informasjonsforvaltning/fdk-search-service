@@ -103,6 +103,7 @@ class KafkaRemovedEventConsumer(
                 spatial = null,
                 title = null,
                 specializedType = null,
+                isAuthoritative = null
             ).let { save(it) }
         }
     }

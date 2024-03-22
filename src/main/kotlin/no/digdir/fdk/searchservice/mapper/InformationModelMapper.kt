@@ -22,6 +22,7 @@ fun InformationModel.toSearchObject(id: String, timestamp: Long, deleted: Boolea
         title = title,
         relations = getRelations(),
         specializedType = null,
+        isAuthoritative = null
     )
 
 fun InformationModel.getRelations(): Set<Relation> {

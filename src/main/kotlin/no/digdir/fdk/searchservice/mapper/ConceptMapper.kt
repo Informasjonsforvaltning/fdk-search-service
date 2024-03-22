@@ -22,6 +22,7 @@ fun Concept.toSearchObject(id: String, timestamp: Long, deleted: Boolean = false
         title = prefLabel,
         relations = getRelations(),
         specializedType = null,
+        isAuthoritative = null
     )
 
 fun Concept.getRelations(): Set<Relation> {
