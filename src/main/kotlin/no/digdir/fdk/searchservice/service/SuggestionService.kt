@@ -1,10 +1,7 @@
 package no.digdir.fdk.searchservice.service
 
 import co.elastic.clients.elasticsearch._types.FieldValue
-import no.digdir.fdk.searchservice.model.SearchObject
-import no.digdir.fdk.searchservice.model.SearchType
-import no.digdir.fdk.searchservice.model.Suggestion
-import no.digdir.fdk.searchservice.model.SuggestionsResult
+import no.digdir.fdk.searchservice.model.*
 import org.springframework.data.elasticsearch.client.elc.NativeQuery
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations
 import org.springframework.data.elasticsearch.core.SearchHits
@@ -16,11 +13,11 @@ import co.elastic.clients.elasticsearch._types.query_dsl.Query as DSLQuery
 class SuggestionService(
     private val elasticsearchOperations: ElasticsearchOperations
 ) {
-    private fun suggestResource(query: String, searchType: List<SearchType>?): SearchHits<SearchObject> =
-        elasticsearchOperations.search(suggestionQuery(query, searchType), SearchObject::class.java)
+    private fun suggestResource(query: String, searchType: List<SearchType>?, profile: SearchProfile?): SearchHits<SearchObject> =
+        elasticsearchOperations.search(suggestionQuery(query, searchType, profile), SearchObject::class.java)
 
-    fun suggestResources(query: String, searchType: List<SearchType>?): SuggestionsResult =
-            SuggestionsResult(suggestResource(query, searchType)
+    fun suggestResources(query: String, searchType: List<SearchType>?, profile: SearchProfile?): SuggestionsResult =
+            SuggestionsResult(suggestResource(query, searchType, profile)
                 .map { it.content }
                 .map { it.toSuggestion() }
                 .toList())
@@ -35,36 +32,62 @@ class SuggestionService(
             searchType = searchType
         )
 
-    private fun suggestionQuery(query: String, searchTypes: List<SearchType>?): Query {
+    private fun suggestionQuery(query: String, searchTypes: List<SearchType>?, profile: SearchProfile?): Query {
         val builder = NativeQuery.builder()
 
-        if (!searchTypes.isNullOrEmpty()) {
-            builder.withFilter { queryBuilder ->
-                queryBuilder.bool { boolBuilder ->
-                    boolBuilder.should(searchTypeFilter(searchTypes))
-                }
-            }
-        }
-
         builder.withQuery { queryBuilder ->
-            queryBuilder.matchPhrasePrefix { matchBuilder ->
-                matchBuilder.query(query)
-                    .field("title.nb")
+            queryBuilder.bool { boolBuilder ->
+                boolBuilder.should {
+                    it.matchPhrasePrefix { matchBuilder ->
+                        matchBuilder
+                            .field("title.nb")
+                            .query(query)
+                    }
+
+                }
+
+                boolBuilder.should {
+                    it.matchPhrase { matchBuilder ->
+                        matchBuilder
+                            .field("title.nb")
+                            .query(query)
+                    }
+                }
+                boolBuilder.minimumShouldMatch("1")
+                boolBuilder.filter(createQueryFilters(searchTypes, profile))
             }
         }
 
         return builder.build()
     }
 
-    private fun searchTypeFilter(searchTypes: List<SearchType>): List<DSLQuery> {
-        return searchTypes.map { searchType ->
-            DSLQuery.of { queryBuilder ->
-                queryBuilder.term { termBuilder ->
-                    termBuilder
-                        .field("searchType.keyword")
-                        .value(FieldValue.of(searchType.name))
-                }
+    private fun createQueryFilters(searchTypes: List<SearchType>?, profile: SearchProfile?): List<DSLQuery> {
+        val queryFilters = mutableListOf<DSLQuery>()
+
+        queryFilters.add(DSLQuery.of { queryBuilder ->
+            queryBuilder.term { termBuilder ->
+                termBuilder
+                        .field(FilterFields.Deleted.jsonPath())
+                        .value(FieldValue.of(false))
             }
+        })
+
+        if (searchTypes != null) {
+            queryFilters.add(
+                    DSLQuery.of { queryBuilder ->
+                        queryBuilder.terms { termsBuilder ->
+                            termsBuilder
+                                    .field(FilterFields.SearchType.jsonPath())
+                                    .terms { termsQueryBuilder ->
+                                        termsQueryBuilder
+                                                .value(searchTypes.map { FieldValue.of(it.name) })
+                                    }
+                        }
+                    })
         }
+
+        if (profile == SearchProfile.TRANSPORT) queryFilters.add(filtersForProfile(profile))
+
+        return queryFilters
     }
 }

@@ -400,64 +400,62 @@ class SearchService(
                     )
                 )
             }
+}
 
-    private val transportProfileLosValues =
+private val transportProfileLosValues =
         listOf(
-            FieldValue.of("trafikk-og-transport/mobilitetstilbud"),
-            FieldValue.of("trafikk-og-transport/trafikkinformasjon"),
-            FieldValue.of("trafikk-og-transport/veg-og-vegregulering"),
-            FieldValue.of("trafikk-og-transport/yrkestransport"),
+                FieldValue.of("trafikk-og-transport/mobilitetstilbud"),
+                FieldValue.of("trafikk-og-transport/trafikkinformasjon"),
+                FieldValue.of("trafikk-og-transport/veg-og-vegregulering"),
+                FieldValue.of("trafikk-og-transport/yrkestransport"),
         )
-
-    private fun filtersForProfile(profile: SearchProfile) = when(profile) {
-        SearchProfile.TRANSPORT -> {
-            co.elastic.clients.elasticsearch._types.query_dsl.Query.of { queryBuilder ->
-                queryBuilder.terms { termsBuilder ->
-                    termsBuilder
+internal fun filtersForProfile(profile: SearchProfile) = when(profile) {
+    SearchProfile.TRANSPORT -> {
+        co.elastic.clients.elasticsearch._types.query_dsl.Query.of { queryBuilder ->
+            queryBuilder.terms { termsBuilder ->
+                termsBuilder
                         .field(FilterFields.LosTheme.jsonPath())
                         .terms { termsQueryBuilder ->
                             termsQueryBuilder.value(transportProfileLosValues)
                         }
-                }
             }
         }
     }
-
-    private fun FilterFields.jsonPath(): String = when(this) {
-        FilterFields.AccessRights -> "accessRights.code.keyword"
-        FilterFields.DataTheme -> "dataTheme.code.keyword"
-        FilterFields.Deleted -> "metadata.deleted"
-        FilterFields.FirstHarvested -> "metadata.firstHarvested"
-        FilterFields.Format -> "fdkFormatPrefixed.keyword"
-        FilterFields.LosTheme -> "losTheme.losPaths.keyword"
-        FilterFields.OpenData -> "isOpenData"
-        FilterFields.OrgPath -> "organization.orgPath.keyword"
-        FilterFields.Provenance -> "provenance.code.keyword"
-        FilterFields.Relations -> "relations.uri.keyword"
-        FilterFields.SearchType -> "searchType.keyword"
-        FilterFields.Spatial -> "spatial.prefLabel.nb.keyword"
-        FilterFields.Uri -> "uri.keyword"
-    }
-
-    private fun FilterFields.aggregationName(): String = when(this) {
-        FilterFields.AccessRights -> "accessRights"
-        FilterFields.DataTheme -> "dataTheme"
-        FilterFields.Deleted -> "deleted"
-        FilterFields.FirstHarvested -> "firstHarvested"
-        FilterFields.Format -> "format"
-        FilterFields.LosTheme -> "losTheme"
-        FilterFields.OpenData -> "openData"
-        FilterFields.OrgPath -> "orgPath"
-        FilterFields.Provenance -> "provenance"
-        FilterFields.Relations -> "relations"
-        FilterFields.SearchType -> "searchType"
-        FilterFields.Spatial -> "spatial"
-        FilterFields.Uri -> "uri"
-    }
-
 }
 
-private enum class FilterFields {
+internal enum class FilterFields {
     AccessRights, DataTheme, Deleted, FirstHarvested, Format, LosTheme,
     OpenData, OrgPath, Provenance, Relations, SearchType, Spatial, Uri
+}
+
+internal fun FilterFields.jsonPath(): String = when(this) {
+    FilterFields.AccessRights -> "accessRights.code.keyword"
+    FilterFields.DataTheme -> "dataTheme.code.keyword"
+    FilterFields.Deleted -> "metadata.deleted"
+    FilterFields.FirstHarvested -> "metadata.firstHarvested"
+    FilterFields.Format -> "fdkFormatPrefixed.keyword"
+    FilterFields.LosTheme -> "losTheme.losPaths.keyword"
+    FilterFields.OpenData -> "isOpenData"
+    FilterFields.OrgPath -> "organization.orgPath.keyword"
+    FilterFields.Provenance -> "provenance.code.keyword"
+    FilterFields.Relations -> "relations.uri.keyword"
+    FilterFields.SearchType -> "searchType.keyword"
+    FilterFields.Spatial -> "spatial.prefLabel.nb.keyword"
+    FilterFields.Uri -> "uri.keyword"
+}
+
+private fun FilterFields.aggregationName(): String = when(this) {
+    FilterFields.AccessRights -> "accessRights"
+    FilterFields.DataTheme -> "dataTheme"
+    FilterFields.Deleted -> "deleted"
+    FilterFields.FirstHarvested -> "firstHarvested"
+    FilterFields.Format -> "format"
+    FilterFields.LosTheme -> "losTheme"
+    FilterFields.OpenData -> "openData"
+    FilterFields.OrgPath -> "orgPath"
+    FilterFields.Provenance -> "provenance"
+    FilterFields.Relations -> "relations"
+    FilterFields.SearchType -> "searchType"
+    FilterFields.Spatial -> "spatial"
+    FilterFields.Uri -> "uri"
 }

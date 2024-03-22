@@ -115,6 +115,20 @@ class SuggestionTest: ApiTestContext() {
         }
 
         @Test
+        fun `get suggestion with transport profile`() {
+            val response = requestApi("$SUGGESTIONS_PATH/datasets?q=title&profile=TRANSPORT", port, null, GET)
+            Assertions.assertEquals(200, response["status"])
+
+            val result: SuggestionsResult = mapper.readValue(response["body"] as String)
+            Assertions.assertEquals(2, result.suggestions.size)
+
+            val validResult = result.suggestions.all { resource ->
+                resource.title?.nb?.contains("NB Test title") == true && resource.searchType == SearchType.DATASET
+            }
+            Assertions.assertTrue(validResult)
+        }
+
+        @Test
         fun `non valid resource type should return not found`() {
             val response = requestApi("$SUGGESTIONS_PATH/nonvalid?q=title", port, null, GET)
             Assertions.assertEquals(404, response["status"])
