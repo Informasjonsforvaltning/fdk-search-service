@@ -95,52 +95,61 @@ class SearchService(
     }
 
     private fun NativeQueryBuilder.addAggregations(): NativeQueryBuilder {
+        val aggSize = 15000
         withAggregation(
             FilterFields.AccessRights.aggregationName(),
             AggregationBuilders.terms { builder ->
                 builder.field(FilterFields.AccessRights.jsonPath())
+                    .size(aggSize)
             }
         )
         withAggregation(
             FilterFields.DataTheme.aggregationName(),
             AggregationBuilders.terms { builder ->
                 builder.field(FilterFields.DataTheme.jsonPath())
+                    .size(aggSize)
             }
         )
         withAggregation(
             FilterFields.Format.aggregationName(),
             AggregationBuilders.terms { builder ->
                 builder.field(FilterFields.Format.jsonPath())
+                    .size(aggSize)
             }
         )
         withAggregation(
             FilterFields.LosTheme.aggregationName(),
             AggregationBuilders.terms { builder ->
                 builder.field(FilterFields.LosTheme.jsonPath())
+                    .size(aggSize)
             }
         )
         withAggregation(
             FilterFields.OrgPath.aggregationName(),
             AggregationBuilders.terms { builder ->
                 builder.field(FilterFields.OrgPath.jsonPath())
+                    .size(aggSize)
             }
         )
         withAggregation(
             FilterFields.OpenData.aggregationName(),
             AggregationBuilders.terms { builder ->
                 builder.field(FilterFields.OpenData.jsonPath())
+                    .size(aggSize)
             }
         )
         withAggregation(
             FilterFields.Provenance.aggregationName(),
             AggregationBuilders.terms { builder ->
                 builder.field(FilterFields.Provenance.jsonPath())
+                    .size(aggSize)
             }
         )
         withAggregation(
             FilterFields.Spatial.aggregationName(),
             AggregationBuilders.terms { builder ->
                 builder.field(FilterFields.Spatial.jsonPath())
+                    .size(aggSize)
             }
         )
 
