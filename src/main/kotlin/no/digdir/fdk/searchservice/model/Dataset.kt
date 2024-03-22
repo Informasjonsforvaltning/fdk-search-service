@@ -24,4 +24,5 @@ data class Dataset(
     val references: List<Reference>?,
     val subject: List<ObjectWithURI>?,
     val specializedType: String?,
+    val isAuthoritative: Boolean?
 )

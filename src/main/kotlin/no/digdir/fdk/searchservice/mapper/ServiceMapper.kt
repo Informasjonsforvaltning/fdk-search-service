@@ -22,6 +22,7 @@ fun Service.toSearchObject(id: String, timestamp: Long, deleted: Boolean = false
         title = title,
         relations = getRelations(),
         specializedType = null,
+        isAuthoritative = null
     )
 
 private fun Service.getOrganization() = if (hasCompetantAuthority.isNullOrEmpty()) {

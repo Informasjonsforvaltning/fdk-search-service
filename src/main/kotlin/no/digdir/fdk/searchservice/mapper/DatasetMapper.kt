@@ -22,6 +22,7 @@ fun Dataset.toSearchObject(id: String, timestamp: Long, deleted: Boolean = false
         title = title,
         relations = getRelations(),
         specializedType = getSpecializedType(),
+        isAuthoritative = isAuthoritative
     )
 
 fun Dataset.extractPrefixedFormats(): Set<String> {

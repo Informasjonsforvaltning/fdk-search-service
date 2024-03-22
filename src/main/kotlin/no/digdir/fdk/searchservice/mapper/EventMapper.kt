@@ -22,6 +22,7 @@ fun Event.toSearchObject(id: String, timestamp: Long, deleted: Boolean = false) 
         title = title,
         relations = getRelations(),
         specializedType = getSpecializedType(),
+        isAuthoritative = null
     )
 
 fun Event.getRelations(): Set<Relation> {
