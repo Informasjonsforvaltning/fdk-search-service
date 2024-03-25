@@ -5,7 +5,8 @@ import no.digdir.fdk.searchservice.model.*
 fun Concept.toSearchObject(id: String, timestamp: Long, deleted: Boolean = false) =
     SearchObject(
         id = id,
-        uri = uri,
+        // identifier from concepts are the resource uri
+        uri = identifier,
         accessRights = null,
         catalog = collection?.toCatalog(),
         dataTheme = null,

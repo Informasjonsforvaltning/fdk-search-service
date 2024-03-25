@@ -5,7 +5,7 @@ import no.digdir.fdk.searchservice.model.Collection
 
 // ids start from 20 to avoid conflicts with the ids in the test data for the other types
 val TEST_NULL_CONCEPT = Concept(
-    uri = "null concept uri",
+    identifier = "null concept uri",
     publisher = null,
     definition = null,
     prefLabel = null,
