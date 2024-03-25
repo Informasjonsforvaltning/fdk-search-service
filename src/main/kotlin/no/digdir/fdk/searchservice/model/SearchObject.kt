@@ -16,6 +16,7 @@ const val SEARCH_INDEX_NAME = "fdk-search"
 @Setting(settingPath = "/elastic/settings.json")
 data class SearchObject(
     @Id
+    // the id field is the fdk-id for the resource
     val id: String,
     val uri: String?,
     val accessRights: ReferenceDataCode?,
