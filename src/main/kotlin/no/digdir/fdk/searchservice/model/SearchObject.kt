@@ -35,7 +35,8 @@ data class SearchObject(
     val title: LocalizedStrings?,
     val relations: Set<Relation>?,
     val specializedType: SpecializedType?,
-    val isAuthoritative: Boolean?
+    val isAuthoritative: Boolean?,
+    val isRelatedToTransportportal: Boolean?
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)

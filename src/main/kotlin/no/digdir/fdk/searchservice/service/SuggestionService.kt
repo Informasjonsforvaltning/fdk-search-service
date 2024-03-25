@@ -17,10 +17,10 @@ class SuggestionService(
         elasticsearchOperations.search(suggestionQuery(query, searchType, profile), SearchObject::class.java)
 
     fun suggestResources(query: String, searchType: List<SearchType>?, profile: SearchProfile?): SuggestionsResult =
-            SuggestionsResult(suggestResource(query, searchType, profile)
-                .map { it.content }
-                .map { it.toSuggestion() }
-                .toList())
+        SuggestionsResult(suggestResource(query, searchType, profile)
+            .map { it.content }
+            .map { it.toSuggestion() }
+            .toList())
 
     private fun SearchObject.toSuggestion(): Suggestion =
         Suggestion(
@@ -67,23 +67,23 @@ class SuggestionService(
         queryFilters.add(DSLQuery.of { queryBuilder ->
             queryBuilder.term { termBuilder ->
                 termBuilder
-                        .field(FilterFields.Deleted.jsonPath())
-                        .value(FieldValue.of(false))
+                    .field(FilterFields.Deleted.jsonPath())
+                    .value(FieldValue.of(false))
             }
         })
 
         if (searchTypes != null) {
             queryFilters.add(
-                    DSLQuery.of { queryBuilder ->
-                        queryBuilder.terms { termsBuilder ->
-                            termsBuilder
-                                    .field(FilterFields.SearchType.jsonPath())
-                                    .terms { termsQueryBuilder ->
-                                        termsQueryBuilder
-                                                .value(searchTypes.map { FieldValue.of(it.name) })
-                                    }
-                        }
-                    })
+                DSLQuery.of { queryBuilder ->
+                    queryBuilder.terms { termsBuilder ->
+                        termsBuilder
+                            .field(FilterFields.SearchType.jsonPath())
+                            .terms { termsQueryBuilder ->
+                                termsQueryBuilder
+                                    .value(searchTypes.map { FieldValue.of(it.name) })
+                            }
+                    }
+                })
         }
 
         if (profile == SearchProfile.TRANSPORT) queryFilters.add(filtersForProfile(profile))

@@ -27,7 +27,8 @@ val TEST_NULL_DATASET = Dataset(
     inSeries = null,
     references = null,
     specializedType = null,
-    isAuthoritative = null
+    isAuthoritative = null,
+    isRelatedToTransportportal = null
 )
 
 val TEST_DATASET_HIT_ALL_FIELDS = TEST_NULL_DATASET.copy(
@@ -78,6 +79,7 @@ val TEST_DATASET_HIT_ALL_FIELDS = TEST_NULL_DATASET.copy(
             losPaths = listOf("trafikk-og-transport/mobilitetstilbud")
         )
     ),
+    isRelatedToTransportportal = true,
     publisher = Organization(
         orgPath = "/STAT/272417858",
         id = "Test publisher > identifier",

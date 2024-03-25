@@ -411,22 +411,13 @@ class SearchService(
             }
 }
 
-private val transportProfileLosValues =
-        listOf(
-                FieldValue.of("trafikk-og-transport/mobilitetstilbud"),
-                FieldValue.of("trafikk-og-transport/trafikkinformasjon"),
-                FieldValue.of("trafikk-og-transport/veg-og-vegregulering"),
-                FieldValue.of("trafikk-og-transport/yrkestransport"),
-        )
 internal fun filtersForProfile(profile: SearchProfile) = when(profile) {
     SearchProfile.TRANSPORT -> {
-        co.elastic.clients.elasticsearch._types.query_dsl.Query.of { queryBuilder ->
-            queryBuilder.terms { termsBuilder ->
-                termsBuilder
-                        .field(FilterFields.LosTheme.jsonPath())
-                        .terms { termsQueryBuilder ->
-                            termsQueryBuilder.value(transportProfileLosValues)
-                        }
+        DSLQuery.of { queryBuilder ->
+            queryBuilder.term { termBuilder ->
+                termBuilder
+                    .field(FilterFields.TransportRelation.jsonPath())
+                    .value(FieldValue.of(true))
             }
         }
     }
@@ -434,7 +425,8 @@ internal fun filtersForProfile(profile: SearchProfile) = when(profile) {
 
 internal enum class FilterFields {
     AccessRights, DataTheme, Deleted, FirstHarvested, Format, LosTheme,
-    OpenData, OrgPath, Provenance, Relations, SearchType, Spatial, Uri
+    OpenData, OrgPath, Provenance, Relations, SearchType, Spatial, Uri,
+    TransportRelation
 }
 
 internal fun FilterFields.jsonPath(): String = when(this) {
@@ -451,6 +443,7 @@ internal fun FilterFields.jsonPath(): String = when(this) {
     FilterFields.SearchType -> "searchType.keyword"
     FilterFields.Spatial -> "spatial.prefLabel.nb.keyword"
     FilterFields.Uri -> "uri.keyword"
+    FilterFields.TransportRelation -> "isRelatedToTransportportal"
 }
 
 private fun FilterFields.aggregationName(): String = when(this) {
@@ -467,4 +460,5 @@ private fun FilterFields.aggregationName(): String = when(this) {
     FilterFields.SearchType -> "searchType"
     FilterFields.Spatial -> "spatial"
     FilterFields.Uri -> "uri"
+    FilterFields.TransportRelation -> "transportportal"
 }
