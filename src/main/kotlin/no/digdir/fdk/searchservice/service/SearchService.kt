@@ -18,12 +18,12 @@ import org.springframework.data.elasticsearch.core.ElasticsearchOperations
 import org.springframework.data.elasticsearch.core.SearchHits
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates
 import org.springframework.data.elasticsearch.core.query.Query
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 import kotlin.math.ceil
 import kotlin.math.roundToLong
 import co.elastic.clients.elasticsearch._types.query_dsl.Query as DSLQuery
 
-@Service
+@Component
 class SearchService(
     private val elasticSearchOperations: ElasticsearchOperations
 ) {
@@ -281,14 +281,14 @@ class SearchService(
         }
 
         filters?.formats?.value?.forEach { formatValue ->
-                queryFilters.add(DSLQuery.of { queryBuilder ->
-                    queryBuilder.match { matchBuilder ->
-                        matchBuilder
-                            .field(FilterFields.Format.jsonPath())
-                            .query(FieldValue.of(formatValue))
-                    }
-                })
-            }
+            queryFilters.add(DSLQuery.of { queryBuilder ->
+                queryBuilder.match { matchBuilder ->
+                    matchBuilder
+                        .field(FilterFields.Format.jsonPath())
+                        .query(FieldValue.of(formatValue))
+                }
+            })
+        }
 
         filters?.relations?.let { relation ->
             queryFilters.add(DSLQuery.of { queryBuilder ->
@@ -336,7 +336,7 @@ class SearchService(
             if (keyword) languagePaths("keyword", 5)
             else emptyList(),
 
-        ).flatten()
+            ).flatten()
 
     private fun QueryFields.phraseMatchPaths(): List<String> =
         listOf(
@@ -349,7 +349,7 @@ class SearchService(
             if (keyword) languagePaths("keyword", 5)
             else emptyList(),
 
-        ).flatten()
+            ).flatten()
 
     private fun languagePaths(basePath: String, boost: Int? = null): List<String> =
         listOf("$basePath.nb${if (boost != null) "^$boost" else ""}",
@@ -374,7 +374,7 @@ class SearchService(
         }
 
     private fun Aggregate.toBucketCounts(aggregateName: String): List<BucketCount> =
-        when(aggregateName) {
+        when (aggregateName) {
             FilterFields.AccessRights.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
             FilterFields.DataTheme.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
             FilterFields.Format.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
@@ -411,7 +411,7 @@ class SearchService(
             }
 }
 
-internal fun filtersForProfile(profile: SearchProfile) = when(profile) {
+internal fun filtersForProfile(profile: SearchProfile) = when (profile) {
     SearchProfile.TRANSPORT -> {
         DSLQuery.of { queryBuilder ->
             queryBuilder.term { termBuilder ->
@@ -425,11 +425,11 @@ internal fun filtersForProfile(profile: SearchProfile) = when(profile) {
 
 internal enum class FilterFields {
     AccessRights, DataTheme, Deleted, FirstHarvested, Format, LosTheme,
-    OpenData, OrgPath, Provenance, Relations, SearchType, Spatial, Uri,
+    OpenData, OrgPath, OrgId, Provenance, Relations, SearchType, Spatial, Uri,
     TransportRelation
 }
 
-internal fun FilterFields.jsonPath(): String = when(this) {
+internal fun FilterFields.jsonPath(): String = when (this) {
     FilterFields.AccessRights -> "accessRights.code.keyword"
     FilterFields.DataTheme -> "dataTheme.code.keyword"
     FilterFields.Deleted -> "metadata.deleted"
@@ -438,6 +438,7 @@ internal fun FilterFields.jsonPath(): String = when(this) {
     FilterFields.LosTheme -> "losTheme.losPaths.keyword"
     FilterFields.OpenData -> "isOpenData"
     FilterFields.OrgPath -> "organization.orgPath.keyword"
+    FilterFields.OrgId -> "organization.id.keyword"
     FilterFields.Provenance -> "provenance.code.keyword"
     FilterFields.Relations -> "relations.uri.keyword"
     FilterFields.SearchType -> "searchType.keyword"
@@ -446,7 +447,7 @@ internal fun FilterFields.jsonPath(): String = when(this) {
     FilterFields.TransportRelation -> "isRelatedToTransportportal"
 }
 
-private fun FilterFields.aggregationName(): String = when(this) {
+private fun FilterFields.aggregationName(): String = when (this) {
     FilterFields.AccessRights -> "accessRights"
     FilterFields.DataTheme -> "dataTheme"
     FilterFields.Deleted -> "deleted"
@@ -455,6 +456,7 @@ private fun FilterFields.aggregationName(): String = when(this) {
     FilterFields.LosTheme -> "losTheme"
     FilterFields.OpenData -> "openData"
     FilterFields.OrgPath -> "orgPath"
+    FilterFields.OrgId -> "orgId"
     FilterFields.Provenance -> "provenance"
     FilterFields.Relations -> "relations"
     FilterFields.SearchType -> "searchType"

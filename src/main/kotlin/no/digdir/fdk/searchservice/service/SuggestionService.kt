@@ -13,11 +13,11 @@ import co.elastic.clients.elasticsearch._types.query_dsl.Query as DSLQuery
 class SuggestionService(
     private val elasticsearchOperations: ElasticsearchOperations
 ) {
-    private fun suggestResource(query: String, searchType: List<SearchType>?, profile: SearchProfile?): SearchHits<SearchObject> =
-        elasticsearchOperations.search(suggestionQuery(query, searchType, profile), SearchObject::class.java)
+    private fun suggestResource(query: String, searchType: List<SearchType>?, profile: SearchProfile?, orgId: String?): SearchHits<SearchObject> =
+        elasticsearchOperations.search(suggestionQuery(query, searchType, profile, orgId), SearchObject::class.java)
 
-    fun suggestResources(query: String, searchType: List<SearchType>?, profile: SearchProfile?): SuggestionsResult =
-        SuggestionsResult(suggestResource(query, searchType, profile)
+    fun suggestResources(query: String, searchType: List<SearchType>?, profile: SearchProfile?, orgId: String?): SuggestionsResult =
+        SuggestionsResult(suggestResource(query, searchType, profile, orgId)
             .map { it.content }
             .map { it.toSuggestion() }
             .toList())
@@ -32,7 +32,7 @@ class SuggestionService(
             searchType = searchType
         )
 
-    private fun suggestionQuery(query: String, searchTypes: List<SearchType>?, profile: SearchProfile?): Query {
+    private fun suggestionQuery(query: String, searchTypes: List<SearchType>?, profile: SearchProfile?, orgId: String?): Query {
         val builder = NativeQuery.builder()
 
         builder.withQuery { queryBuilder ->
@@ -54,14 +54,14 @@ class SuggestionService(
                     }
                 }
                 boolBuilder.minimumShouldMatch("1")
-                boolBuilder.filter(createQueryFilters(searchTypes, profile))
+                boolBuilder.filter(createQueryFilters(searchTypes, profile, orgId))
             }
         }
 
         return builder.build()
     }
 
-    private fun createQueryFilters(searchTypes: List<SearchType>?, profile: SearchProfile?): List<DSLQuery> {
+    private fun createQueryFilters(searchTypes: List<SearchType>?, profile: SearchProfile?, orgId: String?): List<DSLQuery> {
         val queryFilters = mutableListOf<DSLQuery>()
 
         queryFilters.add(DSLQuery.of { queryBuilder ->
@@ -82,6 +82,17 @@ class SuggestionService(
                                 termsQueryBuilder
                                     .value(searchTypes.map { FieldValue.of(it.name) })
                             }
+                    }
+                })
+        }
+
+        if (orgId != null) {
+            queryFilters.add(
+                DSLQuery.of { queryBuilder ->
+                    queryBuilder.term { termBuilder ->
+                        termBuilder
+                            .field(FilterFields.OrgId.jsonPath())
+                            .value(FieldValue.of(orgId))
                     }
                 })
         }
