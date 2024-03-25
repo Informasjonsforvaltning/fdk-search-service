@@ -17,9 +17,10 @@ class SuggestionsController(
     fun suggestResource(
         @RequestParam(value = "q") query: String,
         @RequestParam(value = "profile") searchProfile: SearchProfile?,
+        @RequestParam(value = "org") org: String?,
     ): ResponseEntity<SuggestionsResult> =
         ResponseEntity(
-            suggestionService.suggestResources(query, null, searchProfile),
+            suggestionService.suggestResources(query, null, searchProfile, org),
             HttpStatus.OK
         )
 
@@ -28,12 +29,13 @@ class SuggestionsController(
         @PathVariable searchTypes: String,
         @RequestParam("q") query: String,
         @RequestParam("profile") searchProfile: SearchProfile?,
+        @RequestParam(value = "org") org: String?,
     ): ResponseEntity<SuggestionsResult> = (
         if (searchTypes.pathVariableToSearchType() == null) {
             ResponseEntity.notFound().build()
         } else {
             ResponseEntity(
-                suggestionService.suggestResources(query, searchTypes.pathVariableToSearchType(), searchProfile),
+                suggestionService.suggestResources(query, searchTypes.pathVariableToSearchType(), searchProfile, org),
                 HttpStatus.OK
             )
         })

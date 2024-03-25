@@ -1,4 +1,5 @@
 package no.digdir.fdk.searchservice.integration
+
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.digdir.fdk.searchservice.model.SearchType
@@ -18,7 +19,7 @@ import org.springframework.test.context.ContextConfiguration
 )
 @ContextConfiguration(initializers = [ApiTestContext.Initializer::class])
 @Tag("integration")
-class SuggestionTest: ApiTestContext() {
+class SuggestionTest : ApiTestContext() {
     private val mapper = jacksonObjectMapper()
     private val SUGGESTIONS_PATH = "/suggestions"
     private val GET = HttpMethod.GET
@@ -31,16 +32,13 @@ class SuggestionTest: ApiTestContext() {
         val result: SuggestionsResult = mapper.readValue(response["body"] as String)
         Assertions.assertNotEquals(0, result.suggestions.size)
 
-        Assertions.assertTrue(result.suggestions.stream()
-                .allMatch { resource ->
-                    resource.title?.nb?.contains("title") ?: false
-
-                })
-        Assertions.assertTrue(result.suggestions.stream()
-                .anyMatch { resource ->
-                    resource.description?.nb?.contains("Test description") ?: false &&
-                            resource.organization?.id?.contains("Test publisher") ?: false
-                })
+        Assertions.assertTrue(result.suggestions.all {
+            it.title?.nb?.contains("title") == true
+        })
+        Assertions.assertTrue(result.suggestions.any {
+            it.description?.nb?.contains("Test description") ?: false &&
+                it.organization?.id?.contains("Test publisher") ?: false
+        })
     }
 
     @Test
@@ -65,7 +63,7 @@ class SuggestionTest: ApiTestContext() {
 
         val validResult = result.suggestions.all { resource ->
             resource.title?.nb?.contains("title") == true &&
-                    (resource.searchType == SearchType.SERVICE || resource.searchType == SearchType.EVENT)
+                (resource.searchType == SearchType.SERVICE || resource.searchType == SearchType.EVENT)
         }
         Assertions.assertTrue(validResult)
     }
@@ -124,6 +122,20 @@ class SuggestionTest: ApiTestContext() {
 
             val validResult = result.suggestions.all { resource ->
                 resource.title?.nb?.contains("NB Test title") == true && resource.searchType == SearchType.DATASET
+            }
+            Assertions.assertTrue(validResult)
+        }
+
+        @Test
+        fun `get suggestion with org id`() {
+            val response = requestApi("$SUGGESTIONS_PATH/concepts?q=title&org=102117858", port, null, GET)
+            Assertions.assertEquals(200, response["status"])
+
+            val result: SuggestionsResult = mapper.readValue(response["body"] as String)
+            Assertions.assertEquals(1, result.suggestions.size)
+
+            val validResult = result.suggestions.all { resource ->
+                resource.title?.nb?.contains("NB Test prefLabel, title") == true && resource.searchType == SearchType.CONCEPT
             }
             Assertions.assertTrue(validResult)
         }
