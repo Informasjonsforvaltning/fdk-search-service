@@ -23,7 +23,8 @@ fun Concept.toSearchObject(id: String, timestamp: Long, deleted: Boolean = false
         title = prefLabel,
         relations = getRelations(),
         specializedType = null,
-        isAuthoritative = null
+        isAuthoritative = null,
+        isRelatedToTransportportal = false
     )
 
 fun Concept.getRelations(): Set<Relation> {

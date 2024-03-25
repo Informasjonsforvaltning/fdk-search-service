@@ -32,11 +32,6 @@ class Profile: ApiTestContext() {
 
     @Nested
     inner class Transport {
-        private val transportProfileLosPaths = listOf(
-            "trafikk-og-transport/mobilitetstilbud",
-            "trafikk-og-transport/trafikkinformasjon",
-            "trafikk-og-transport/veg-og-vegregulering",
-            "trafikk-og-transport/yrkestransport")
 
         @Test
         fun `transport filters are added when no other filters are present`() {
@@ -45,13 +40,9 @@ class Profile: ApiTestContext() {
             Assertions.assertEquals(200, response["status"])
 
             val result: SearchResult = mapper.readValue(response["body"] as String)
-            val resultLosPaths: Set<String> = result.hits
-                .flatMap { it.losTheme ?: emptySet() }
-                .flatMap { it.losPaths ?: emptySet() }
-                .toSet()
 
             Assertions.assertNotEquals(0, result.hits.size)
-            Assertions.assertTrue(transportProfileLosPaths.any { resultLosPaths.contains(it) })
+            Assertions.assertTrue(result.hits.all { it.isRelatedToTransportportal ?: false })
         }
         @Test
         fun `transport filters are added on endpoint for specific resource`() {
@@ -60,32 +51,26 @@ class Profile: ApiTestContext() {
             Assertions.assertEquals(200, response["status"])
 
             val result: SearchResult = mapper.readValue(response["body"] as String)
-            val resultLosPaths: Set<String> = result.hits
-                .flatMap { it.losTheme ?: emptySet() }
-                .flatMap { it.losPaths ?: emptySet() }
-                .toSet()
 
             Assertions.assertNotEquals(0, result.hits.size)
-            Assertions.assertTrue(transportProfileLosPaths.any { resultLosPaths.contains(it) })
+            Assertions.assertTrue(result.hits.all { it.isRelatedToTransportportal ?: false })
             result.hits.forEach { Assertions.assertTrue(it.searchType == SearchType.DATASET) }
         }
 
         @Test
         fun `transport filters are added in combination with los filter`() {
-            val filters = createEmptySearchFilters().copy(losTheme = SearchFilter(listOf("test")))
+            val filters = createEmptySearchFilters().copy(losTheme = SearchFilter(listOf("familie-og-barn")))
             val searchBody = mapper.writeValueAsString(SearchOperation(filters = filters, profile = SearchProfile.TRANSPORT))
             val response = requestApi(PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 
             val result: SearchResult = mapper.readValue(response["body"] as String)
-            val resultLosPaths: Set<String> = result.hits
-                .flatMap { it.losTheme ?: emptySet() }
-                .flatMap { it.losPaths ?: emptySet() }
-                .toSet()
 
             Assertions.assertNotEquals(0, result.hits.size)
-            Assertions.assertTrue(transportProfileLosPaths.any { resultLosPaths.contains(it) })
-            Assertions.assertTrue(resultLosPaths.contains("test"))
+            Assertions.assertTrue(result.hits.all { it.isRelatedToTransportportal ?: false })
+
+            val losPaths: List<List<String>> = result.hits.map { it.losTheme?.flatMap { los -> los.losPaths ?: emptyList() } ?: emptyList() }
+            Assertions.assertTrue(losPaths.all { it.contains("familie-og-barn") })
         }
     }
 
