@@ -22,6 +22,7 @@ val TEST_NULL_CONCEPT = Concept(
     genericRelation = null)
 
 val TEST_CONCEPT_HIT_ALL_FIELDS = TEST_NULL_CONCEPT.copy(
+    identifier = "concept.uri.0",
     publisher = Organization(
         orgPath = "/STAT/102117858",
         id = "102117858",
@@ -80,6 +81,7 @@ val TEST_CONCEPT_HIT_ALL_FIELDS = TEST_NULL_CONCEPT.copy(
 )
 
 val CONCEPT_WITH_RELATIONS = TEST_NULL_CONCEPT.copy(
+    identifier = "concept.uri.1",
     collection = Collection(description = null, id = null, publisher = null, label = null, uri = "collection_uri"),
     memberOf = listOf("memberOf_uri"),
     replaces = listOf("replaces_uri"),

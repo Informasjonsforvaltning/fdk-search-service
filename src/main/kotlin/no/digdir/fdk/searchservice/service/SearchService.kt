@@ -310,12 +310,16 @@ class SearchService(
             })
         }
 
-        filters?.uri?.value?.forEach { uriValue ->
+        filters?.uri?.value?.let { uriValues ->
             queryFilters.add(DSLQuery.of { queryBuilder ->
-                queryBuilder.term { termBuilder ->
-                    termBuilder
+                queryBuilder.terms { termsBuilder ->
+                    termsBuilder
                         .field(FilterFields.Uri.jsonPath())
-                        .value(FieldValue.of(uriValue))
+                        .terms { fieldBuilder ->
+                            fieldBuilder.value(
+                                uriValues.map { uri -> FieldValue.of(uri) }
+                            )
+                        }
                 }
             })
         }
