@@ -503,6 +503,19 @@ class FilterTest: ApiTestContext() {
             val result: SearchResult = mapper.readValue(response["body"] as String)
             Assertions.assertEquals(0, result.hits.size)
         }
+
+        @Test
+        fun `filter by several uris`() {
+            val uris = listOf("dataset.uri.2", "concept.uri.0")
+            val searchBody =
+                mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(uri = SearchFilter(uris))))
+            val response = requestApi(ALL_RESOURCES_PATH, port, searchBody, HttpMethod.POST)
+            Assertions.assertEquals(200, response["status"])
+
+            val result: SearchResult = mapper.readValue(response["body"] as String)
+            Assertions.assertEquals(2, result.hits.size)
+            Assertions.assertTrue(result.hits.map { it.uri }.containsAll(uris))
+        }
     }
 
     @Nested
