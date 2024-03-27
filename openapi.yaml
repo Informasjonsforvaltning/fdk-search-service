@@ -1,0 +1,537 @@
+openapi: 3.1.0
+info:
+  description: Service that provides search functionality on the FDK data.
+  title: fdk-search-service
+  version: 0.1.0
+
+paths:
+  /search:
+    post:
+      description: Search among resources of all types based on query and filters in the request body.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SearchOperation"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResult"
+          description: Successful Response
+        "400":
+          description: Bad request, bad input data.
+        "500":
+          description: Internal server error.
+
+  /search/{resource_filter}:
+    post:
+      description: Search among resources of the type(s) given in path. Search is based on query and filters in the request body.
+      parameters:
+        - in: path
+          name: resource_filter
+          required: true
+          schema:
+            $ref: "#/components/schemas/ResourceFilterEnum"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SearchOperation"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResult"
+          description: Successful Response
+        "400":
+          description: Bad request, bad input data.
+        "404":
+          description: Unsupported resource filter in path.
+        "500":
+          description: Internal server error.
+
+  /suggestions:
+    get:
+      description: Get suggestions for the given query.
+      parameters:
+        - in: query
+          name: q
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: profile
+          required: false
+          schema:
+            $ref: "#/components/schemas/SearchProfile"
+        - in: query
+          name: org
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuggestionsResult"
+          description: Successful Response
+        "400":
+          description: Bad request, bad input data.
+        "500":
+          description: Internal server error.
+
+  /suggestions/{resource_filter}:
+    get:
+      description: Get suggestions for the given query.
+      parameters:
+        - in: path
+          name: resource_filter
+          required: true
+          schema:
+            $ref: "#/components/schemas/ResourceFilterEnum"
+        - in: query
+          name: q
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: profile
+          required: false
+          schema:
+            $ref: "#/components/schemas/SearchProfile"
+        - in: query
+          name: org
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuggestionsResult"
+          description: Successful Response
+        "400":
+          description: Bad request, bad input data.
+        "404":
+          description: Unsupported resource filter in path.
+        "500":
+          description: Internal server error.
+
+components:
+  schemas:
+    SearchOperation:
+      type: object
+      properties:
+        query:
+          type: string
+        filters:
+          $ref: "#/components/schemas/SearchFilters"
+        fields:
+          $ref: "#/components/schemas/QueryField"
+        sort:
+          $ref: "#/components/schemas/SortField"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        profile:
+          $ref: "#/components/schemas/SearchProfile"
+
+      title: SearchOperation
+
+    SearchFilters:
+      properties:
+        openData:
+          type: object
+          properties:
+            value:
+              type: boolean
+        accessRights:
+          type: object
+          properties:
+            value:
+              type: string
+        dataTheme:
+          type: object
+          properties:
+            value:
+              type: array
+              items:
+                type: string
+        spatial:
+          type: object
+          properties:
+            value:
+              type: array
+              items:
+                type: string
+        provenance:
+          type: object
+          properties:
+            value:
+              type: string
+        losTheme:
+          type: object
+          properties:
+            value:
+              type: array
+              items:
+                type: string
+        orgPath:
+          type: object
+          properties:
+            value:
+              type: string
+        formats:
+          type: object
+          properties:
+            value:
+              type: array
+              items:
+                type: string
+        relations:
+          type: object
+          properties:
+            value:
+              type: array
+              items:
+                type: string
+        lastXDays:
+          type: object
+          properties:
+            value:
+              type: integer
+        uri:
+          type: object
+          properties:
+            value:
+              type: array
+              items:
+                type: string
+      type: object
+
+    QueryField:
+      properties:
+        title:
+          type: boolean
+        description:
+          type: boolean
+        keyword:
+          type: boolean
+      type: object
+
+    SortField:
+      properties:
+        field:
+          type: string
+          enum: [FIRST_HARVESTED]
+        direction:
+          type: string
+          enum: [ASC, DESC]
+      type: object
+
+    Pagination:
+      properties:
+        page:
+          type: integer
+        size:
+          type: integer
+      type: object
+
+    SearchProfile:
+      type: string
+      enum: [TRANSPORT]
+
+    ResourceFilterEnum:
+      type: string
+      enum:
+        [
+          datasets,
+          concepts,
+          dataservices,
+          data-services,
+          informationmodels,
+          information-models,
+          events,
+          services,
+          public-services-and-events,
+          services-and-events,
+        ]
+
+    LocalizedStrings:
+      type: object
+      properties:
+        nb:
+          type: string
+        nn:
+          type: string
+        no:
+          type: string
+        en:
+          type: string
+
+    SearchResult:
+      type: object
+      properties:
+        hits:
+          type: array
+          items:
+            $ref: "#/components/schemas/SearchObject"
+        page:
+          $ref: "#/components/schemas/PageMeta"
+        aggregations:
+          type: object
+          properties:
+            accessRights:
+              type: array
+              items:
+                $ref: "#/components/schemas/BucketCount"
+            dataTheme:
+              type: array
+              items:
+                $ref: "#/components/schemas/BucketCount"
+            format:
+              type: array
+              items:
+                $ref: "#/components/schemas/BucketCount"
+            losTheme:
+              type: array
+              items:
+                $ref: "#/components/schemas/BucketCount"
+            orgPath:
+              type: array
+              items:
+                $ref: "#/components/schemas/BucketCount"
+            openData:
+              type: array
+              items:
+                $ref: "#/components/schemas/BucketCount"
+            provenance:
+              type: array
+              items:
+                $ref: "#/components/schemas/BucketCount"
+            spatial:
+              type: array
+              items:
+                $ref: "#/components/schemas/BucketCount"
+
+    BucketCount:
+      type: object
+      properties:
+        key:
+          type: string
+        count:
+          type: integer
+          format: int64
+
+    PageMeta:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+          format: in64
+
+    SearchObject:
+      type: object
+      properties:
+        id:
+          type: string
+        uri:
+          type: string
+        accessRights:
+          $ref: "#/components/schemas/ReferenceDataCode"
+        catalog:
+          $ref: "#/components/schemas/Catalog"
+        dataTheme:
+          type: array
+          items:
+            $ref: "#/components/schemas/EuDataTheme"
+        description:
+          $ref: "#/components/schemas/LocalizedStrings"
+        fdkFormatPrefixed:
+          type: array
+          items:
+            type: string
+        metadata:
+          $ref: "#/components/schemas/Metadata"
+        isOpenData:
+          type: boolean
+        keyword:
+          type: array
+          items:
+            $ref: "#/components/schemas/LocalizedStrings"
+        losTheme:
+          type: array
+          items:
+            $ref: "#/components/schemas/LosNode"
+        organization:
+          $ref: "#/components/schemas/Organization"
+        provenance:
+          $ref: "#/components/schemas/ReferenceDataCode"
+        searchType:
+          $ref: "#/components/schemas/SearchType"
+        spatial:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReferenceDataCode"
+        title:
+          $ref: "#/components/schemas/LocalizedStrings"
+        relations:
+          type: array
+          items:
+            $ref: "#/components/schemas/Relation"
+        specializedType:
+          type: string
+          enum: [DATASET_SERIES, LIFE_EVENT, BUSINESS_EVENT]
+        isAuthoritative:
+          type: boolean
+        isRelatedToTransportPortal:
+          type: boolean
+
+    SuggestionsResult:
+      type: object
+      properties:
+        suggestions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Suggestion"
+
+    SearchType:
+      type: string
+      enum: [CONCEPT, DATASET, DATA_SERVICE, INFORMATION_MODEL, SERVICE, EVENT]
+
+    Suggestion:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          $ref: "#/components/schemas/LocalizedStrings"
+        description:
+          $ref: "#/components/schemas/LocalizedStrings"
+        uri:
+          type: string
+        organization:
+          $ref: "#/components/schemas/Organization"
+        searchType:
+          $ref: "#/components/schemas/SearchType"
+
+    Organization:
+      type: object
+      properties:
+        id:
+          type: string
+        uri:
+          type: string
+        orgPath:
+          type: string
+        name:
+          type: string
+        prefLabel:
+          $ref: "#/components/schemas/LocalizedStrings"
+
+    ReferenceDataCode:
+      type: object
+      properties:
+        uri:
+          type: string
+        code:
+          type: string
+        prefLabel:
+          type: object
+          $ref: "#/components/schemas/LocalizedStrings"
+
+    Catalog:
+      type: object
+      properties:
+        description:
+          $ref: "#/components/schemas/LocalizedStrings"
+        id:
+          type: string
+        publisher:
+          $ref: "#/components/schemas/Organization"
+        title:
+          $ref: "#/components/schemas/LocalizedStrings"
+        uri:
+          type: string
+
+    EuDataTheme:
+      type: object
+      properties:
+        title:
+          $ref: "#/components/schemas/LocalizedStrings"
+        code:
+          type: string
+
+    Metadata:
+      type: object
+      properties:
+        firstHarvested:
+          type: string
+        changed:
+          type: array
+          items:
+            type: string
+        deleted:
+          type: boolean
+        timestamp:
+          type: integer
+          format: int64
+
+    LosNode:
+      type: object
+      properties:
+        name:
+          $ref: "#/components/schemas/LocalizedStrings"
+        losPaths:
+          type: array
+          items:
+            type: string
+
+    Relation:
+      type: object
+      properties:
+        uri:
+          type: string
+        type:
+          type: string
+          enum:
+            [
+              associativeRelation,
+              closeMatch,
+              exactMatch,
+              generalizes,
+              specializes,
+              isReplacedBy,
+              memberOf,
+              replaces,
+              seeAlso,
+              conformsTo,
+              servesDataset,
+              inSeries,
+              subject,
+              hasPart,
+              isPartOf,
+              isGroupedBy,
+              isClassifiedBy,
+              isDescribedAt,
+              relation,
+              hasVersion,
+              isVersionOf,
+              references,
+              isReferencedBy,
+              requires,
+              isRequiredBy,
+              source,
+            ]
