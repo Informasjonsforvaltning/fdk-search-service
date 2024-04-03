@@ -88,7 +88,7 @@ paths:
 
   /suggestions/{resource_filter}:
     get:
-      description: Get suggestions for the given query.
+      description: Get suggestions from resources of the type(s) given in path for the given query.
       parameters:
         - in: path
           name: resource_filter
@@ -195,12 +195,7 @@ components:
               items:
                 type: string
         relations:
-          type: object
-          properties:
-            value:
-              type: array
-              items:
-                type: string
+          type: string
         lastXDays:
           type: object
           properties:
@@ -219,10 +214,13 @@ components:
       properties:
         title:
           type: boolean
+          default: true
         description:
           type: boolean
+          default: true
         keyword:
           type: boolean
+          default: true
       type: object
 
     SortField:
@@ -239,8 +237,10 @@ components:
       properties:
         page:
           type: integer
+          default: 0
         size:
           type: integer
+          default: 10
       type: object
 
     SearchProfile:
@@ -340,7 +340,7 @@ components:
           type: integer
         totalPages:
           type: integer
-          format: in64
+          format: int64
 
     SearchObject:
       type: object
