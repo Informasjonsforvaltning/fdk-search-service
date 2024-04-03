@@ -31,6 +31,7 @@ data class SearchFilters(
     val formats: SearchFilter<List<String>>?,
     val relations: SearchFilter<String>?,
     val lastXDays: SearchFilter<Int>?,
+    val lastXDaysModified: SearchFilter<Int>?,
     val uri: SearchFilter<List<String>>?
 )
 

@@ -117,7 +117,7 @@ val TEST_INFORMATION_MODEL_HIT_ALL_FIELDS = TEST_NULL_INFORMATION_MODEL.copy(
     ),
     harvest = HarvestMetadata(
         "2022-02-15T11:00:05Z",
-        listOf("Test harvest > changed")),
+        "2022-02-15T11:00:05Z"),
 )
 
 val INFORMATION_MODEL_WITH_RELATIONS = TEST_NULL_INFORMATION_MODEL.copy(

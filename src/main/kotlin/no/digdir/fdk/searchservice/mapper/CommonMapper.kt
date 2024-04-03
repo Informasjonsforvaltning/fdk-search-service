@@ -15,7 +15,7 @@ fun Collection.toCatalog() =
 fun HarvestMetadata.toMetadata(timestamp: Long, deleted: Boolean = false) =
     Metadata(
         firstHarvested = firstHarvested,
-        changed = changed,
+        modified = modified,
         deleted = deleted,
         timestamp = timestamp
     )

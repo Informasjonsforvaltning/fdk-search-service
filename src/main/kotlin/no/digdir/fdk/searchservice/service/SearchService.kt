@@ -310,6 +310,16 @@ class SearchService(
             })
         }
 
+        filters?.lastXDaysModified?.let { daysAgo ->
+            queryFilters.add(DSLQuery.of { queryBuilder ->
+                queryBuilder.range { rangeBuilder ->
+                    rangeBuilder
+                        .field(FilterFields.Modified.jsonPath())
+                        .gte(JsonData.of("now-${daysAgo.value}d/d"))
+                }
+            })
+        }
+
         filters?.uri?.value?.let { uriValues ->
             queryFilters.add(DSLQuery.of { queryBuilder ->
                 queryBuilder.terms { termsBuilder ->
@@ -428,7 +438,7 @@ internal fun filtersForProfile(profile: SearchProfile) = when (profile) {
 }
 
 internal enum class FilterFields {
-    AccessRights, DataTheme, Deleted, FirstHarvested, Format, LosTheme,
+    AccessRights, DataTheme, Deleted, FirstHarvested, Modified, Format, LosTheme,
     OpenData, OrgPath, OrgId, Provenance, Relations, SearchType, Spatial, Uri,
     TransportRelation
 }
@@ -438,6 +448,7 @@ internal fun FilterFields.jsonPath(): String = when (this) {
     FilterFields.DataTheme -> "dataTheme.code.keyword"
     FilterFields.Deleted -> "metadata.deleted"
     FilterFields.FirstHarvested -> "metadata.firstHarvested"
+    FilterFields.Modified -> "metadata.modified"
     FilterFields.Format -> "fdkFormatPrefixed.keyword"
     FilterFields.LosTheme -> "losTheme.losPaths.keyword"
     FilterFields.OpenData -> "isOpenData"
@@ -456,6 +467,7 @@ private fun FilterFields.aggregationName(): String = when (this) {
     FilterFields.DataTheme -> "dataTheme"
     FilterFields.Deleted -> "deleted"
     FilterFields.FirstHarvested -> "firstHarvested"
+    FilterFields.Modified -> "modified"
     FilterFields.Format -> "format"
     FilterFields.LosTheme -> "losTheme"
     FilterFields.OpenData -> "openData"

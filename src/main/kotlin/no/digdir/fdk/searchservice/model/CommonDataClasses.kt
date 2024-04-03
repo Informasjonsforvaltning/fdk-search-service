@@ -36,33 +36,33 @@ data class ReferenceDataCode(
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Reference(
-  val referenceType: ReferenceDataCode?,
-  val source: ObjectWithURI?
+    val referenceType: ReferenceDataCode?,
+    val source: ObjectWithURI?
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class ObjectWithURI(
-  val uri: String?
+    val uri: String?
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class AssociativeRelation(
-  val description: LocalizedStrings?,
-  val related: String?,
+    val description: LocalizedStrings?,
+    val related: String?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class GenericRelation(
-  val divisioncriterion: LocalizedStrings?,
-  val generalizes: String?,
-  val specializes: String?
+    val divisioncriterion: LocalizedStrings?,
+    val generalizes: String?,
+    val specializes: String?
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class PartitiveRelation(
-  val description: LocalizedStrings?,
-  val hasPart: String?,
-  val isPartOf: String?
+    val description: LocalizedStrings?,
+    val hasPart: String?,
+    val isPartOf: String?
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -83,14 +83,14 @@ data class Definition(
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class HarvestMetadata(
     val firstHarvested: String?,
-    val changed: List<String>?
+    val modified: String?
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Metadata(
     val firstHarvested: String?,
-    val changed: List<String>?,
+    val modified: String?,
     val deleted: Boolean?,
     val timestamp: Long?
 )
