@@ -20,7 +20,7 @@ import org.springframework.test.context.ContextConfiguration
 )
 @ContextConfiguration(initializers = [ApiTestContext.Initializer::class])
 @Tag("integration")
-class FilterTest: ApiTestContext() {
+class FilterTest : ApiTestContext() {
     private val mapper = jacksonObjectMapper()
     private val SEARCH_FILTER = createEmptySearchFilters()
     private val DATASETS_PATH = "/search/datasets"
@@ -274,7 +274,7 @@ class FilterTest: ApiTestContext() {
         fun `filter datasets on multiple los`() {
             val searchBody =
                 mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(losTheme = SearchFilter(
-                    listOf("familie-og-barn" ,"demokrati-og-innbyggerrettigheter/politikk-og-valg")))))
+                    listOf("familie-og-barn", "demokrati-og-innbyggerrettigheter/politikk-og-valg")))))
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 
@@ -302,6 +302,7 @@ class FilterTest: ApiTestContext() {
             val result: SearchResult = mapper.readValue(response["body"] as String)
             Assertions.assertEquals(0, result.hits.size)
         }
+
         @Test
         fun `filtering datasets by parent category should include hits from subcategories`() {
             val searchBody =
@@ -314,7 +315,8 @@ class FilterTest: ApiTestContext() {
 
             val allThemesValid = result.hits.all { searchObject ->
                 searchObject.losTheme?.any { losNode ->
-                    losNode.losPaths?.any { losPath -> losPath.startsWith("demokrati-og-innbyggerrettigheter") } ?: false
+                    losNode.losPaths?.any { losPath -> losPath.startsWith("demokrati-og-innbyggerrettigheter") }
+                        ?: false
                 } ?: false
             }
             Assertions.assertTrue(allThemesValid)
@@ -481,11 +483,36 @@ class FilterTest: ApiTestContext() {
     }
 
     @Nested
+    inner class Last_x_days_modified {
+        @Test
+        fun `filter datasets on modified last 7 days`() {
+            val searchBody =
+                mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(lastXDaysModified = SearchFilter(7))))
+            val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
+            Assertions.assertEquals(200, response["status"])
+
+            val result: SearchResult = mapper.readValue(response["body"] as String)
+            Assertions.assertNotEquals(0, result.hits.size)
+        }
+
+        @Test
+        fun `filter datasets on modified 1 day ago should return no hits`() {
+            val searchBody =
+                mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(lastXDaysModified = SearchFilter(1))))
+            val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
+            Assertions.assertEquals(200, response["status"])
+
+            val result: SearchResult = mapper.readValue(response["body"] as String)
+            Assertions.assertEquals(0, result.hits.size)
+        }
+    }
+
+    @Nested
     inner class Uris {
         @Test
         fun `filter datasets by uri dataset uri 2`() {
             val searchBody =
-                    mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(uri = SearchFilter(listOf("dataset.uri.2")))))
+                mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(uri = SearchFilter(listOf("dataset.uri.2")))))
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 
@@ -496,7 +523,7 @@ class FilterTest: ApiTestContext() {
         @Test
         fun `filter by uri should return no hits`() {
             val searchBody =
-                    mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(uri = SearchFilter(listOf("dataset.uri.doesNotExist")))))
+                mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(uri = SearchFilter(listOf("dataset.uri.doesNotExist")))))
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 
@@ -524,8 +551,8 @@ class FilterTest: ApiTestContext() {
         fun `sorting on descending firstHarvested returns correct order`() {
             val searchBody = mapper.writeValueAsString(
                 SearchOperation(
-                sort = SortField(
-                    field = SortFieldEnum.FIRST_HARVESTED, direction = SortDirection.DESC)
+                    sort = SortField(
+                        field = SortFieldEnum.FIRST_HARVESTED, direction = SortDirection.DESC)
                 )
             )
 

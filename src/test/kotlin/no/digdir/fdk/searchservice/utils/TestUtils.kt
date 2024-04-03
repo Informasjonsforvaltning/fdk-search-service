@@ -58,6 +58,6 @@ fun createEmptySearchFilters(): SearchFilters {
     return SearchFilters(
         null, null, null,
         null, null, null, null, null,
-        null, null, null
+        null, null, null, null
     )
 }

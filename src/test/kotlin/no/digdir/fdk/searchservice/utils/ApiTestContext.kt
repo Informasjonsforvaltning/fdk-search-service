@@ -46,8 +46,8 @@ abstract class ApiTestContext {
     internal class Initializer : ApplicationContextInitializer<ConfigurableApplicationContext> {
         override fun initialize(configurableApplicationContext: ConfigurableApplicationContext) {
             TestPropertyValues.of(
-                    "application.elastic.host=localhost:${elasticContainer.getMappedPort(9200)}",
-                    "application.cors.originPatterns=*",
+                "application.elastic.host=localhost:${elasticContainer.getMappedPort(9200)}",
+                "application.cors.originPatterns=*",
             ).applyTo(configurableApplicationContext.environment)
         }
     }

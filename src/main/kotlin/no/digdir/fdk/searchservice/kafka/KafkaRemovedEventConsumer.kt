@@ -84,7 +84,7 @@ class KafkaRemovedEventConsumer(
                 id = id,
                 metadata = Metadata(
                     firstHarvested = null,
-                    changed = null,
+                    modified = null,
                     deleted = true,
                     timestamp = timestamp),
                 searchType = searchType,

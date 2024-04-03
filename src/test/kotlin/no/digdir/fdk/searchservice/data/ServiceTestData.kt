@@ -30,7 +30,7 @@ val TEST_SERVICE = TEST_NULL_SERVICE.copy(
         "EN Test prefLabel"),
     harvest = HarvestMetadata(
         "2022-02-15T11:00:05Z",
-        listOf("Test harvest > changed")),
+        "2022-02-15T11:00:05Z"),
     description = LocalizedStrings(
         "NB Test collection > description",
         "NN Test collection > description",
@@ -121,7 +121,7 @@ val TEST_SERVICE_HIT_ALL_FIELDS = TEST_NULL_SERVICE.copy(
     ),
     harvest = HarvestMetadata(
         "2022-02-15T11:00:05Z",
-        listOf("Test harvest > changed")),
+        "2022-02-15T11:00:05Z"),
 )
 
 val TEST_SERVICE_HIT_OWNED_BY = TEST_SERVICE_HIT_ALL_FIELDS.copy(
