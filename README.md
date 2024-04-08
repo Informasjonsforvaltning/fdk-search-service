@@ -1,6 +1,15 @@
 # fdk-search-service
 This service is responsible for searching for all resources in FDK. The service consumes RDF parse events (Kafka) 
-and indexing these resources as documents in Elastic Search.
+and indexing these resources as documents (`SearchObject`s) in Elastic Search.
+
+### About the general `SearchObject` model
+The generalized model is used to represent all resources in FDK, with fields that are common to all
+resources, and used for searching.
+
+### About the `SearchResult` model
+The result of search queries is represented by the `SearchResult` model. This model contains paginated list of 
+`SearchObject`s.
+
 
 ## Requirements
 - maven
