@@ -62,18 +62,18 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-elasticsearch</artifactId>
-            <version>5.2.4</version>
+            <version>5.2.5</version>
         </dependency>
 
         <dependency>
             <groupId>io.confluent</groupId>
             <artifactId>kafka-schema-registry-client</artifactId>
-            <version>7.6.0</version>
+            <version>7.6.1</version>
         </dependency>
         <dependency>
             <groupId>io.confluent</groupId>
             <artifactId>kafka-avro-serializer</artifactId>
-            <version>7.6.0</version>
+            <version>7.6.1</version>
         </dependency>
 
         <dependency>
@@ -136,7 +136,7 @@
         <dependency>
             <groupId>org.mockito.kotlin</groupId>
             <artifactId>mockito-kotlin</artifactId>
-            <version>5.2.1</version>
+            <version>5.3.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
