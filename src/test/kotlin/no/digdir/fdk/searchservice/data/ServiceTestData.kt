@@ -11,7 +11,7 @@ val TEST_NULL_SERVICE = Service(
     keyword = null,
     description = null,
     spatial = null,
-    hasCompetantAuthority = null,
+    hasCompetentAuthority = null,
     ownedBy = null,
     euDataThemes = null,
     subject = null,
@@ -140,18 +140,18 @@ val TEST_SERVICE_HIT_OWNED_BY = TEST_SERVICE_HIT_ALL_FIELDS.copy(
     ))
 )
 
-val TEST_SERVICE_HIT_HAS_COMPETANT_AUTHORITY = TEST_NULL_SERVICE.copy(
+val TEST_SERVICE_HIT_HAS_COMPETENT_AUTHORITY = TEST_NULL_SERVICE.copy(
     uri = "uri 0103",
-    hasCompetantAuthority = listOf(ServiceOrganization(
+    hasCompetentAuthority = listOf(ServiceOrganization(
         orgPath = "/STAT/103417858",
         identifier = "test identifier 0103",
         uri = "test uri 0103",
         name = LocalizedStrings("test name 0103", null, null, null),
         title = LocalizedStrings(
-            "NB Test hasCompetantAuthority > prefLabel",
-            "NN Test hasCompetantAuthority > prefLabel",
-            "NO Test hasCompetantAuthority > prefLabel",
-            "EN Test hasCompetantAuthority > prefLabel"),
+            "NB Test hasCompetentAuthority > prefLabel",
+            "NN Test hasCompetentAuthority > prefLabel",
+            "NO Test hasCompetentAuthority > prefLabel",
+            "EN Test hasCompetentAuthority > prefLabel"),
     ))
 )
 

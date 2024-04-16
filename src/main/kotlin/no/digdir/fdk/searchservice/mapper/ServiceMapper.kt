@@ -26,10 +26,10 @@ fun Service.toSearchObject(id: String, timestamp: Long, deleted: Boolean = false
         isRelatedToTransportportal = false
     )
 
-private fun Service.getOrganization() = if (hasCompetantAuthority.isNullOrEmpty()) {
+private fun Service.getOrganization() = if (hasCompetentAuthority.isNullOrEmpty()) {
     ownedBy?.get(0)
 } else {
-    hasCompetantAuthority.get(0)
+    hasCompetentAuthority[0]
 }
 
 private fun ServiceOrganization.toSearchOrg(): Organization =
