@@ -1,7 +1,6 @@
 package no.digdir.fdk.searchservice.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.annotation.JsonInclude
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Service(
@@ -13,7 +12,7 @@ data class Service(
     val euDataThemes: List<EuDataTheme>?,
     val losTheme: List<LosNode>?,
     val ownedBy: List<ServiceOrganization>?,
-    val hasCompetantAuthority: List<ServiceOrganization>?,
+    val hasCompetentAuthority: List<ServiceOrganization>?,
     val spatial: List<ReferenceDataCode>?,
     val harvest: HarvestMetadata?,
     val isGroupedBy: List<String>?,
