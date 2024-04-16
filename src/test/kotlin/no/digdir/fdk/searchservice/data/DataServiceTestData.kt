@@ -117,6 +117,7 @@ val TEST_DATA_SERVICE_HIT_ALL_FIELDS = TEST_NULL_DATA_SERVICE.copy(
     ),
     fdkFormat = listOf(
         MediaTypeOrExtent(name = null, uri = null, type = MediaTypeOrExtentType.MEDIA_TYPE, code = "turtle"),
+        MediaTypeOrExtent(name = null, uri = null, type = MediaTypeOrExtentType.UNKNOWN, code = "IPSUM")
     )
 )
 

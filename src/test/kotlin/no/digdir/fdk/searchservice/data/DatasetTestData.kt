@@ -201,7 +201,8 @@ val TEST_DATASET_FILTERS = TEST_DATASET_HIT_ALL_FIELDS.copy(
         Distribution(
             listOf(
                 MediaTypeOrExtent(name = null, uri = null, type = MediaTypeOrExtentType.MEDIA_TYPE, code = "tiff"),
-                MediaTypeOrExtent(name = null, uri = null, type = MediaTypeOrExtentType.FILE_TYPE, code = "SHP")
+                MediaTypeOrExtent(name = null, uri = null, type = MediaTypeOrExtentType.FILE_TYPE, code = "SHP"),
+                MediaTypeOrExtent(name = null, uri = null, type = MediaTypeOrExtentType.UNKNOWN, code = "LOREM")
             ))
     )
 )

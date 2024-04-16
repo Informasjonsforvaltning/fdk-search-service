@@ -379,7 +379,7 @@ class FilterTest : ApiTestContext() {
             val result: SearchResult = mapper.readValue(response["body"] as String)
             Assertions.assertTrue(result.hits.isNotEmpty())
 
-            val validValues = listOf("MEDIA_TYPE tiff", "FILE_TYPE SHP")
+            val validValues = listOf("MEDIA_TYPE tiff", "FILE_TYPE SHP", "UNKNOWN")
 
             val allFormatsValid = result.hits.all { dataset ->
                 dataset.fdkFormatPrefixed?.all { validValues.contains(it) } ?: false
@@ -411,7 +411,7 @@ class FilterTest : ApiTestContext() {
             val result: SearchResult = mapper.readValue(response["body"] as String)
             Assertions.assertTrue(result.hits.isNotEmpty())
 
-            val validValues = listOf("MEDIA_TYPE turtle")
+            val validValues = listOf("MEDIA_TYPE turtle", "UNKNOWN")
 
             val allFormatsValid = result.hits.all { dataset ->
                 dataset.fdkFormatPrefixed?.all { validValues.contains(it) } ?: false
