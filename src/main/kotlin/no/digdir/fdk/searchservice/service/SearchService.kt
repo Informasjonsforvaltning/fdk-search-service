@@ -78,6 +78,7 @@ class SearchService(
                 }
                 boolBuilder.minimumShouldMatch("1")
                 boolBuilder.filter(createQueryFilters(filters, searchTypes, profile))
+                boolBuilder.mustNot(createNullFilters(filters))
             }
         }
     }
@@ -90,6 +91,7 @@ class SearchService(
         withQuery { queryBuilder ->
             queryBuilder.bool { boolBuilder ->
                 boolBuilder.filter(createQueryFilters(filters, searchTypes, profile))
+                boolBuilder.mustNot(createNullFilters(filters))
             }
         }
     }
@@ -100,6 +102,7 @@ class SearchService(
             FilterFields.AccessRights.aggregationName(),
             AggregationBuilders.terms { builder ->
                 builder.field(FilterFields.AccessRights.jsonPath())
+                    .missing(MISSING_VALUE_AGGREGATE)
                     .size(aggSize)
             }
         )
@@ -128,6 +131,7 @@ class SearchService(
             FilterFields.OrgPath.aggregationName(),
             AggregationBuilders.terms { builder ->
                 builder.field(FilterFields.OrgPath.jsonPath())
+                    .missing(MISSING_VALUE_AGGREGATE)
                     .size(aggSize)
             }
         )
@@ -214,12 +218,12 @@ class SearchService(
             })
         }
 
-        filters?.accessRights?.let { accessRights ->
+        filters?.accessRights?.value?.let { accessRightsValue ->
             queryFilters.add(DSLQuery.of { queryBuilder ->
                 queryBuilder.term { termBuilder ->
                     termBuilder
                         .field(FilterFields.AccessRights.jsonPath())
-                        .value(FieldValue.of(accessRights.value))
+                        .value(FieldValue.of(accessRightsValue))
                 }
             })
         }
@@ -270,12 +274,12 @@ class SearchService(
             }
         }
 
-        filters?.orgPath?.let { orgPath ->
+        filters?.orgPath?.value?.let { orgPathValue ->
             queryFilters.add(DSLQuery.of { queryBuilder ->
                 queryBuilder.term { termBuilder ->
                     termBuilder
                         .field(FilterFields.OrgPath.jsonPath())
-                        .value(FieldValue.of(orgPath.value))
+                        .value(FieldValue.of(orgPathValue))
                 }
             })
         }
@@ -335,6 +339,34 @@ class SearchService(
         }
 
         if (profile == SearchProfile.TRANSPORT) queryFilters.add(filtersForProfile(profile))
+
+        return queryFilters
+    }
+
+    private fun createNullFilters(
+        filters: SearchFilters?,
+    ): List<DSLQuery> {
+        val queryFilters = mutableListOf<DSLQuery>()
+
+        filters?.accessRights?.let { accessRights ->
+            if (accessRights.value == null) {
+                queryFilters.add(DSLQuery.of { queryBuilder ->
+                    queryBuilder.exists { existsBuilder ->
+                        existsBuilder.field(FilterFields.AccessRights.jsonPath())
+                    }
+                })
+            }
+        }
+
+        filters?.orgPath?.let { orgPath ->
+            if (orgPath.value == null) {
+                queryFilters.add(DSLQuery.of { queryBuilder ->
+                    queryBuilder.exists { existsBuilder ->
+                        existsBuilder.field(FilterFields.OrgPath.jsonPath())
+                    }
+                })
+            }
+        }
 
         return queryFilters
     }
@@ -442,6 +474,8 @@ internal enum class FilterFields {
     OpenData, OrgPath, OrgId, Provenance, Relations, SearchType, Spatial, Uri,
     TransportRelation
 }
+
+private const val MISSING_VALUE_AGGREGATE = "null"
 
 internal fun FilterFields.jsonPath(): String = when (this) {
     FilterFields.AccessRights -> "accessRights.code.keyword"

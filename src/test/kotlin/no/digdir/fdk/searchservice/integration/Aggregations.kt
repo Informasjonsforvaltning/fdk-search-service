@@ -75,4 +75,26 @@ class Aggregations: ApiTestContext() {
         Assertions.assertTrue(10 < (result.aggregations["orgPath"]?.size ?: 0))
     }
 
+    @Test
+    fun `objects missing accessRights are aggregated as null`() {
+        val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(accessRights = SearchFilter(null))))
+        val response = requestApi(PATH, port, searchBody, HttpMethod.POST)
+        Assertions.assertEquals(200, response["status"])
+
+        val result: SearchResult = mapper.readValue(response["body"] as String)
+        Assertions.assertEquals(1, result.aggregations["accessRights"]?.size)
+        Assertions.assertEquals("null", result.aggregations["accessRights"]?.first()?.key)
+    }
+
+    @Test
+    fun `objects missing orgPath are aggregated as null`() {
+        val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(orgPath = SearchFilter(null))))
+        val response = requestApi(PATH, port, searchBody, HttpMethod.POST)
+        Assertions.assertEquals(200, response["status"])
+
+        val result: SearchResult = mapper.readValue(response["body"] as String)
+        Assertions.assertEquals(1, result.aggregations["orgPath"]?.size)
+        Assertions.assertEquals("null", result.aggregations["orgPath"]?.first()?.key)
+    }
+
 }
