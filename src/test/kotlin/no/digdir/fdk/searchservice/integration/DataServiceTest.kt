@@ -2,6 +2,7 @@ package no.digdir.fdk.searchservice.integration
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import no.digdir.fdk.searchservice.model.SearchFilter
 import no.digdir.fdk.searchservice.model.SearchOperation
 import no.digdir.fdk.searchservice.model.SearchResult
 import no.digdir.fdk.searchservice.model.SearchType
@@ -87,6 +88,19 @@ class DataServiceSearchTest : ApiTestContext() {
 
             val result: SearchResult = mapper.readValue(response["body"] as String)
             if (result.hits.isEmpty()) Assertions.fail<String>("No hit for query: $it")
+        }
+    }
+
+    @Test
+    fun `data service with unknown format type is indexed as fdkFormat=UNKNOWN`() {
+        val searchBody = mapper.writeValueAsString(SearchOperation(filters = searchFilters.copy(formats = SearchFilter(value = listOf("UNKNOWN")))))
+        val response = requestApi(DATA_SERVICES_PATH, port, searchBody, POST)
+        Assertions.assertEquals(200, response["status"])
+
+        val result: SearchResult = mapper.readValue(response["body"] as String)
+        Assertions.assertTrue(result.hits.isNotEmpty())
+        result.hits.forEach { hit ->
+            Assertions.assertFalse(hit.fdkFormatPrefixed?.filter { it == "UNKNOWN" }.isNullOrEmpty())
         }
     }
 }

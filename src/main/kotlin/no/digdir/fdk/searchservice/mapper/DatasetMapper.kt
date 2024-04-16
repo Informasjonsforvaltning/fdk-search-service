@@ -30,7 +30,9 @@ fun Dataset.extractPrefixedFormats(): Set<String> {
     val mutableList = mutableSetOf<String>()
     distribution?.forEach { dist ->
         dist.fdkFormat?.forEach { format ->
-            mutableList.add("${format.type} ${format.code}")
+            if(format.type == MediaTypeOrExtentType.UNKNOWN)
+                mutableList.add(MediaTypeOrExtentType.UNKNOWN.name)
+            else mutableList.add("${format.type} ${format.code}")
         }
     }
     return mutableList
