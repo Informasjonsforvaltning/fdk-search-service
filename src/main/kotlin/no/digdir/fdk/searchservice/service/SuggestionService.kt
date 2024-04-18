@@ -59,20 +59,22 @@ class SuggestionService(
 
         builder.withQuery { queryBuilder ->
             queryBuilder.bool { boolBuilder ->
-                boolBuilder.should {
-                    it.matchPhrasePrefix { matchBuilder ->
-                        matchBuilder
-                            .field("title.nb")
-                            .query(query)
+                listOf("title.nb", "title.nn", "title.no", "title.en").forEach { field ->
+                    boolBuilder.should {
+                        it.matchPhrasePrefix { matchBuilder ->
+                            matchBuilder
+                                .field(field)
+                                .query(query)
+                        }
+
                     }
 
-                }
-
-                boolBuilder.should {
-                    it.matchPhrase { matchBuilder ->
-                        matchBuilder
-                            .field("title.nb")
-                            .query(query)
+                    boolBuilder.should {
+                        it.matchPhrase { matchBuilder ->
+                            matchBuilder
+                                .field(field)
+                                .query(query)
+                        }
                     }
                 }
                 boolBuilder.minimumShouldMatch("1")
