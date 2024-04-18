@@ -9,6 +9,7 @@ import co.elastic.clients.elasticsearch._types.aggregations.StringTermsAggregate
 import co.elastic.clients.elasticsearch._types.query_dsl.Operator
 import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType
 import co.elastic.clients.json.JsonData
+import io.micrometer.core.instrument.Metrics
 import no.digdir.fdk.searchservice.model.*
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchAggregation
 import org.springframework.data.elasticsearch.client.elc.NativeQuery
@@ -21,20 +22,27 @@ import org.springframework.data.elasticsearch.core.query.Query
 import org.springframework.stereotype.Component
 import kotlin.math.ceil
 import kotlin.math.roundToLong
+import kotlin.time.measureTimedValue
+import kotlin.time.toJavaDuration
 import co.elastic.clients.elasticsearch._types.query_dsl.Query as DSLQuery
 
 @Component
 class SearchService(
     private val elasticSearchOperations: ElasticsearchOperations
 ) {
-    fun search(search: SearchOperation, searchTypes: List<SearchType>?): SearchResult =
-        elasticSearchOperations
-            .search(
-                search.toElasticQuery(searchTypes),
-                SearchObject::class.java,
-                IndexCoordinates.of(SEARCH_INDEX_NAME)
-            )
-            .toSearchResult(search.pagination)
+    fun search(search: SearchOperation, searchTypes: List<SearchType>?): SearchResult {
+        val (result, timeElapsed) = measureTimedValue {
+            elasticSearchOperations
+                .search(
+                    search.toElasticQuery(searchTypes),
+                    SearchObject::class.java,
+                    IndexCoordinates.of(SEARCH_INDEX_NAME)
+                )
+                .toSearchResult(search.pagination)
+        }
+        Metrics.timer("search").record(timeElapsed.toJavaDuration())
+        return result
+    }
 
     private fun SearchOperation.toElasticQuery(searchTypes: List<SearchType>?): Query {
         val builder = NativeQuery.builder()
@@ -398,10 +406,12 @@ class SearchService(
             ).flatten()
 
     private fun languagePaths(basePath: String, boost: Int? = null): List<String> =
-        listOf("$basePath.nb${if (boost != null) "^$boost" else ""}",
+        listOf(
+            "$basePath.nb${if (boost != null) "^$boost" else ""}",
             "$basePath.nn${if (boost != null) "^$boost" else ""}",
             "$basePath.no${if (boost != null) "^$boost" else ""}",
-            "$basePath.en${if (boost != null) "^$boost" else ""}")
+            "$basePath.en${if (boost != null) "^$boost" else ""}"
+        )
 
     private fun StringTermsAggregate.toBucketCounts(): List<BucketCount> =
         buckets().array().map {
