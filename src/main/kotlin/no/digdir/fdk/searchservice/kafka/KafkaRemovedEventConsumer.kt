@@ -13,8 +13,8 @@ import no.fdk.dataset.DatasetEvent
 import no.fdk.dataset.DatasetEventType
 import no.fdk.event.EventEvent
 import no.fdk.event.EventEventType
-import no.fdk.informationmodels.InformationModelEvent
-import no.fdk.informationmodels.InformationModelEventType
+import no.fdk.informationmodel.InformationModelEvent
+import no.fdk.informationmodel.InformationModelEventType
 import no.fdk.service.ServiceEvent
 import no.fdk.service.ServiceEventType
 import org.apache.avro.specific.SpecificRecord
@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component
 import kotlin.time.measureTimedValue
 import kotlin.time.toJavaDuration
 
-fun SpecificRecord.getResourceType(): String? {
+fun SpecificRecord.getResourceType(): String {
     return when (this) {
         is DatasetEvent -> "dataset"
         is DataServiceEvent -> "data-service"
@@ -36,7 +36,7 @@ fun SpecificRecord.getResourceType(): String? {
         is InformationModelEvent -> "information-model"
         is ServiceEvent -> "service"
         is EventEvent -> "event"
-        else -> null
+        else -> "invalid-type"
     }
 }
 
