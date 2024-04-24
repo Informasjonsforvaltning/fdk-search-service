@@ -4,6 +4,7 @@ logging:
   level.org.springframework: WARN
   level.org.springframework.web: WARN
   level.org.apache.avro: ERROR
+  level.org.apache.kafka: ERROR
 server:
   port: 8080
 management:
@@ -38,6 +39,19 @@ spring:
       compression-type: snappy
     listener:
       ack-mode: manual_immediate
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        permittedNumberOfCallsInHalfOpenState: 3
+        waitDurationInOpenState: 60000
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+    instances:
+      rdf-parse.baseConfig: default
+      remove.baseConfig: default
 application:
   prop: 1
   cors:
