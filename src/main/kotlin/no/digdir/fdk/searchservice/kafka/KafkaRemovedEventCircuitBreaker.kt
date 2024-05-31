@@ -49,39 +49,61 @@ open class KafkaRemovedEventCircuitBreaker(
 
         val event = record.value()
         try {
-            val timeElapsed = measureTimedValue {
-                event.let {
-                    if (it is DatasetEvent && it.type == DatasetEventType.DATASET_REMOVED) {
-                        LOGGER.debug("Remove dataset - id: " + it.fdkId)
-                        searchRepository.markDeletedIfTimestampIsNewer("${it.fdkId}", it.timestamp, SearchType.DATASET)
-                    } else if (it is DataServiceEvent && it.type == DataServiceEventType.DATA_SERVICE_REMOVED) {
-                        LOGGER.debug("Remove data-service - id: " + it.fdkId)
-                        searchRepository.markDeletedIfTimestampIsNewer(
-                            "${it.fdkId}",
-                            it.timestamp,
-                            SearchType.DATA_SERVICE
-                        )
-                    } else if (it is ConceptEvent && it.type == ConceptEventType.CONCEPT_REMOVED) {
-                        LOGGER.debug("Remove concept - id: " + it.fdkId)
-                        searchRepository.markDeletedIfTimestampIsNewer("${it.fdkId}", it.timestamp, SearchType.CONCEPT)
-                    } else if (it is InformationModelEvent && it.type == InformationModelEventType.INFORMATION_MODEL_REMOVED) {
-                        LOGGER.debug("Remove information-model - id: " + it.fdkId)
-                        searchRepository.markDeletedIfTimestampIsNewer(
-                            "${it.fdkId}",
-                            it.timestamp,
-                            SearchType.INFORMATION_MODEL
-                        )
-                    } else if (it is ServiceEvent && it.type == ServiceEventType.SERVICE_REMOVED) {
-                        LOGGER.debug("Remove service - id: " + it.fdkId)
-                        searchRepository.markDeletedIfTimestampIsNewer("${it.fdkId}", it.timestamp, SearchType.SERVICE)
-                    } else if (it is EventEvent && it.type == EventEventType.EVENT_REMOVED) {
-                        LOGGER.debug("Remove event - id: " + it.fdkId)
-                        searchRepository.markDeletedIfTimestampIsNewer("${it.fdkId}", it.timestamp, SearchType.EVENT)
-                    }
+            val (deleted, timeElapsed) = measureTimedValue {
+                if (event is DatasetEvent && event.type == DatasetEventType.DATASET_REMOVED) {
+                    LOGGER.debug("Remove dataset - id: {}", event.fdkId)
+                    searchRepository.markDeletedIfTimestampIsNewer(
+                        "${event.fdkId}",
+                        event.timestamp,
+                        SearchType.DATASET
+                    )
+                    true
+                } else if (event is DataServiceEvent && event.type == DataServiceEventType.DATA_SERVICE_REMOVED) {
+                    LOGGER.debug("Remove data-service - id: {}", event.fdkId)
+                    searchRepository.markDeletedIfTimestampIsNewer(
+                        "${event.fdkId}",
+                        event.timestamp,
+                        SearchType.DATA_SERVICE
+                    )
+                    true
+                } else if (event is ConceptEvent && event.type == ConceptEventType.CONCEPT_REMOVED) {
+                    LOGGER.debug("Remove concept - id: {}", event.fdkId)
+                    searchRepository.markDeletedIfTimestampIsNewer(
+                        "${event.fdkId}",
+                        event.timestamp,
+                        SearchType.CONCEPT
+                    )
+                    true
+                } else if (event is InformationModelEvent && event.type == InformationModelEventType.INFORMATION_MODEL_REMOVED) {
+                    LOGGER.debug("Remove information-model - id: {}", event.fdkId)
+                    searchRepository.markDeletedIfTimestampIsNewer(
+                        "${event.fdkId}",
+                        event.timestamp,
+                        SearchType.INFORMATION_MODEL
+                    )
+                    true
+                } else if (event is ServiceEvent && event.type == ServiceEventType.SERVICE_REMOVED) {
+                    LOGGER.debug("Remove service - id: {}", event.fdkId)
+                    searchRepository.markDeletedIfTimestampIsNewer(
+                        "${event.fdkId}",
+                        event.timestamp,
+                        SearchType.SERVICE
+                    )
+                    true
+                } else if (event is EventEvent && event.type == EventEventType.EVENT_REMOVED) {
+                    LOGGER.debug("Remove event - id: {}", event.fdkId)
+                    searchRepository.markDeletedIfTimestampIsNewer("${event.fdkId}", event.timestamp, SearchType.EVENT)
+                    true
+                } else {
+                    LOGGER.debug("Unknown event type: {}, skipping", event)
+                    false
                 }
             }
-            Metrics.timer("search_delete", "type", event.getResourceType())
-                .record(timeElapsed.duration.toJavaDuration())
+
+            if (deleted) {
+                Metrics.timer("search_delete", "type", event.getResourceType())
+                    .record(timeElapsed.toJavaDuration())
+            }
         } catch (e: Exception) {
             LOGGER.error("Error processing message: " + e.message)
             Metrics.counter(
