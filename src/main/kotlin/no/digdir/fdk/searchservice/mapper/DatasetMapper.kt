@@ -23,7 +23,8 @@ fun Dataset.toSearchObject(id: String, timestamp: Long, deleted: Boolean = false
         relations = getRelations(),
         specializedType = getSpecializedType(),
         isAuthoritative = isAuthoritative,
-        isRelatedToTransportportal = isRelatedToTransportportal
+        isRelatedToTransportportal = isRelatedToTransportportal,
+        additionalTitles = null
     )
 
 fun Dataset.extractPrefixedFormats(): Set<String> {

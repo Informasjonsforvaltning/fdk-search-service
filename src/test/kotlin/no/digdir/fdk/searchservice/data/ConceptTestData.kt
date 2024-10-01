@@ -19,7 +19,9 @@ val TEST_NULL_CONCEPT = Concept(
     isReplacedBy = null,
     closeMatch = null,
     exactMatch = null,
-    genericRelation = null)
+    genericRelation = null,
+    altLabel = null,
+    hiddenLabel = null)
 
 val TEST_CONCEPT_HIT_ALL_FIELDS = TEST_NULL_CONCEPT.copy(
     identifier = "concept.uri.0",
@@ -78,6 +80,16 @@ val TEST_CONCEPT_HIT_ALL_FIELDS = TEST_NULL_CONCEPT.copy(
                 "NO Test publisher > prefLabel",
                 "EN Test publisher > prefLabel"))
     ),
+    hiddenLabel = listOf( LocalizedStrings(
+        "NB: Frarådet term",
+        "NN: Fråråda term",
+        "NO: Frarådet term",
+        "EN: Hidden term")),
+    altLabel = listOf( LocalizedStrings(
+        "NB: Tillatt term",
+        "NN: Tillatt term",
+        "NO: Tillatt term",
+        "EN: Alternative term")),
 )
 
 val CONCEPT_WITH_RELATIONS = TEST_NULL_CONCEPT.copy(

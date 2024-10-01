@@ -17,6 +17,7 @@ class QueryFields(
     val title: Boolean = true,
     val description: Boolean = true,
     val keyword: Boolean = true,
+    val additionalTitles: Boolean = true
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)

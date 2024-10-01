@@ -23,7 +23,8 @@ fun Event.toSearchObject(id: String, timestamp: Long, deleted: Boolean = false) 
         relations = getRelations(),
         specializedType = getSpecializedType(),
         isAuthoritative = null,
-        isRelatedToTransportportal = false
+        isRelatedToTransportportal = false,
+        additionalTitles = null
     )
 
 fun Event.getRelations(): Set<Relation> {

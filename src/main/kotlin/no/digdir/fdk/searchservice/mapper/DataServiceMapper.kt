@@ -27,7 +27,8 @@ fun DataService.toSearchObject(id: String, timestamp: Long, deleted: Boolean = f
         relations = getRelations(),
         specializedType = null,
         isAuthoritative = null,
-        isRelatedToTransportportal = false
+        isRelatedToTransportportal = false,
+        additionalTitles = null
     )
 
 fun DataService.extractPrefixedFormats(): Set<String> {

@@ -20,5 +20,7 @@ data class Concept(
     val memberOf: List<String>?,
     val partitiveRelation: List<PartitiveRelation>?,
     val replaces: List<String>?,
-    val seeAlso: List<String>?
+    val seeAlso: List<String>?,
+    val hiddenLabel: List<LocalizedStrings>?,
+    val altLabel: List<LocalizedStrings>?
 )
