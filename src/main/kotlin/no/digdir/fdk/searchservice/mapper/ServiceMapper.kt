@@ -23,7 +23,8 @@ fun Service.toSearchObject(id: String, timestamp: Long, deleted: Boolean = false
         relations = getRelations(),
         specializedType = null,
         isAuthoritative = null,
-        isRelatedToTransportportal = false
+        isRelatedToTransportportal = false,
+        additionalTitles = null
     )
 
 private fun Service.getOrganization() = if (hasCompetentAuthority.isNullOrEmpty()) {

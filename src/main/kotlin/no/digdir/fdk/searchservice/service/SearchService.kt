@@ -390,6 +390,9 @@ class SearchService(
             if (keyword) languagePaths("keyword", 5)
             else emptyList(),
 
+            if (additionalTitles) languagePaths("additionalTitles", 10)
+            else emptyList(),
+
             ).flatten()
 
     private fun QueryFields.phraseMatchPaths(): List<String> =
@@ -401,6 +404,9 @@ class SearchService(
             else emptyList(),
 
             if (keyword) languagePaths("keyword", 5)
+            else emptyList(),
+
+            if (additionalTitles) languagePaths("additionalTitles", 10)
             else emptyList(),
 
             ).flatten()

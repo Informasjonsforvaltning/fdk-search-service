@@ -24,7 +24,8 @@ fun Concept.toSearchObject(id: String, timestamp: Long, deleted: Boolean = false
         relations = getRelations(),
         specializedType = null,
         isAuthoritative = null,
-        isRelatedToTransportportal = false
+        isRelatedToTransportportal = false,
+        additionalTitles = listOf(hiddenLabel ?: emptyList(), altLabel ?: emptyList()).flatten().toSet()
     )
 
 fun Concept.getRelations(): Set<Relation> {

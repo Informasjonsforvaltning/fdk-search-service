@@ -145,7 +145,8 @@ open class KafkaRemovedEventCircuitBreaker(
                 title = null,
                 specializedType = null,
                 isAuthoritative = null,
-                isRelatedToTransportportal = null
+                isRelatedToTransportportal = null,
+                additionalTitles = null
             ).let { save(it) }
         }
     }

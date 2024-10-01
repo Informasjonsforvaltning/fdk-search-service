@@ -23,7 +23,8 @@ val TEST_NULL_SEARCH_OBJECT = SearchObject(
     relations = null,
     specializedType = null,
     isAuthoritative = null,
-    isRelatedToTransportportal = null
+    isRelatedToTransportportal = null,
+    additionalTitles = null
 )
 
 val TEST_SEARCH_OBJECT_AND_HIT_ALL_FIELDS = TEST_NULL_SEARCH_OBJECT.copy(

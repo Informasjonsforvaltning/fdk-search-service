@@ -29,6 +29,8 @@ class ConceptSearchTest: ApiTestContext() {
     private val SEARCH_QUERY_NO_HITS = "nohits"
     private val SEARCH_QUERYS_HIT_ALL_SEARCH_FIELDS =
         listOf("definition","prefLabel")
+    private val SEARCH_QUERYS_HIT_ADDITIONAL_TITLES =
+        listOf("Frarådet term","Tillatt term")
     private val searchFilters = createEmptySearchFilters()
     private val mapper = jacksonObjectMapper()
 
@@ -83,6 +85,25 @@ class ConceptSearchTest: ApiTestContext() {
 
             val result: SearchResult = mapper.readValue(response["body"] as String)
             if (result.hits.isEmpty()) Assertions.fail<String>("No hit for query: $it")
+        }
+    }
+
+    @Test
+    fun `search and hit additional titles`() {
+        SEARCH_QUERYS_HIT_ADDITIONAL_TITLES.forEach { searchQuery ->
+            val searchBody = mapper.writeValueAsString(SearchOperation(searchQuery, searchFilters))
+            val response = requestApi(CONCEPTS_PATH, port, searchBody, POST)
+            Assertions.assertEquals(200, response["status"])
+
+            val result: SearchResult = mapper.readValue(response["body"] as String)
+            if (result.hits.isEmpty()) Assertions.fail<String>("No hit for query: $searchQuery")
+
+
+            val hasAdditionalTitlesHits = result.hits.any { hit ->
+                hit.additionalTitles?.isNotEmpty() ?: false
+            }
+
+            Assertions.assertTrue(hasAdditionalTitlesHits)
         }
     }
 }
