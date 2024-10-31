@@ -18,7 +18,7 @@ fun Service.toSearchObject(id: String, timestamp: Long, deleted: Boolean = false
         organization = getOrganization()?.toSearchOrg(),
         provenance = null,
         searchType = SearchType.SERVICE,
-        spatial = spatial?.toSet(),
+        spatial = spatial?.map { ReferenceDataCode(uri = it, code = null, prefLabel = null) }?.toSet(),
         title = title,
         relations = getRelations(),
         specializedType = null,

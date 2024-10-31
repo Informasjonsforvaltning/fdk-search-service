@@ -108,17 +108,7 @@ val TEST_SERVICE_HIT_ALL_FIELDS = TEST_NULL_SERVICE.copy(
             losPaths = listOf("test"),
         )
     ),
-    spatial = listOf(
-        ReferenceDataCode(
-            uri = "Test spatial > uri",
-            code = "Test spatial > code",
-            prefLabel = LocalizedStrings(
-                "NB Test spatial > prefLabel",
-                "NN Test spatial > prefLabel",
-                "NO Test spatial > prefLabel",
-                "EN Test spatial > prefLabel"),
-        )
-    ),
+    spatial = listOf("Test spatial > uri"),
     harvest = HarvestMetadata(
         "2022-02-15T11:00:05Z",
         "2022-02-15T11:00:05Z"),
