@@ -6,5 +6,5 @@ resources:
   - service-fdk-search-service.yaml
 images:
   - name: fdk-search-service
-    newName: eu.gcr.io/digdir-fdk-infra/fdk-search-service
+    newName: ghcr.io/informasjonsforvaltning/fdk-search-service
     newTag: $(GIT_COMMIT_SHA)
