@@ -315,9 +315,10 @@ class SearchService(
         filters?.lastXDays?.let { daysAgo ->
             queryFilters.add(DSLQuery.of { queryBuilder ->
                 queryBuilder.range { rangeBuilder ->
-                    rangeBuilder
-                        .field(FilterFields.FirstHarvested.jsonPath())
-                        .gte(JsonData.of("now-${daysAgo.value}d/d"))
+                    rangeBuilder.term { termRangeBuilder ->
+                        termRangeBuilder.field(FilterFields.FirstHarvested.jsonPath())
+                            .gte("now-${daysAgo.value}d/d")
+                    }
                 }
             })
         }
@@ -325,9 +326,10 @@ class SearchService(
         filters?.lastXDaysModified?.let { daysAgo ->
             queryFilters.add(DSLQuery.of { queryBuilder ->
                 queryBuilder.range { rangeBuilder ->
-                    rangeBuilder
-                        .field(FilterFields.Modified.jsonPath())
-                        .gte(JsonData.of("now-${daysAgo.value}d/d"))
+                    rangeBuilder.term { termRangeBuilder ->
+                        termRangeBuilder.field(FilterFields.Modified.jsonPath())
+                        .gte("now-${daysAgo.value}d/d")
+                    }
                 }
             })
         }
