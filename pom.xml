@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.0</version>
+        <version>3.4.4</version>
         <relativePath/>
     </parent>
 
@@ -33,9 +33,10 @@
         <maven.compiler.target>${java.release}</maven.compiler.target>
         <maven.exec.skip>false</maven.exec.skip>
 
-        <kotlin.version>2.1.0</kotlin.version>
-        <testcontainers.version>1.20.4</testcontainers.version>
+        <kotlin.version>2.1.20</kotlin.version>
+        <testcontainers.version>1.20.6</testcontainers.version>
         <avro.version>1.12.0</avro.version>
+        <confluent.version>7.9.0</confluent.version>
     </properties>
 
     <dependencies>
@@ -91,12 +92,12 @@
         <dependency>
             <groupId>io.confluent</groupId>
             <artifactId>kafka-schema-registry-client</artifactId>
-            <version>7.7.2</version>
+            <version>${confluent.version}</version>
         </dependency>
         <dependency>
             <groupId>io.confluent</groupId>
             <artifactId>kafka-avro-serializer</artifactId>
-            <version>7.7.2</version>
+            <version>${confluent.version}</version>
         </dependency>
 
         <dependency>
@@ -183,13 +184,19 @@
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>elasticsearch</artifactId>
+            <artifactId>testcontainers</artifactId>
             <version>${testcontainers.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-compress</artifactId>
+                </exclusion>
+            </exclusions>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>testcontainers</artifactId>
+            <artifactId>elasticsearch</artifactId>
             <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
