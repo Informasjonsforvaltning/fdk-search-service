@@ -67,13 +67,13 @@ spring:
   config.activate.on-profile: develop
 application:
   scope: test.scope
+  cors:
+    originPatterns: '*'
   elastic:
     username: elastic
     password: elasticpwd
+    host: localhost
     ssl: false
-    storeName: keystore
-    storePass: keystore
-    certPath: path
 ---
 spring:
   config.activate.on-profile: test

@@ -1,75 +1,109 @@
-# fdk-search-service
-This service is responsible for searching for all resources in FDK. The service consumes RDF parse events (Kafka) 
-and indexing these resources as documents (`SearchObject`s) in ElasticSearch.
+# FDK Search Service
 
-**Open-API spec:** https://github.com/Informasjonsforvaltning/fdk-search-service/blob/main/openapi.yaml
+This application provides an API for searching all resources (datasets, concepts etc.). The service consumes RDF parse
+events (Kafka) and indexing these resources as documents (`SearchObject`) in ElasticSearch.
 
+For a broader understanding of the system’s context, refer to
+the [architecture documentation](https://github.com/Informasjonsforvaltning/architecture-documentation) wiki. For more
+specific context on this application, see the **Portal** subsystem section.
 
-### About the general `SearchObject` model
-The generalized model is used to represent all resources in FDK, with fields that are common to all
-resources, and used for searching.
+## Getting Started
 
-### About the `SearchResult` model
-The result of search queries is represented by the `SearchResult` model. This model contains paginated list of 
-`SearchObject`s.
+These instructions will give you a copy of the project up and running on your local machine for development and testing
+purposes.
 
-## Requirements
-- maven
-- java 21
-- docker
-- docker-compose
+### Prerequisites
 
-## Generate sources
+Ensure you have the following installed:
+
+- Java 21
+- Maven
+- Docker
+
+### Running locally
+
+#### Clone the repository
+
+```sh
+git clone https://github.com/Informasjonsforvaltning/fdk-search-service.git
+cd fdk-search-service
+```
+
+#### Generate sources
+
+Kafka messages are serialized using Avro. Avro schemas are located in ```kafka/schemas```. To generate sources from Avro
+schema, run the following command:
+
 ```
 mvn generate-sources    
 ```
 
-## Run tests
-```
-mvn test
-```
+#### Start Elasticsearch, Kafka cluster and setup topics/schemas
 
-## Run locally
+Topics and schemas are set up automatically when starting the Kafka cluster. Docker compose uses the scripts
+```create-topics.sh``` and ```create-schemas.sh``` to set up topics and schemas.
 
-### Start Kafka cluster and setup topics/schemas
-Topics and schemas are set up automatically when starting the Kafka cluster.
-Docker compose uses the scripts create-topics.sh and create-schemas.sh to set up topics and schemas.
 ```
 docker-compose up -d
 ```
-If you have problems starting kafka, check if all health checks are ok.
-Make sure number at the end (after 'grep') matches desired topics.
 
-### Start search service
-Start search service locally using maven. Use Spring profile **develop**.
+If you have problems starting kafka, check if all health checks are ok. Make sure number at the end (after 'grep')
+matches desired topics.
+
+#### Start application
+
 ```
 mvn spring-boot:run -Dspring-boot.run.profiles=develop
 ```
 
-### Produce messages
-Check if schema id is correct in the produce-messages.sh script. This should be 1 if there
-is only one schema in your registry.
+#### Produce messages
+
+Check if schema id is correct in the script. This should be 1 if there is only one schema in your registry.
+
 ```
 sh ./kafka/produce-messages.sh
 ```
 
-## Search examples
-For more usages, see [openAPI](https://github.com/Informasjonsforvaltning/fdk-search-service/blob/main/openapi.yaml) spec.
-### Endpoints:
+### API Documentation (OpenAPI)
+
+The API documentation is available at ```openapi.yaml```.
+
+### Running tests
+
+```sh
+mvn verify
+```
+
+## About
+
+### The general `SearchObject` model
+
+The generalized model is used to represent all resources (datasets, concepts etc.), with fields that are common to all
+resources, and used for searching.
+
+### The `SearchResult` model
+
+The result of search queries is represented by the `SearchResult` model. This model contains paginated list of
+`SearchObject`.
+
+## Examples
+
+### Search examples
 
 #### Searching all resources:
-
 
 ```
 URL: https://search.api.staging.fellesdatakatalog.digdir.no/search
 ```
 
 #### Searching specific resources:
+
 ```
 URL: https://search.api.staging.fellesdatakatalog.digdir.no/search/[resourceType]
 ```
 
 #### For example:
+
 ```
 URL: https://search.api.staging.fellesdatakatalog.digdir.no/search/datasets
 ```
@@ -79,6 +113,7 @@ URL: https://search.api.staging.fellesdatakatalog.digdir.no/search/datasets
 #### Search with query:
 
 Payload:
+
 ```
 {
     "query": "test",
@@ -88,6 +123,7 @@ Payload:
 #### Search with pagination:
 
 Payload:
+
 ```
 {
     "pagination": {
@@ -100,6 +136,7 @@ Payload:
 #### Search with sorting:
 
 Payload:
+
 ```
 {
     "sort": {
@@ -112,6 +149,7 @@ Payload:
 #### Search with filters:
 
 Payload:
+
 ```
 {
     "filters": {

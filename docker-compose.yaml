@@ -1,25 +1,6 @@
 ---
 version: '3.8'
 services:
-  fdk-search-service:
-    image: eu.gcr.io/digdir-fdk-infra/fdk-search-service:test
-    build: .
-    environment:
-      - ELASTIC_USERNAME=elastic
-      - ELASTIC_PASSWORD=elasticpwd
-      - ELASTIC_SSL=false
-      - ELASTIC_HOST=elasticsearch:9200
-      - ELASTIC_KEYSTORE_PATH=keystore.jks
-      - ELASTIC_KEYSTORE_PASSWORD=keystore
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - KAFKA_SCHEMA_REGISTRY=http://schema-registry:8081
-      - CORS_ORIGIN_PATTERNS=*
-      - LOG_LEVEL=DEBUG
-    ports:
-      - '8080:8080'
-    depends_on:
-      - elasticsearch
-      - schema-registry
   zookeeper:
     image: confluentinc/cp-zookeeper
     environment:
@@ -43,7 +24,7 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://kafka:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
