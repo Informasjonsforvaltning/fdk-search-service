@@ -38,7 +38,7 @@ schema, run the following command:
 mvn generate-sources    
 ```
 
-#### Start PostgreSQL database, Kafka cluster and setup topics/schemas
+#### Start Elasticsearch, Kafka cluster and setup topics/schemas
 
 Topics and schemas are set up automatically when starting the Kafka cluster. Docker compose uses the scripts
 ```create-topics.sh``` and ```create-schemas.sh``` to set up topics and schemas.
