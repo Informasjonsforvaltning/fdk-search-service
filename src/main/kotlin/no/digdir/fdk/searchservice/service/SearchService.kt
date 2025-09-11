@@ -437,16 +437,30 @@ class SearchService(
             )
         }
 
+    private fun Aggregate.toBucketCounts(): List<BucketCount> {
+        val fromString = try {
+            (_get() as StringTermsAggregate).toBucketCounts()
+        } catch (e: Exception) {
+            emptyList()
+        }
+        val fromLong = try {
+            (_get() as LongTermsAggregate).toOpenDataCounts()
+        } catch (e: Exception) {
+            emptyList()
+        }
+        return fromString.ifEmpty { fromLong }
+    }
+
     private fun Aggregate.toBucketCounts(aggregateName: String): List<BucketCount> =
         when (aggregateName) {
-            FilterFields.AccessRights.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
-            FilterFields.DataTheme.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
-            FilterFields.Format.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
-            FilterFields.LosTheme.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
-            FilterFields.OrgPath.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
-            FilterFields.OpenData.aggregationName() -> (_get() as LongTermsAggregate).toOpenDataCounts()
-            FilterFields.Provenance.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
-            FilterFields.Spatial.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
+            FilterFields.AccessRights.aggregationName() -> toBucketCounts()
+            FilterFields.DataTheme.aggregationName() -> toBucketCounts()
+            FilterFields.Format.aggregationName() -> toBucketCounts()
+            FilterFields.LosTheme.aggregationName() -> toBucketCounts()
+            FilterFields.OrgPath.aggregationName() -> toBucketCounts()
+            FilterFields.OpenData.aggregationName() -> toBucketCounts()
+            FilterFields.Provenance.aggregationName() -> toBucketCounts()
+            FilterFields.Spatial.aggregationName() -> toBucketCounts()
             else -> emptyList()
         }
 
