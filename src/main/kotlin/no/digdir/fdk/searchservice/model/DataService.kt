@@ -6,7 +6,7 @@ import org.springframework.data.annotation.Id
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class DataService(
-    val uri: String,
+    val uri: String?,
     val title: LocalizedStrings?,
     val catalog: Catalog?,
     val description: LocalizedStrings?,

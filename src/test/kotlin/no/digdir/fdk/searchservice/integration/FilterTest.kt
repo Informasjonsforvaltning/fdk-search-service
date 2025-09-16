@@ -426,7 +426,7 @@ class FilterTest : ApiTestContext() {
         @Test
         fun `get relations to dataset`() {
             val searchBody = mapper.writeValueAsString(SearchOperation(filters = SEARCH_FILTER.copy(
-                relations = SearchFilter(TEST_DATASET_FILTERS.uri))
+                relations = SearchFilter(TEST_DATASET_FILTERS.uri!!))
             ))
 
             val response = requestApi(DATASETS_PATH, port, searchBody, HttpMethod.POST)
