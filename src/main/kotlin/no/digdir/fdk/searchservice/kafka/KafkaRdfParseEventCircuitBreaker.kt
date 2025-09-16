@@ -44,32 +44,44 @@ open class KafkaRdfParseEventCircuitBreaker {
                 if (event?.resourceType == RdfParseResourceType.DATASET) {
                     LOGGER.debug("Index dataset - id: " + event.fdkId)
                     index(event, searchRepository, Dataset::class.java) {
-                        searchRepository.save(it.toSearchObject("${event.fdkId}", event.timestamp))
+                        val searchObject = it.toSearchObject("${event.fdkId}", event.timestamp)
+                        if (searchObject.uri == null) LOGGER.warn("No uri found for ${event.fdkId}")
+                        searchRepository.save(searchObject)
                     }
                 } else if (event?.resourceType == RdfParseResourceType.DATA_SERVICE) {
                     LOGGER.debug("Index dataservice - id: " + event.fdkId)
                     index(event, searchRepository, DataService::class.java) {
-                        searchRepository.save(it.toSearchObject("${event.fdkId}", event.timestamp))
+                        val searchObject = it.toSearchObject("${event.fdkId}", event.timestamp)
+                        if (searchObject.uri == null) LOGGER.warn("No uri found for ${event.fdkId}")
+                        searchRepository.save(searchObject)
                     }
                 } else if (event?.resourceType == RdfParseResourceType.CONCEPT) {
                     LOGGER.debug("Index concept - id: " + event.fdkId)
                     index(event, searchRepository, Concept::class.java) {
-                        searchRepository.save(it.toSearchObject("${event.fdkId}", event.timestamp))
+                        val searchObject = it.toSearchObject("${event.fdkId}", event.timestamp)
+                        if (searchObject.uri == null) LOGGER.warn("No uri found for ${event.fdkId}")
+                        searchRepository.save(searchObject)
                     }
                 } else if (event?.resourceType == RdfParseResourceType.INFORMATION_MODEL) {
                     LOGGER.debug("Index informationmodel - id: " + event.fdkId)
                     index(event, searchRepository, InformationModel::class.java) {
-                        searchRepository.save(it.toSearchObject("${event.fdkId}", event.timestamp))
+                        val searchObject = it.toSearchObject("${event.fdkId}", event.timestamp)
+                        if (searchObject.uri == null) LOGGER.warn("No uri found for ${event.fdkId}")
+                        searchRepository.save(searchObject)
                     }
                 } else if (event?.resourceType == RdfParseResourceType.EVENT) {
                     LOGGER.debug("Index event - id: " + event.fdkId)
                     index(event, searchRepository, Event::class.java) {
-                        searchRepository.save(it.toSearchObject("${event.fdkId}", event.timestamp))
+                        val searchObject = it.toSearchObject("${event.fdkId}", event.timestamp)
+                        if (searchObject.uri == null) LOGGER.warn("No uri found for ${event.fdkId}")
+                        searchRepository.save(searchObject)
                     }
                 } else if (event?.resourceType == RdfParseResourceType.SERVICE) {
                     LOGGER.debug("Index service - id: " + event.fdkId)
                     index(event, searchRepository, Service::class.java) {
-                        searchRepository.save(it.toSearchObject("${event.fdkId}", event.timestamp))
+                        val searchObject = it.toSearchObject("${event.fdkId}", event.timestamp)
+                        if (searchObject.uri == null) LOGGER.warn("No uri found for ${event.fdkId}")
+                        searchRepository.save(searchObject)
                     }
                 }
             }

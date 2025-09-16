@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Service(
-    val uri: String,
+    val uri: String?,
     val title: LocalizedStrings?,
     val catalog: Catalog?,
     val description: LocalizedStrings?,
