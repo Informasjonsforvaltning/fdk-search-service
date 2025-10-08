@@ -38,6 +38,7 @@ spring:
       compression-type: snappy
     listener:
       ack-mode: manual_immediate
+springdoc.api-docs.version: openapi_3_0
 resilience4j:
   circuitbreaker:
     configs:
