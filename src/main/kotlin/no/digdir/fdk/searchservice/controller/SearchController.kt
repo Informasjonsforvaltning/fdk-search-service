@@ -1,5 +1,8 @@
 package no.digdir.fdk.searchservice.controller
 
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.enums.ParameterIn
+import io.swagger.v3.oas.annotations.media.ExampleObject
 import no.digdir.fdk.searchservice.mapper.pathVariableToSearchType
 import no.digdir.fdk.searchservice.model.SearchOperation
 import no.digdir.fdk.searchservice.model.SearchResult
@@ -23,23 +26,23 @@ class SearchController(
     /**
      * Search in specific resource
      * @param query SearchOperation object containing query and filters
-     * @param endpoint Type of resource to search in (dataservices, informationmodels, concepts, events, datasets, services)
+     * @param searchTypes Type of resource to search in (dataservices, informationmodels, concepts, events, datasets, services)
      * @return List of SearchObject
      */
-    @PostMapping(value = ["/{endpoint}"])
+    @Parameter(name ="searchTypes", `in` = ParameterIn.PATH, description ="Available values: concepts, datasets, dataservices, data-services, informationmodels, information-models, services, events, public-services-and-events, services-and-events")
+    @PostMapping(value = ["/{searchTypes}"])
     fun searchInSpecificResource(
         @RequestBody query: SearchOperation,
-        @PathVariable endpoint: String
+        @PathVariable searchTypes: String
     ): ResponseEntity<SearchResult> {
-        val searchTypes = endpoint.pathVariableToSearchType()
-        return if (searchTypes == null) {
+        val searchTypeList = searchTypes.pathVariableToSearchType()
+        return if (searchTypeList == null) {
             ResponseEntity(HttpStatus.NOT_FOUND)
         } else {
             ResponseEntity(
-                searchService.search(query, searchTypes),
+                searchService.search(query, searchTypeList),
                 HttpStatus.OK
             )
         }
     }
 }
-

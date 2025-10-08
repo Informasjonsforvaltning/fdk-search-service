@@ -1,5 +1,7 @@
 package no.digdir.fdk.searchservice.controller
 
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.enums.ParameterIn
 import no.digdir.fdk.searchservice.mapper.pathVariableToSearchType
 import no.digdir.fdk.searchservice.model.SearchProfile
 import no.digdir.fdk.searchservice.model.SuggestionsResult
@@ -24,6 +26,7 @@ class SuggestionsController(
             HttpStatus.OK
         )
 
+    @Parameter(name ="searchTypes", `in` = ParameterIn.PATH, description ="Available values: concepts, datasets, dataservices, data-services, informationmodels, information-models, services, events, public-services-and-events, services-and-events")
     @GetMapping(value = ["/{searchTypes}"])
     fun suggestionsForSpecificResource(
         @PathVariable searchTypes: String,
