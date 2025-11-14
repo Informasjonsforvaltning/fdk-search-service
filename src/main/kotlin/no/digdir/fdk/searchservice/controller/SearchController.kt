@@ -1,8 +1,13 @@
 package no.digdir.fdk.searchservice.controller
 
+import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.enums.ParameterIn
-import io.swagger.v3.oas.annotations.media.ExampleObject
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import no.digdir.fdk.searchservice.mapper.pathVariableToSearchType
 import no.digdir.fdk.searchservice.model.SearchOperation
 import no.digdir.fdk.searchservice.model.SearchResult
@@ -13,27 +18,86 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping(value = ["/search"], produces = ["application/json"])
+@Tag(name = "Search", description = "API for searching resources in the data catalog")
 class SearchController(
     private val searchService: SearchService
 ) {
     @PostMapping
-    fun search(@RequestBody query: SearchOperation): ResponseEntity<SearchResult> =
+    @Operation(
+        summary = "Search all resources",
+        description = "Perform a full-text search across all resource types in the data catalog. " +
+                "Supports advanced filtering, pagination, sorting, and field-specific querying. " +
+                "The search operation allows you to search across titles, descriptions, keywords, and additional metadata, " +
+                "apply filters for access rights, data themes, spatial coverage, organization, formats, and more, " +
+                "paginate through results with configurable page size, sort results by various criteria, " +
+                "get aggregation counts for faceted search, and use search profiles for domain-specific use cases.",
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Successfully performed search",
+                content = [Content(mediaType = "application/json", schema = Schema(implementation = SearchResult::class))],
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Invalid search request",
+            ),
+        ],
+    )
+    fun search(
+        @Parameter(
+            description = "Search operation containing query, filters, pagination, sorting, and other search parameters",
+            required = true,
+        )
+        @RequestBody query: SearchOperation
+    ): ResponseEntity<SearchResult> =
         ResponseEntity(
             searchService.search(query, null),
             HttpStatus.OK
         )
 
-    /**
-     * Search in specific resource
-     * @param query SearchOperation object containing query and filters
-     * @param searchTypes Type of resource to search in (dataservices, informationmodels, concepts, events, datasets, services)
-     * @return List of SearchObject
-     */
-    @Parameter(name ="searchTypes", `in` = ParameterIn.PATH, description ="Available values: concepts, datasets, dataservices, data-services, informationmodels, information-models, services, events, public-services-and-events, services-and-events")
     @PostMapping(value = ["/{searchTypes}"])
+    @Operation(
+        summary = "Search specific resource types",
+        description = "Perform a full-text search within specific resource types. " +
+                "This endpoint allows you to limit your search to one or more resource types. " +
+                "Available resource types: concepts (controlled vocabularies and taxonomies), " +
+                "datasets (structured data collections), dataservices/data-services (APIs and data services), " +
+                "informationmodels/information-models (data schemas and specifications), services (service descriptions), " +
+                "events (event information), public-services-and-events, and services-and-events. " +
+                "Supports the same advanced features as the general search endpoint including filtering, pagination, sorting, and aggregations.",
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Successfully performed search",
+                content = [Content(mediaType = "application/json", schema = Schema(implementation = SearchResult::class))],
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Invalid search request",
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Invalid resource type specified",
+            ),
+        ],
+    )
     fun searchInSpecificResource(
-        @RequestBody query: SearchOperation,
-        @PathVariable searchTypes: String
+        @Parameter(
+            description = "Resource type(s) to search in. Available values: concepts, datasets, dataservices, data-services, informationmodels, information-models, services, events, public-services-and-events, services-and-events",
+            required = true,
+            `in` = ParameterIn.PATH,
+            example = "datasets",
+        )
+        @PathVariable searchTypes: String,
+        @Parameter(
+            description = "Search operation containing query, filters, pagination, sorting, and other search parameters",
+            required = true,
+        )
+        @RequestBody query: SearchOperation
     ): ResponseEntity<SearchResult> {
         val searchTypeList = searchTypes.pathVariableToSearchType()
         return if (searchTypeList == null) {
