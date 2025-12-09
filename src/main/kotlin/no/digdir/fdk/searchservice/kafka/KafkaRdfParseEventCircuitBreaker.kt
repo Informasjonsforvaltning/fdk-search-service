@@ -12,11 +12,14 @@ import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
+import java.time.Instant
 import kotlin.time.measureTimedValue
 import kotlin.time.toJavaDuration
 
 @Component
-open class KafkaRdfParseEventCircuitBreaker {
+open class KafkaRdfParseEventCircuitBreaker(
+    private val harvestEventProducer: HarvestEventProducer
+) {
 
     private fun <T> index(
         event: RdfParseEvent,
@@ -39,12 +42,18 @@ open class KafkaRdfParseEventCircuitBreaker {
         LOGGER.debug("CB Received message - offset: " + record.offset())
 
         val event = record.value()
+        val harvestRunId = event?.harvestRunId?.toString()
+        val uri = event?.uri?.toString()
+        val startTime = Instant.now()
+        var resourceUri: String? = null
+
         try {
             val timeElapsed = measureTimedValue {
                 if (event?.resourceType == RdfParseResourceType.DATASET) {
                     LOGGER.debug("Index dataset - id: " + event.fdkId)
                     index(event, searchRepository, Dataset::class.java) {
                         val searchObject = it.toSearchObject("${event.fdkId}", event.timestamp)
+                        resourceUri = searchObject.uri ?: uri
                         if (searchObject.uri == null) LOGGER.warn("No uri found for ${event.fdkId}")
                         searchRepository.save(searchObject)
                     }
@@ -52,6 +61,7 @@ open class KafkaRdfParseEventCircuitBreaker {
                     LOGGER.debug("Index dataservice - id: " + event.fdkId)
                     index(event, searchRepository, DataService::class.java) {
                         val searchObject = it.toSearchObject("${event.fdkId}", event.timestamp)
+                        resourceUri = searchObject.uri ?: uri
                         if (searchObject.uri == null) LOGGER.warn("No uri found for ${event.fdkId}")
                         searchRepository.save(searchObject)
                     }
@@ -59,6 +69,7 @@ open class KafkaRdfParseEventCircuitBreaker {
                     LOGGER.debug("Index concept - id: " + event.fdkId)
                     index(event, searchRepository, Concept::class.java) {
                         val searchObject = it.toSearchObject("${event.fdkId}", event.timestamp)
+                        resourceUri = searchObject.uri ?: uri
                         if (searchObject.uri == null) LOGGER.warn("No uri found for ${event.fdkId}")
                         searchRepository.save(searchObject)
                     }
@@ -66,6 +77,7 @@ open class KafkaRdfParseEventCircuitBreaker {
                     LOGGER.debug("Index informationmodel - id: " + event.fdkId)
                     index(event, searchRepository, InformationModel::class.java) {
                         val searchObject = it.toSearchObject("${event.fdkId}", event.timestamp)
+                        resourceUri = searchObject.uri ?: uri
                         if (searchObject.uri == null) LOGGER.warn("No uri found for ${event.fdkId}")
                         searchRepository.save(searchObject)
                     }
@@ -73,6 +85,7 @@ open class KafkaRdfParseEventCircuitBreaker {
                     LOGGER.debug("Index event - id: " + event.fdkId)
                     index(event, searchRepository, Event::class.java) {
                         val searchObject = it.toSearchObject("${event.fdkId}", event.timestamp)
+                        resourceUri = searchObject.uri ?: uri
                         if (searchObject.uri == null) LOGGER.warn("No uri found for ${event.fdkId}")
                         searchRepository.save(searchObject)
                     }
@@ -80,6 +93,7 @@ open class KafkaRdfParseEventCircuitBreaker {
                     LOGGER.debug("Index service - id: " + event.fdkId)
                     index(event, searchRepository, Service::class.java) {
                         val searchObject = it.toSearchObject("${event.fdkId}", event.timestamp)
+                        resourceUri = searchObject.uri ?: uri
                         if (searchObject.uri == null) LOGGER.warn("No uri found for ${event.fdkId}")
                         searchRepository.save(searchObject)
                     }
@@ -87,12 +101,37 @@ open class KafkaRdfParseEventCircuitBreaker {
             }
             Metrics.timer("search_index", "type", event.resourceType.name.lowercase())
                 .record(timeElapsed.duration.toJavaDuration())
+            
+            // Produce harvest event on success
+            val endTime = Instant.now()
+            harvestEventProducer.produceSearchProcessingEvent(
+                harvestRunId = harvestRunId,
+                resourceType = event.resourceType,
+                fdkId = "${event.fdkId}",
+                resourceUri = resourceUri,
+                startTime = startTime,
+                endTime = endTime,
+                errorMessage = null
+            )
         } catch (e: Exception) {
             LOGGER.error("Error processing message: " + e.message)
             Metrics.counter(
                 "search_index_error",
                 "type", event.resourceType.name.lowercase()
             ).increment()
+            
+            // Produce harvest event on failure
+            val endTime = Instant.now()
+            harvestEventProducer.produceSearchProcessingEvent(
+                harvestRunId = harvestRunId,
+                resourceType = event.resourceType,
+                fdkId = "${event.fdkId}",
+                resourceUri = uri,
+                startTime = startTime,
+                endTime = endTime,
+                errorMessage = e.message
+            )
+            
             throw e
         }
     }
