@@ -90,7 +90,7 @@ open class KafkaRemovedEventCircuitBreaker(
         val harvestRunId = event.getHarvestRunId()
         val eventUri = event.getUri()
         val resourceType = event.getRdfParseResourceType()
-        val startTime = Instant.now()
+        val startTime = Instant.now() // When Kafka handling starts
         var resourceUri: String? = null
         var fdkId: String? = null
 
@@ -164,7 +164,7 @@ open class KafkaRemovedEventCircuitBreaker(
                 
                 // Produce harvest event on success
                 if (harvestRunId != null && fdkId != null && resourceType != null) {
-                    val endTime = Instant.now()
+                    val endTime = Instant.now() // When Kafka handling finishes
                     harvestEventProducer.produceSearchProcessingEvent(
                         harvestRunId = harvestRunId,
                         resourceType = resourceType,
