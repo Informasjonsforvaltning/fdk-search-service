@@ -44,7 +44,7 @@ open class KafkaRdfParseEventCircuitBreaker(
         val event = record.value()
         val harvestRunId = event?.harvestRunId?.toString()
         val uri = event?.uri?.toString()
-        val startTime = Instant.now()
+        val startTime = Instant.now() // When Kafka handling starts
         var resourceUri: String? = null
 
         try {

@@ -35,7 +35,6 @@ class HarvestEventProducer(
             .setDataType(dataType)
             .setFdkId(fdkId)
             .setResourceUri(resourceUri)
-            .setTimestamp(endTime.toEpochMilli())
             .setStartTime(startTime.toString())
             .setEndTime(endTime.toString())
             .setErrorMessage(errorMessage)
