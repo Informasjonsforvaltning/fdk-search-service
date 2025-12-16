@@ -38,8 +38,8 @@ private fun ServiceOrganization.toSearchOrg(): Organization =
         id = identifier,
         uri = uri,
         orgPath = orgPath,
-        name = name?.nb,
-        prefLabel = title
+        name = title?.nb ?: prefLabel?.nb,
+        prefLabel = prefLabel ?: title
     )
 
 
