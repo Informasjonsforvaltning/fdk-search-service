@@ -28,6 +28,6 @@ data class ServiceOrganization(
     val identifier: String?,
     val uri: String?,
     val orgPath: String?,
-    val name: LocalizedStrings?,
+    val prefLabel: LocalizedStrings?,
     val title: LocalizedStrings?,
 )

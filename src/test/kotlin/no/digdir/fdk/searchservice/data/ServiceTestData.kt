@@ -121,7 +121,7 @@ val TEST_SERVICE_HIT_OWNED_BY = TEST_SERVICE_HIT_ALL_FIELDS.copy(
         orgPath = "/STAT/010247858",
         identifier = "test identifier 0102",
         uri = "test uri 0102",
-        name = LocalizedStrings("test name 0102", null, null, null),
+        prefLabel = LocalizedStrings("test name 0102", null, null, null),
         title = LocalizedStrings(
             "NB Test ownedBy > prefLabel",
             "NN Test ownedBy > prefLabel",
@@ -136,7 +136,7 @@ val TEST_SERVICE_HIT_HAS_COMPETENT_AUTHORITY = TEST_NULL_SERVICE.copy(
         orgPath = "/STAT/103417858",
         identifier = "test identifier 0103",
         uri = "test uri 0103",
-        name = LocalizedStrings("test name 0103", null, null, null),
+        prefLabel = LocalizedStrings("test name 0103", null, null, null),
         title = LocalizedStrings(
             "NB Test hasCompetentAuthority > prefLabel",
             "NN Test hasCompetentAuthority > prefLabel",
