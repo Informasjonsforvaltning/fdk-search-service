@@ -37,6 +37,7 @@ abstract class ApiTestContext {
                 TEST_SERVICE_HIT_ALL_FIELDS.toSearchObject("0101", System.currentTimeMillis()),
                 TEST_SERVICE_HIT_OWNED_BY.toSearchObject("0102", System.currentTimeMillis()),
                 TEST_SERVICE_HIT_HAS_COMPETENT_AUTHORITY.toSearchObject("0103", System.currentTimeMillis()),
+                TEST_SERVICE_HIT_SPATIAL.toSearchObject("0104", System.currentTimeMillis()),
                 TEST_DATASET_FILTERS.toSearchObject("3", System.currentTimeMillis()),
                 TEST_SERVICE.toSearchObject("678", System.currentTimeMillis()),
                 TEST_EVENT.toSearchObject("111", System.currentTimeMillis())
