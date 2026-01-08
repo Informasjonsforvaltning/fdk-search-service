@@ -31,17 +31,17 @@ cd fdk-search-service
 
 #### Generate sources
 
-Kafka messages are serialized using Avro. Avro schemas are located in ```kafka/schemas```. To generate sources from Avro
+Kafka messages are serialized using Avro. Avro schemas are located in `kafka/schemas`. To generate sources from Avro
 schema, run the following command:
 
 ```
-mvn generate-sources    
+mvn generate-sources
 ```
 
 #### Start Elasticsearch, Kafka cluster and setup topics/schemas
 
 Topics and schemas are set up automatically when starting the Kafka cluster. Docker compose uses the scripts
-```create-topics.sh``` and ```create-schemas.sh``` to set up topics and schemas.
+`create-topics.sh` and `create-schemas.sh` to set up topics and schemas.
 
 ```
 docker-compose up -d
@@ -66,7 +66,7 @@ sh ./kafka/produce-messages.sh
 
 ### API Documentation (OpenAPI)
 
-The API documentation is available at ```openapi.yaml```.
+The API documentation is available at `openapi.yaml`.
 
 ### Running tests
 
