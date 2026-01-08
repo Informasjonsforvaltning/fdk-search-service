@@ -108,6 +108,17 @@ val TEST_SERVICE_HIT_ALL_FIELDS = TEST_NULL_SERVICE.copy(
             losPaths = listOf("test"),
         )
     ),
+    spatial = listOf(
+        ReferenceDataCode(
+            uri = "spatial > uri",
+            code = "Test spatial > code",
+            prefLabel = LocalizedStrings(
+                "NB Test spatial > prefLabel",
+                "NN Test spatial > prefLabel",
+                "NO Test spatial > prefLabel",
+                "EN Test spatial > prefLabel")
+        )
+    ),
     harvest = HarvestMetadata(
         "2022-02-15T11:00:05Z",
         "2022-02-15T11:00:05Z"),
@@ -151,29 +162,4 @@ val SERVICE_WITH_RELATIONS = TEST_NULL_SERVICE.copy(
     isDescribedAt = listOf(ObjectWithURI(uri = "isDescribedAt_uri")),
     isGroupedBy = listOf("isGroupedBy_uri"),
     isClassifiedBy = listOf(ObjectWithURI(uri = "isClassifiedBy_uri")),
-)
-
-val TEST_SERVICE_HIT_SPATIAL = TEST_NULL_SERVICE.copy(
-    uri = "uri 0104",
-    spatial = listOf(
-        ReferenceDataCode(
-            uri = "spatial > uri",
-            code = "123789",
-            prefLabel = LocalizedStrings(
-                "Norge",
-                "Noreg",
-                "Norge",
-                "Norway")
-        ),
-        ReferenceDataCode(
-            uri = "spatial > uri",
-            code = "123456",
-            prefLabel = LocalizedStrings(nb = "Spania", null, null, null)
-        ),
-        ReferenceDataCode(
-            uri = "spatial > uri",
-            code = "56789",
-            prefLabel = LocalizedStrings(nb = "Sogn og fjordane", null, null, null)
-        )
-    )
 )
