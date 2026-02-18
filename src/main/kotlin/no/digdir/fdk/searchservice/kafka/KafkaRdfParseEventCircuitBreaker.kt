@@ -6,9 +6,8 @@ import io.micrometer.core.instrument.Metrics
 import no.digdir.fdk.searchservice.elastic.SearchRepository
 import no.digdir.fdk.searchservice.mapper.toSearchObject
 import no.digdir.fdk.searchservice.model.*
-import no.fdk.rdf.parse.RdfParseEvent
 import no.fdk.rdf.parse.RdfParseResourceType
-import org.apache.kafka.clients.consumer.ConsumerRecord
+import org.apache.avro.generic.GenericRecord
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
@@ -21,117 +20,145 @@ open class KafkaRdfParseEventCircuitBreaker(
     private val harvestEventProducer: HarvestEventProducer
 ) {
 
+    private fun GenericRecord.getResourceType(): RdfParseResourceType? {
+        val sym = get("resourceType")?.toString() ?: return null
+        return try {
+            RdfParseResourceType.valueOf(sym)
+        } catch (e: IllegalArgumentException) {
+            null
+        }
+    }
+
+    private fun GenericRecord.getFdkId(): String = get("fdkId")?.toString() ?: ""
+    private fun GenericRecord.getData(): String = get("data")?.toString() ?: ""
+    private fun GenericRecord.getTimestamp(): Long = (get("timestamp") as? Number)?.toLong() ?: 0L
+    private fun GenericRecord.getHarvestRunId(): String? = get("harvestRunId")?.toString()?.takeIf { it.isNotBlank() }
+    private fun GenericRecord.getUri(): String? = get("uri")?.toString()?.takeIf { it.isNotBlank() }
+
     private fun <T> index(
-        event: RdfParseEvent,
+        event: GenericRecord,
         searchRepository: SearchRepository,
         clazz: Class<T>,
         index: (T) -> Unit
     ) {
-        val search = searchRepository.findById("${event.fdkId}")
-        if (search.isEmpty || (search.get().metadata?.timestamp ?: 0) < event.timestamp) {
-            val payload = jacksonObjectMapper().readValue(event.data.toString(), clazz)
+        val fdkId = event.getFdkId()
+        val timestamp = event.getTimestamp()
+        val search = searchRepository.findById(fdkId)
+        if (search.isEmpty || (search.get().metadata?.timestamp ?: 0) < timestamp) {
+            val payload = jacksonObjectMapper().readValue(event.getData(), clazz)
             index(payload)
         }
     }
 
     @CircuitBreaker(name = "rdf-parse")
     open fun process(
-        record: ConsumerRecord<String, RdfParseEvent>,
+        event: GenericRecord?,
         searchRepository: SearchRepository
     ) {
-        LOGGER.debug("CB Received message - offset: " + record.offset())
+        if (event == null) return
+        LOGGER.debug("CB Received message")
 
-        val event = record.value()
-        val harvestRunId = event?.harvestRunId?.toString()
-        val uri = event?.uri?.toString()
-        val startTime = Instant.now() // When Kafka handling starts
+        val harvestRunId = event.getHarvestRunId()
+        val uri = event.getUri()
+        val resourceType = event.getResourceType()
+        val startTime = Instant.now()
         var resourceUri: String? = null
 
         try {
             val timeElapsed = measureTimedValue {
-                if (event?.resourceType == RdfParseResourceType.DATASET) {
-                    LOGGER.debug("Index dataset - id: " + event.fdkId)
-                    index(event, searchRepository, Dataset::class.java) {
-                        val searchObject = it.toSearchObject("${event.fdkId}", event.timestamp)
-                        resourceUri = searchObject.uri ?: uri
-                        if (searchObject.uri == null) LOGGER.warn("No uri found for ${event.fdkId}")
-                        searchRepository.save(searchObject)
+                when (resourceType) {
+                    RdfParseResourceType.DATASET -> {
+                        LOGGER.debug("Index dataset - id: " + event.getFdkId())
+                        index(event, searchRepository, Dataset::class.java) {
+                            val searchObject = it.toSearchObject(event.getFdkId(), event.getTimestamp())
+                            resourceUri = searchObject.uri ?: uri
+                            if (searchObject.uri == null) LOGGER.warn("No uri found for ${event.getFdkId()}")
+                            searchRepository.save(searchObject)
+                        }
                     }
-                } else if (event?.resourceType == RdfParseResourceType.DATA_SERVICE) {
-                    LOGGER.debug("Index dataservice - id: " + event.fdkId)
-                    index(event, searchRepository, DataService::class.java) {
-                        val searchObject = it.toSearchObject("${event.fdkId}", event.timestamp)
-                        resourceUri = searchObject.uri ?: uri
-                        if (searchObject.uri == null) LOGGER.warn("No uri found for ${event.fdkId}")
-                        searchRepository.save(searchObject)
+                    RdfParseResourceType.DATA_SERVICE -> {
+                        LOGGER.debug("Index dataservice - id: " + event.getFdkId())
+                        index(event, searchRepository, DataService::class.java) {
+                            val searchObject = it.toSearchObject(event.getFdkId(), event.getTimestamp())
+                            resourceUri = searchObject.uri ?: uri
+                            if (searchObject.uri == null) LOGGER.warn("No uri found for ${event.getFdkId()}")
+                            searchRepository.save(searchObject)
+                        }
                     }
-                } else if (event?.resourceType == RdfParseResourceType.CONCEPT) {
-                    LOGGER.debug("Index concept - id: " + event.fdkId)
-                    index(event, searchRepository, Concept::class.java) {
-                        val searchObject = it.toSearchObject("${event.fdkId}", event.timestamp)
-                        resourceUri = searchObject.uri ?: uri
-                        if (searchObject.uri == null) LOGGER.warn("No uri found for ${event.fdkId}")
-                        searchRepository.save(searchObject)
+                    RdfParseResourceType.CONCEPT -> {
+                        LOGGER.debug("Index concept - id: " + event.getFdkId())
+                        index(event, searchRepository, Concept::class.java) {
+                            val searchObject = it.toSearchObject(event.getFdkId(), event.getTimestamp())
+                            resourceUri = searchObject.uri ?: uri
+                            if (searchObject.uri == null) LOGGER.warn("No uri found for ${event.getFdkId()}")
+                            searchRepository.save(searchObject)
+                        }
                     }
-                } else if (event?.resourceType == RdfParseResourceType.INFORMATION_MODEL) {
-                    LOGGER.debug("Index informationmodel - id: " + event.fdkId)
-                    index(event, searchRepository, InformationModel::class.java) {
-                        val searchObject = it.toSearchObject("${event.fdkId}", event.timestamp)
-                        resourceUri = searchObject.uri ?: uri
-                        if (searchObject.uri == null) LOGGER.warn("No uri found for ${event.fdkId}")
-                        searchRepository.save(searchObject)
+                    RdfParseResourceType.INFORMATION_MODEL -> {
+                        LOGGER.debug("Index informationmodel - id: " + event.getFdkId())
+                        index(event, searchRepository, InformationModel::class.java) {
+                            val searchObject = it.toSearchObject(event.getFdkId(), event.getTimestamp())
+                            resourceUri = searchObject.uri ?: uri
+                            if (searchObject.uri == null) LOGGER.warn("No uri found for ${event.getFdkId()}")
+                            searchRepository.save(searchObject)
+                        }
                     }
-                } else if (event?.resourceType == RdfParseResourceType.EVENT) {
-                    LOGGER.debug("Index event - id: " + event.fdkId)
-                    index(event, searchRepository, Event::class.java) {
-                        val searchObject = it.toSearchObject("${event.fdkId}", event.timestamp)
-                        resourceUri = searchObject.uri ?: uri
-                        if (searchObject.uri == null) LOGGER.warn("No uri found for ${event.fdkId}")
-                        searchRepository.save(searchObject)
+                    RdfParseResourceType.EVENT -> {
+                        LOGGER.debug("Index event - id: " + event.getFdkId())
+                        index(event, searchRepository, Event::class.java) {
+                            val searchObject = it.toSearchObject(event.getFdkId(), event.getTimestamp())
+                            resourceUri = searchObject.uri ?: uri
+                            if (searchObject.uri == null) LOGGER.warn("No uri found for ${event.getFdkId()}")
+                            searchRepository.save(searchObject)
+                        }
                     }
-                } else if (event?.resourceType == RdfParseResourceType.SERVICE) {
-                    LOGGER.debug("Index service - id: " + event.fdkId)
-                    index(event, searchRepository, Service::class.java) {
-                        val searchObject = it.toSearchObject("${event.fdkId}", event.timestamp)
-                        resourceUri = searchObject.uri ?: uri
-                        if (searchObject.uri == null) LOGGER.warn("No uri found for ${event.fdkId}")
-                        searchRepository.save(searchObject)
+                    RdfParseResourceType.SERVICE -> {
+                        LOGGER.debug("Index service - id: " + event.getFdkId())
+                        index(event, searchRepository, Service::class.java) {
+                            val searchObject = it.toSearchObject(event.getFdkId(), event.getTimestamp())
+                            resourceUri = searchObject.uri ?: uri
+                            if (searchObject.uri == null) LOGGER.warn("No uri found for ${event.getFdkId()}")
+                            searchRepository.save(searchObject)
+                        }
                     }
+                    null -> { /* unknown resource type, skip */ }
                 }
             }
-            Metrics.timer("search_index", "type", event.resourceType.name.lowercase())
-                .record(timeElapsed.duration.toJavaDuration())
-            
-            // Produce harvest event on success
-            val endTime = Instant.now()
-            harvestEventProducer.produceSearchProcessingEvent(
-                harvestRunId = harvestRunId,
-                resourceType = event.resourceType,
-                fdkId = "${event.fdkId}",
-                resourceUri = resourceUri,
-                startTime = startTime,
-                endTime = endTime,
-                errorMessage = null
-            )
+            if (resourceType != null) {
+                Metrics.timer("search_index", "type", resourceType.name.lowercase())
+                    .record(timeElapsed.duration.toJavaDuration())
+
+                val endTime = Instant.now()
+                harvestEventProducer.produceSearchProcessingEvent(
+                    harvestRunId = harvestRunId,
+                    resourceType = resourceType,
+                    fdkId = event.getFdkId(),
+                    resourceUri = resourceUri,
+                    startTime = startTime,
+                    endTime = endTime,
+                    errorMessage = null
+                )
+            }
         } catch (e: Exception) {
             LOGGER.error("Error processing message: " + e.message)
-            Metrics.counter(
-                "search_index_error",
-                "type", event.resourceType.name.lowercase()
-            ).increment()
-            
-            // Produce harvest event on failure
-            val endTime = Instant.now()
-            harvestEventProducer.produceSearchProcessingEvent(
-                harvestRunId = harvestRunId,
-                resourceType = event.resourceType,
-                fdkId = "${event.fdkId}",
-                resourceUri = uri,
-                startTime = startTime,
-                endTime = endTime,
-                errorMessage = e.message
-            )
-            
+            if (resourceType != null) {
+                Metrics.counter(
+                    "search_index_error",
+                    "type", resourceType.name.lowercase()
+                ).increment()
+
+                val endTime = Instant.now()
+                harvestEventProducer.produceSearchProcessingEvent(
+                    harvestRunId = harvestRunId,
+                    resourceType = resourceType,
+                    fdkId = event.getFdkId(),
+                    resourceUri = uri,
+                    startTime = startTime,
+                    endTime = endTime,
+                    errorMessage = e.message
+                )
+            }
+
             throw e
         }
     }

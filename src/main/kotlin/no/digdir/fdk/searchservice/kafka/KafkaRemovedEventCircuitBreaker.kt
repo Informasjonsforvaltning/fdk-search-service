@@ -6,20 +6,8 @@ import no.digdir.fdk.searchservice.elastic.SearchRepository
 import no.digdir.fdk.searchservice.model.Metadata
 import no.digdir.fdk.searchservice.model.SearchObject
 import no.digdir.fdk.searchservice.model.SearchType
-import no.fdk.concept.ConceptEvent
-import no.fdk.concept.ConceptEventType
-import no.fdk.dataservice.DataServiceEvent
-import no.fdk.dataservice.DataServiceEventType
-import no.fdk.dataset.DatasetEvent
-import no.fdk.dataset.DatasetEventType
-import no.fdk.event.EventEvent
-import no.fdk.event.EventEventType
-import no.fdk.informationmodel.InformationModelEvent
-import no.fdk.informationmodel.InformationModelEventType
 import no.fdk.rdf.parse.RdfParseResourceType
-import no.fdk.service.ServiceEvent
-import no.fdk.service.ServiceEventType
-import org.apache.avro.specific.SpecificRecord
+import org.apache.avro.generic.GenericRecord
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -34,141 +22,95 @@ open class KafkaRemovedEventCircuitBreaker(
     private val searchRepository: SearchRepository,
     private val harvestEventProducer: HarvestEventProducer
 ) {
-    private fun SpecificRecord.getResourceType(): String {
-        return when (this) {
-            is DatasetEvent -> "dataset"
-            is DataServiceEvent -> "data-service"
-            is ConceptEvent -> "concept"
-            is InformationModelEvent -> "information-model"
-            is ServiceEvent -> "service"
-            is EventEvent -> "event"
+
+    private fun GenericRecord.getTypeSymbol(): String? =
+        (get("type")?.toString())?.takeIf { it.isNotBlank() }
+
+    private fun GenericRecord.getHarvestRunId(): String? =
+        get("harvestRunId")?.toString()?.takeIf { it.isNotBlank() }
+
+    private fun GenericRecord.getUri(): String? =
+        get("uri")?.toString()?.takeIf { it.isNotBlank() }
+
+    private fun GenericRecord.getFdkId(): String? =
+        get("fdkId")?.toString()?.takeIf { it.isNotBlank() }
+
+    private fun GenericRecord.getTimestamp(): Long =
+        (get("timestamp") as? Number)?.toLong() ?: 0L
+
+    private fun GenericRecord.getResourceTypeName(): String =
+        when (getTypeSymbol()) {
+            "DATASET_REMOVED", "DATASET_HARVESTED", "DATASET_REASONED" -> "dataset"
+            "DATA_SERVICE_REMOVED", "DATA_SERVICE_HARVESTED", "DATA_SERVICE_REASONED" -> "data-service"
+            "CONCEPT_REMOVED", "CONCEPT_HARVESTED", "CONCEPT_REASONED" -> "concept"
+            "INFORMATION_MODEL_REMOVED", "INFORMATION_MODEL_HARVESTED", "INFORMATION_MODEL_REASONED" -> "information-model"
+            "SERVICE_REMOVED", "SERVICE_HARVESTED", "SERVICE_REASONED" -> "service"
+            "EVENT_REMOVED", "EVENT_HARVESTED", "EVENT_REASONED" -> "event"
             else -> "invalid-type"
         }
-    }
 
-    private fun SpecificRecord.getRdfParseResourceType(): RdfParseResourceType? {
-        return when (this) {
-            is DatasetEvent -> RdfParseResourceType.DATASET
-            is DataServiceEvent -> RdfParseResourceType.DATA_SERVICE
-            is ConceptEvent -> RdfParseResourceType.CONCEPT
-            is InformationModelEvent -> RdfParseResourceType.INFORMATION_MODEL
-            is ServiceEvent -> RdfParseResourceType.SERVICE
-            is EventEvent -> RdfParseResourceType.EVENT
+    private fun GenericRecord.getRdfParseResourceType(): RdfParseResourceType? =
+        when (getTypeSymbol()) {
+            "DATASET_REMOVED", "DATASET_HARVESTED", "DATASET_REASONED" -> RdfParseResourceType.DATASET
+            "DATA_SERVICE_REMOVED", "DATA_SERVICE_HARVESTED", "DATA_SERVICE_REASONED" -> RdfParseResourceType.DATA_SERVICE
+            "CONCEPT_REMOVED", "CONCEPT_HARVESTED", "CONCEPT_REASONED" -> RdfParseResourceType.CONCEPT
+            "INFORMATION_MODEL_REMOVED", "INFORMATION_MODEL_HARVESTED", "INFORMATION_MODEL_REASONED" -> RdfParseResourceType.INFORMATION_MODEL
+            "SERVICE_REMOVED", "SERVICE_HARVESTED", "SERVICE_REASONED" -> RdfParseResourceType.SERVICE
+            "EVENT_REMOVED", "EVENT_HARVESTED", "EVENT_REASONED" -> RdfParseResourceType.EVENT
             else -> null
         }
-    }
 
-    private fun SpecificRecord.getHarvestRunId(): String? {
-        return when (this) {
-            is DatasetEvent -> this.harvestRunId?.toString()
-            is DataServiceEvent -> this.harvestRunId?.toString()
-            is ConceptEvent -> this.harvestRunId?.toString()
-            is InformationModelEvent -> this.harvestRunId?.toString()
-            is ServiceEvent -> this.harvestRunId?.toString()
-            is EventEvent -> this.harvestRunId?.toString()
+    private fun GenericRecord.getSearchType(): SearchType? =
+        when (getTypeSymbol()) {
+            "DATASET_REMOVED" -> SearchType.DATASET
+            "DATA_SERVICE_REMOVED" -> SearchType.DATA_SERVICE
+            "CONCEPT_REMOVED" -> SearchType.CONCEPT
+            "INFORMATION_MODEL_REMOVED" -> SearchType.INFORMATION_MODEL
+            "SERVICE_REMOVED" -> SearchType.SERVICE
+            "EVENT_REMOVED" -> SearchType.EVENT
             else -> null
         }
-    }
-
-    private fun SpecificRecord.getUri(): String? {
-        return when (this) {
-            is DatasetEvent -> this.uri?.toString()
-            is DataServiceEvent -> this.uri?.toString()
-            is ConceptEvent -> this.uri?.toString()
-            is InformationModelEvent -> this.uri?.toString()
-            is ServiceEvent -> this.uri?.toString()
-            is EventEvent -> this.uri?.toString()
-            else -> null
-        }
-    }
 
     @CircuitBreaker(name = "remove")
-    open fun process(record: ConsumerRecord<String, SpecificRecord>) {
+    open fun process(record: ConsumerRecord<String, GenericRecord>) {
         LOGGER.debug("Received message - offset: " + record.offset())
 
-        val event = record.value()
+        val event = record.value() ?: return
         val harvestRunId = event.getHarvestRunId()
         val eventUri = event.getUri()
         val resourceType = event.getRdfParseResourceType()
-        val startTime = Instant.now() // When Kafka handling starts
+        val searchType = event.getSearchType()
+        val startTime = Instant.now()
         var resourceUri: String? = null
-        var fdkId: String? = null
+        var fdkId: String? = event.getFdkId()
 
         try {
             val (deleted, timeElapsed) = measureTimedValue {
-                if (event is DatasetEvent && event.type == DatasetEventType.DATASET_REMOVED) {
-                    LOGGER.debug("Remove dataset - id: {}", event.fdkId)
-                    fdkId = "${event.fdkId}"
-                    resourceUri = searchRepository.findByIdOrNull(fdkId!!)?.uri ?: eventUri
+                if (searchType != null && fdkId != null) {
+                    LOGGER.debug("Remove {} - id: {}", event.getResourceTypeName(), fdkId)
+                    resourceUri = searchRepository.findByIdOrNull(fdkId)?.uri ?: eventUri
                     searchRepository.markDeletedIfTimestampIsNewer(
-                        fdkId!!,
-                        event.timestamp,
-                        SearchType.DATASET
+                        fdkId,
+                        event.getTimestamp(),
+                        searchType
                     )
-                    true
-                } else if (event is DataServiceEvent && event.type == DataServiceEventType.DATA_SERVICE_REMOVED) {
-                    LOGGER.debug("Remove data-service - id: {}", event.fdkId)
-                    fdkId = "${event.fdkId}"
-                    resourceUri = searchRepository.findByIdOrNull(fdkId!!)?.uri ?: eventUri
-                    searchRepository.markDeletedIfTimestampIsNewer(
-                        fdkId!!,
-                        event.timestamp,
-                        SearchType.DATA_SERVICE
-                    )
-                    true
-                } else if (event is ConceptEvent && event.type == ConceptEventType.CONCEPT_REMOVED) {
-                    LOGGER.debug("Remove concept - id: {}", event.fdkId)
-                    fdkId = "${event.fdkId}"
-                    resourceUri = searchRepository.findByIdOrNull(fdkId!!)?.uri ?: eventUri
-                    searchRepository.markDeletedIfTimestampIsNewer(
-                        fdkId!!,
-                        event.timestamp,
-                        SearchType.CONCEPT
-                    )
-                    true
-                } else if (event is InformationModelEvent && event.type == InformationModelEventType.INFORMATION_MODEL_REMOVED) {
-                    LOGGER.debug("Remove information-model - id: {}", event.fdkId)
-                    fdkId = "${event.fdkId}"
-                    resourceUri = searchRepository.findByIdOrNull(fdkId!!)?.uri ?: eventUri
-                    searchRepository.markDeletedIfTimestampIsNewer(
-                        fdkId!!,
-                        event.timestamp,
-                        SearchType.INFORMATION_MODEL
-                    )
-                    true
-                } else if (event is ServiceEvent && event.type == ServiceEventType.SERVICE_REMOVED) {
-                    LOGGER.debug("Remove service - id: {}", event.fdkId)
-                    fdkId = "${event.fdkId}"
-                    resourceUri = searchRepository.findByIdOrNull(fdkId!!)?.uri ?: eventUri
-                    searchRepository.markDeletedIfTimestampIsNewer(
-                        fdkId!!,
-                        event.timestamp,
-                        SearchType.SERVICE
-                    )
-                    true
-                } else if (event is EventEvent && event.type == EventEventType.EVENT_REMOVED) {
-                    LOGGER.debug("Remove event - id: {}", event.fdkId)
-                    fdkId = "${event.fdkId}"
-                    resourceUri = searchRepository.findByIdOrNull(fdkId!!)?.uri ?: eventUri
-                    searchRepository.markDeletedIfTimestampIsNewer(fdkId!!, event.timestamp, SearchType.EVENT)
                     true
                 } else {
-                    LOGGER.debug("Unknown event type: {}, skipping", event)
+                    LOGGER.debug("Unknown event type: {}, skipping", event.getTypeSymbol())
                     false
                 }
             }
 
             if (deleted) {
-                Metrics.timer("search_delete", "type", event.getResourceType())
+                Metrics.timer("search_delete", "type", event.getResourceTypeName())
                     .record(timeElapsed.toJavaDuration())
-                
-                // Produce harvest event on success
+
                 if (harvestRunId != null && fdkId != null && resourceType != null) {
-                    val endTime = Instant.now() // When Kafka handling finishes
+                    val endTime = Instant.now()
                     harvestEventProducer.produceSearchProcessingEvent(
                         harvestRunId = harvestRunId,
                         resourceType = resourceType,
-                        fdkId = fdkId!!,
+                        fdkId = fdkId,
                         resourceUri = resourceUri,
                         startTime = startTime,
                         endTime = endTime,
@@ -180,23 +122,22 @@ open class KafkaRemovedEventCircuitBreaker(
             LOGGER.error("Error processing message: " + e.message)
             Metrics.counter(
                 "search_delete_error",
-                "type", event.getResourceType()
+                "type", event.getResourceTypeName()
             ).increment()
-            
-            // Produce harvest event on failure
+
             if (harvestRunId != null && fdkId != null && resourceType != null) {
                 val endTime = Instant.now()
                 harvestEventProducer.produceSearchProcessingEvent(
                     harvestRunId = harvestRunId,
                     resourceType = resourceType,
-                    fdkId = fdkId!!,
+                    fdkId = fdkId,
                     resourceUri = eventUri,
                     startTime = startTime,
                     endTime = endTime,
                     errorMessage = e.message
                 )
             }
-            
+
             throw e
         }
     }
