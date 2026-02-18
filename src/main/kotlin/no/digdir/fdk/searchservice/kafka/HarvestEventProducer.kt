@@ -42,8 +42,9 @@ class HarvestEventProducer(
             .setDataSourceUrl(null)
             .setAcceptHeader(null)
             .setChangedResourcesCount(null)
-            .setUnchangedResourcesCount(null)
             .setRemovedResourcesCount(null)
+            .setRemoveAll(null)
+            .setForced(false)
             .build()
 
         try {
