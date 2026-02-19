@@ -20,12 +20,17 @@ open class CircuitBreakerConsumerConfiguration(
             when (event.stateTransition) {
                 StateTransition.CLOSED_TO_OPEN,
                 StateTransition.CLOSED_TO_FORCED_OPEN,
-                StateTransition.HALF_OPEN_TO_OPEN -> kafkaManager.pause("rdf-parse")
-
+                StateTransition.HALF_OPEN_TO_OPEN -> {
+                    LOGGER.warn("Circuit breaker 'rdf-parse' opened ({}); pausing Kafka listener - rdf-parse-events lag will grow until it closes", event.stateTransition)
+                    kafkaManager.pause("rdf-parse")
+                }
                 StateTransition.OPEN_TO_HALF_OPEN,
                 StateTransition.HALF_OPEN_TO_CLOSED,
                 StateTransition.FORCED_OPEN_TO_CLOSED,
-                StateTransition.FORCED_OPEN_TO_HALF_OPEN -> kafkaManager.resume("rdf-parse")
+                StateTransition.FORCED_OPEN_TO_HALF_OPEN -> {
+                    LOGGER.warn("Circuit breaker 'rdf-parse' closed; resuming Kafka listener - consumption will resume")
+                    kafkaManager.resume("rdf-parse")
+                }
 
                 else -> throw IllegalStateException("Unknown transition state: " + event.stateTransition)
             }
@@ -35,12 +40,17 @@ open class CircuitBreakerConsumerConfiguration(
             when (event.stateTransition) {
                 StateTransition.CLOSED_TO_OPEN,
                 StateTransition.CLOSED_TO_FORCED_OPEN,
-                StateTransition.HALF_OPEN_TO_OPEN -> kafkaManager.pause("remove")
-
+                StateTransition.HALF_OPEN_TO_OPEN -> {
+                    LOGGER.warn("Circuit breaker 'remove' opened ({}); pausing Kafka listener - dataset/removed-event lag will grow until it closes", event.stateTransition)
+                    kafkaManager.pause("remove")
+                }
                 StateTransition.OPEN_TO_HALF_OPEN,
                 StateTransition.HALF_OPEN_TO_CLOSED,
                 StateTransition.FORCED_OPEN_TO_CLOSED,
-                StateTransition.FORCED_OPEN_TO_HALF_OPEN -> kafkaManager.resume("remove")
+                StateTransition.FORCED_OPEN_TO_HALF_OPEN -> {
+                    LOGGER.warn("Circuit breaker 'remove' closed; resuming Kafka listener - consumption will resume")
+                    kafkaManager.resume("remove")
+                }
 
                 else -> throw IllegalStateException("Unknown transition state: " + event.stateTransition)
             }
