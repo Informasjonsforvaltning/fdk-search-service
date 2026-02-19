@@ -32,8 +32,8 @@ open class KafkaRdfParseEventCircuitBreaker(
     private fun GenericRecord.getFdkId(): String = get("fdkId")?.toString() ?: ""
     private fun GenericRecord.getData(): String = get("data")?.toString() ?: ""
     private fun GenericRecord.getTimestamp(): Long = (get("timestamp") as? Number)?.toLong() ?: 0L
-    private fun GenericRecord.getHarvestRunId(): String? = get("harvestRunId")?.toString()?.takeIf { it.isNotBlank() }
-    private fun GenericRecord.getUri(): String? = get("uri")?.toString()?.takeIf { it.isNotBlank() }
+    private fun GenericRecord.getHarvestRunId(): String? = safeGetString("harvestRunId")
+    private fun GenericRecord.getUri(): String? = safeGetString("uri")
 
     private fun <T> index(
         event: GenericRecord,
