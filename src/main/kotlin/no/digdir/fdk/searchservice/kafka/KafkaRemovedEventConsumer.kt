@@ -32,6 +32,7 @@ class KafkaRemovedEventConsumer(
             kafkaRemovedEventCircuitBreaker.process(record)
             ack.acknowledge()
         } catch (e: Exception) {
+            LOGGER.warn("Removed event processing failed, nacking (reason: {}): {}", e.message, e.javaClass.simpleName, e)
             ack.nack(Duration.ZERO)
         }
     }
