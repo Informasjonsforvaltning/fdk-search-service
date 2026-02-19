@@ -119,7 +119,15 @@ open class KafkaRemovedEventCircuitBreaker(
                 }
             }
         } catch (e: Exception) {
-            LOGGER.error("Error processing message: " + e.message)
+            LOGGER.warn(
+                "Error processing removed event (circuit breaker will record failure): type={}, topic={}, partition={}, offset={} - {}",
+                e.javaClass.simpleName,
+                record.topic(),
+                record.partition(),
+                record.offset(),
+                e.message,
+                e
+            )
             Metrics.counter(
                 "search_delete_error",
                 "type", event.getResourceTypeName()
