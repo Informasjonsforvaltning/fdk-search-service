@@ -1,5 +1,11 @@
 {
   "properties": {
+    "isOpenData": {
+      "type": "boolean"
+    },
+    "isRelatedToTransportportal": {
+      "type": "boolean"
+    },
     "losTheme": {
       "properties": {
         "losPaths": {

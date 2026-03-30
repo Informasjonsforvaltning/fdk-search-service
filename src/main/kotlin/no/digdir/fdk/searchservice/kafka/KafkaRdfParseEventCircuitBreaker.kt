@@ -1,7 +1,7 @@
 package no.digdir.fdk.searchservice.kafka
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
 import io.micrometer.core.instrument.Metrics
 import no.digdir.fdk.searchservice.elastic.SearchRepository
 import no.digdir.fdk.searchservice.mapper.toSearchObject
@@ -16,9 +16,11 @@ import kotlin.time.measureTimedValue
 import kotlin.time.toJavaDuration
 
 @Component
-open class KafkaRdfParseEventCircuitBreaker(
-    private val harvestEventProducer: HarvestEventProducer
+class KafkaRdfParseEventCircuitBreaker(
+    private val harvestEventProducer: HarvestEventProducer,
+    circuitBreakerRegistry: CircuitBreakerRegistry,
 ) {
+    private val circuitBreaker = circuitBreakerRegistry.circuitBreaker("rdf-parse")
 
     private fun GenericRecord.getResourceType(): RdfParseResourceType? {
         val sym = get("resourceType")?.toString() ?: return null
@@ -50,12 +52,20 @@ open class KafkaRdfParseEventCircuitBreaker(
         }
     }
 
-    @CircuitBreaker(name = "rdf-parse")
-    open fun process(
+    fun process(
         event: GenericRecord?,
         searchRepository: SearchRepository
     ) {
         if (event == null) return
+        circuitBreaker.executeRunnable {
+            processInternal(event, searchRepository)
+        }
+    }
+
+    private fun processInternal(
+        event: GenericRecord,
+        searchRepository: SearchRepository
+    ) {
         LOGGER.debug("CB Received message")
 
         val harvestRunId = event.getHarvestRunId()
