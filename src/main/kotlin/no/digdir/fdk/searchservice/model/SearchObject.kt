@@ -2,6 +2,7 @@ package no.digdir.fdk.searchservice.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.data.annotation.Id
 import org.springframework.data.elasticsearch.annotations.Document
 import org.springframework.data.elasticsearch.annotations.Mapping
@@ -25,6 +26,8 @@ data class SearchObject(
     val description: LocalizedStrings?,
     val fdkFormatPrefixed: Set<String>?,
     val metadata: Metadata?,
+    @get:JsonProperty("isOpenData")
+    @field:JsonProperty("isOpenData")
     val isOpenData: Boolean?,
     val keyword: Set<LocalizedStrings>?,
     val losTheme: Set<LosNode>?,
@@ -37,6 +40,8 @@ data class SearchObject(
     val relations: Set<Relation>?,
     val specializedType: SpecializedType?,
     val isAuthoritative: Boolean?,
+    @get:JsonProperty("isRelatedToTransportportal")
+    @field:JsonProperty("isRelatedToTransportportal")
     val isRelatedToTransportportal: Boolean?
 )
 

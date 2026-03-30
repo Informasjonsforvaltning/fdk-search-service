@@ -6,18 +6,18 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 data class SearchOperation(
     val query: String? = null,
     val filters: SearchFilters? = null,
-    val fields: QueryFields = QueryFields(),
+    val fields: QueryFields? = QueryFields(),
     val sort: SortField? = null,
-    val pagination: Pagination = Pagination(),
+    val pagination: Pagination? = Pagination(),
     val profile: SearchProfile? = null
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 class QueryFields(
-    val title: Boolean = true,
-    val description: Boolean = true,
-    val keyword: Boolean = true,
-    val additionalTitles: Boolean = true
+    val title: Boolean? = true,
+    val description: Boolean? = true,
+    val keyword: Boolean? = true,
+    val additionalTitles: Boolean? = true
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -56,5 +56,5 @@ enum class SearchProfile {
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 class SearchFilter<T>(
-    val value: T
+    val value: T?
 )

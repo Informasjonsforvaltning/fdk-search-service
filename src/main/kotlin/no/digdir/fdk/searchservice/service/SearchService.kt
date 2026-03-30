@@ -38,21 +38,23 @@ class SearchService(
                     SearchObject::class.java,
                     IndexCoordinates.of(SEARCH_INDEX_NAME)
                 )
-                .toSearchResult(search.pagination)
+                .toSearchResult(search.pagination ?: Pagination())
         }
         Metrics.timer("search").record(timeElapsed.toJavaDuration())
         return result
     }
 
     private fun SearchOperation.toElasticQuery(searchTypes: List<SearchType>?): Query {
+        val queryFields = fields ?: QueryFields()
+        val pageable = pagination?.toPageable() ?: Pagination().toPageable()
         val builder = NativeQuery.builder()
-            .withPageable(pagination.toPageable())
+            .withPageable(pageable)
             .addAggregations()
 
         if (sort != null) builder.addSorting(sort)
 
         if (query.isNullOrBlank()) builder.addEmptyQueryWithFilters(filters, searchTypes, profile)
-        else builder.addFilteredQuery(fields, query, filters, searchTypes, profile)
+        else builder.addFilteredQuery(queryFields, query, filters, searchTypes, profile)
 
         return builder.build()
     }
@@ -216,12 +218,12 @@ class SearchService(
                 })
         }
 
-        filters?.openData?.let { opendata ->
+        filters?.openData?.value?.let { openDataValue ->
             queryFilters.add(DSLQuery.of { queryBuilder ->
                 queryBuilder.term { termBuilder ->
                     termBuilder
                         .field(FilterFields.OpenData.jsonPath())
-                        .value(FieldValue.of(opendata.value))
+                        .value(FieldValue.of(openDataValue))
                 }
             })
         }
@@ -248,18 +250,18 @@ class SearchService(
             }
         }
 
-        filters?.provenance?.let { provenance ->
+        filters?.provenance?.value?.let { provenanceValue ->
             queryFilters.add(DSLQuery.of { queryBuilder ->
                 queryBuilder.term { termBuilder ->
                     termBuilder
                         .field(FilterFields.Provenance.jsonPath())
-                        .value(FieldValue.of(provenance.value))
+                        .value(FieldValue.of(provenanceValue))
                 }
             })
         }
 
-        filters?.spatial?.let { spatial ->
-            spatial.value.forEach { spatialValue ->
+        filters?.spatial?.value?.let { spatialValues ->
+            spatialValues.forEach { spatialValue ->
                 queryFilters.add(DSLQuery.of { queryBuilder ->
                     queryBuilder.term { termBuilder ->
                         termBuilder
@@ -270,8 +272,8 @@ class SearchService(
             }
         }
 
-        filters?.losTheme?.let { los ->
-            los.value.forEach { losValue ->
+        filters?.losTheme?.value?.let { losValues ->
+            losValues.forEach { losValue ->
                 queryFilters.add(DSLQuery.of { queryBuilder ->
                     queryBuilder.term { termBuilder ->
                         termBuilder
@@ -302,33 +304,33 @@ class SearchService(
             })
         }
 
-        filters?.relations?.let { relation ->
+        filters?.relations?.value?.let { relationValue ->
             queryFilters.add(DSLQuery.of { queryBuilder ->
                 queryBuilder.term { termBuilder ->
                     termBuilder
                         .field(FilterFields.Relations.jsonPath())
-                        .value(FieldValue.of(relation.value))
+                        .value(FieldValue.of(relationValue))
                 }
             })
         }
 
-        filters?.lastXDays?.let { daysAgo ->
+        filters?.lastXDays?.value?.let { daysAgo ->
             queryFilters.add(DSLQuery.of { queryBuilder ->
                 queryBuilder.range { rangeBuilder ->
                     rangeBuilder.term { termRangeBuilder ->
                         termRangeBuilder.field(FilterFields.FirstHarvested.jsonPath())
-                            .gte("now-${daysAgo.value}d/d")
+                            .gte("now-${daysAgo}d/d")
                     }
                 }
             })
         }
 
-        filters?.lastXDaysModified?.let { daysAgo ->
+        filters?.lastXDaysModified?.value?.let { daysAgo ->
             queryFilters.add(DSLQuery.of { queryBuilder ->
                 queryBuilder.range { rangeBuilder ->
                     rangeBuilder.term { termRangeBuilder ->
                         termRangeBuilder.field(FilterFields.Modified.jsonPath())
-                        .gte("now-${daysAgo.value}d/d")
+                            .gte("now-${daysAgo}d/d")
                     }
                 }
             })
@@ -383,32 +385,32 @@ class SearchService(
 
     private fun QueryFields.prefixMatchPaths(): List<String> =
         listOf(
-            if (title) languagePaths("title", 15)
+            if (title != false) languagePaths("title", 15)
             else emptyList(),
 
-            if (description) languagePaths("description")
+            if (description != false) languagePaths("description")
             else emptyList(),
 
-            if (keyword) languagePaths("keyword", 5)
+            if (keyword != false) languagePaths("keyword", 5)
             else emptyList(),
 
-            if (additionalTitles) languagePaths("additionalTitles", 10)
+            if (additionalTitles != false) languagePaths("additionalTitles", 10)
             else emptyList(),
 
             ).flatten()
 
     private fun QueryFields.phraseMatchPaths(): List<String> =
         listOf(
-            if (title) languagePaths("title", 30)
+            if (title != false) languagePaths("title", 30)
             else emptyList(),
 
-            if (description) languagePaths("description")
+            if (description != false) languagePaths("description")
             else emptyList(),
 
-            if (keyword) languagePaths("keyword", 5)
+            if (keyword != false) languagePaths("keyword", 5)
             else emptyList(),
 
-            if (additionalTitles) languagePaths("additionalTitles", 10)
+            if (additionalTitles != false) languagePaths("additionalTitles", 10)
             else emptyList(),
 
             ).flatten()
@@ -464,7 +466,7 @@ class SearchService(
             .let {
                 SearchResult(
                     hits = it,
-                    aggregations = aggregations.toAggregationCounts(),
+                    aggregations = aggregations?.toAggregationCounts() ?: emptyMap(),
                     page = PageMeta(
                         currentPage = pagination.getPage(),
                         size = it.size,

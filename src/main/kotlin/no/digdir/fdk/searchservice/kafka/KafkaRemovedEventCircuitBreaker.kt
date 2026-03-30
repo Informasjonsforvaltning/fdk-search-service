@@ -1,6 +1,6 @@
 package no.digdir.fdk.searchservice.kafka
 
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
 import io.micrometer.core.instrument.Metrics
 import no.digdir.fdk.searchservice.elastic.SearchRepository
 import no.digdir.fdk.searchservice.model.Metadata
@@ -18,10 +18,12 @@ import kotlin.time.measureTimedValue
 import kotlin.time.toJavaDuration
 
 @Component
-open class KafkaRemovedEventCircuitBreaker(
+class KafkaRemovedEventCircuitBreaker(
     private val searchRepository: SearchRepository,
-    private val harvestEventProducer: HarvestEventProducer
+    private val harvestEventProducer: HarvestEventProducer,
+    circuitBreakerRegistry: CircuitBreakerRegistry,
 ) {
+    private val circuitBreaker = circuitBreakerRegistry.circuitBreaker("remove")
 
     private fun GenericRecord.getTypeSymbol(): String? =
         (get("type")?.toString())?.takeIf { it.isNotBlank() }
@@ -68,8 +70,13 @@ open class KafkaRemovedEventCircuitBreaker(
             else -> null
         }
 
-    @CircuitBreaker(name = "remove")
-    open fun process(record: ConsumerRecord<String, GenericRecord>) {
+    fun process(record: ConsumerRecord<String, GenericRecord>) {
+        circuitBreaker.executeRunnable {
+            processInternal(record)
+        }
+    }
+
+    private fun processInternal(record: ConsumerRecord<String, GenericRecord>) {
         LOGGER.debug("Received message - offset: " + record.offset())
 
         val event = record.value() ?: return
