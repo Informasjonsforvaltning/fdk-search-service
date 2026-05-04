@@ -19,7 +19,8 @@ val TEST_NULL_SERVICE = Service(
     requires = null,
     isDescribedAt = null,
     isGroupedBy = null,
-    isClassifiedBy = null
+    isClassifiedBy = null,
+    specializedType = null
 )
 
 val TEST_SERVICE = TEST_NULL_SERVICE.copy(
