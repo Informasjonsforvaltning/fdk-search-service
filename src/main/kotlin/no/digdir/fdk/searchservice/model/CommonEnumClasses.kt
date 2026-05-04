@@ -19,4 +19,6 @@ enum class SpecializedType {
     DATASET_SERIES,
     LIFE_EVENT,
     BUSINESS_EVENT,
+    PUBLIC_SERVICE,
+    SERVICE,
 }

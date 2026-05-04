@@ -20,7 +20,8 @@ data class Service(
     val isDescribedAt: List<ObjectWithURI>?,
     val relation: List<ObjectWithURI>?,
     val requires: List<ObjectWithURI>?,
-    val subject: List<ObjectWithURI>?
+    val subject: List<ObjectWithURI>?,
+    val specializedType: String?
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)

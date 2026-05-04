@@ -21,7 +21,7 @@ fun Service.toSearchObject(id: String, timestamp: Long, deleted: Boolean = false
         spatial = spatial?.toSet(),
         title = title,
         relations = getRelations(),
-        specializedType = null,
+        specializedType = getSpecializedType(),
         isAuthoritative = null,
         isRelatedToTransportportal = false,
         additionalTitles = null
@@ -71,4 +71,12 @@ fun Service.getRelations(): Set<Relation> {
     }
 
     return relations
+}
+
+fun Service.getSpecializedType(): SpecializedType? {
+    return when (specializedType) {
+        "publicService" -> SpecializedType.PUBLIC_SERVICE
+        "service" -> SpecializedType.SERVICE
+        else -> null
+    }
 }
