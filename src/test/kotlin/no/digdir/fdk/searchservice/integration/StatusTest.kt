@@ -31,4 +31,10 @@ class StatusTest: ApiTestContext() {
         val response = requestApi("/ready", port, null, GET)
         assertEquals(HttpStatus.OK.value(), response["status"])
     }
+
+    @Test
+    fun `api-docs returns 200`() {
+        val response = requestApi("/v3/api-docs", port, null, GET)
+        assertEquals(HttpStatus.OK.value(), response["status"])
+    }
 }
