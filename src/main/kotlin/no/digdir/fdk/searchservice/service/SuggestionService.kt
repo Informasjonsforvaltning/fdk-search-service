@@ -1,6 +1,5 @@
 package no.digdir.fdk.searchservice.service
 
-import co.elastic.clients.elasticsearch._types.FieldValue
 import io.micrometer.core.instrument.Metrics
 import no.digdir.fdk.searchservice.model.*
 import org.springframework.data.elasticsearch.client.elc.NativeQuery
@@ -90,42 +89,9 @@ class SuggestionService(
         profile: SearchProfile?,
         orgId: String?
     ): List<DSLQuery> {
-        val queryFilters = mutableListOf<DSLQuery>()
+        val queryFilters = commonQueryFilters(searchTypes, profile)
 
-        queryFilters.add(DSLQuery.of { queryBuilder ->
-            queryBuilder.term { termBuilder ->
-                termBuilder
-                    .field(FilterFields.Deleted.jsonPath())
-                    .value(FieldValue.of(false))
-            }
-        })
-
-        if (searchTypes != null) {
-            queryFilters.add(
-                DSLQuery.of { queryBuilder ->
-                    queryBuilder.terms { termsBuilder ->
-                        termsBuilder
-                            .field(FilterFields.SearchType.jsonPath())
-                            .terms { termsQueryBuilder ->
-                                termsQueryBuilder
-                                    .value(searchTypes.map { FieldValue.of(it.name) })
-                            }
-                    }
-                })
-        }
-
-        if (orgId != null) {
-            queryFilters.add(
-                DSLQuery.of { queryBuilder ->
-                    queryBuilder.term { termBuilder ->
-                        termBuilder
-                            .field(FilterFields.OrgId.jsonPath())
-                            .value(FieldValue.of(orgId))
-                    }
-                })
-        }
-
-        if (profile == SearchProfile.TRANSPORT) queryFilters.add(filtersForProfile(profile))
+        orgId?.let { queryFilters.add(termFilter(FilterFields.OrgId, it)) }
 
         return queryFilters
     }

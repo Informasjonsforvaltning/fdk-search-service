@@ -7,3 +7,9 @@ fun GenericRecord.safeGetString(key: String): String? = try {
 } catch (e: Exception) {
     null
 }
+
+fun GenericRecord.getHarvestRunId(): String? = safeGetString("harvestRunId")
+
+fun GenericRecord.getUri(): String? = safeGetString("uri")
+
+fun GenericRecord.getTimestamp(): Long = (get("timestamp") as? Number)?.toLong() ?: 0L

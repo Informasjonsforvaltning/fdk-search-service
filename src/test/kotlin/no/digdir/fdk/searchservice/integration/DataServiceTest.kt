@@ -24,12 +24,12 @@ import org.springframework.test.context.ContextConfiguration
 )
 @ContextConfiguration(initializers = [ApiTestContext.Initializer::class])
 @Tag("integration")
-class DataServiceSearchTest : ApiTestContext() {
+class DataServiceTest : ApiTestContext() {
     private val mapper = jacksonObjectMapper()
     private val searchFilters = createEmptySearchFilters()
     private val SEARCH_QUERY = "test"
     private val SEARCH_QUERY_NO_HITS = "nohits"
-    private val SEARCH_QUERYS_HIT_ALL_SEARCH_FIELDS =
+    private val SEARCH_QUERIES_HIT_ALL_SEARCH_FIELDS =
         listOf(
             "title",
             "description",
@@ -81,7 +81,7 @@ class DataServiceSearchTest : ApiTestContext() {
 
     @Test
     fun `search and hit all search fields successfully`() {
-        SEARCH_QUERYS_HIT_ALL_SEARCH_FIELDS.forEach {
+        SEARCH_QUERIES_HIT_ALL_SEARCH_FIELDS.forEach {
             val searchBody = mapper.writeValueAsString(SearchOperation(it, searchFilters))
             val response = requestApi(DATA_SERVICES_PATH, port, searchBody, POST)
             Assertions.assertEquals(200, response["status"])

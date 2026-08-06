@@ -23,11 +23,11 @@ import org.springframework.test.context.ContextConfiguration
 )
 @ContextConfiguration(initializers = [ApiTestContext.Initializer::class])
 @Tag("integration")
-class InformationModelSearchTest: ApiTestContext() {
+class InformationModelTest : ApiTestContext() {
     private val INFORMATION_MODELS_PATH = "/search/informationmodels"
     private val SEARCH_QUERY = "test"
     private val SEARCH_QUERY_NO_HITS = "nohits"
-    private val SEARCH_QUERYS_HIT_ALL_SEARCH_FIELDS =
+    private val SEARCH_QUERIES_HIT_ALL_SEARCH_FIELDS =
         listOf("title", "description", "keyword")
     private val searchFilters = createEmptySearchFilters()
     private val mapper = jacksonObjectMapper()
@@ -76,7 +76,7 @@ class InformationModelSearchTest: ApiTestContext() {
 
     @Test
     fun `search and hit all search fields successfully`() {
-        SEARCH_QUERYS_HIT_ALL_SEARCH_FIELDS.forEach {
+        SEARCH_QUERIES_HIT_ALL_SEARCH_FIELDS.forEach {
             val searchBody = mapper.writeValueAsString(SearchOperation(it, searchFilters))
             val response = requestApi(INFORMATION_MODELS_PATH, port, searchBody, POST)
             Assertions.assertEquals(200, response["status"])

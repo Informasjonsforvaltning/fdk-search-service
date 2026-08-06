@@ -100,13 +100,11 @@ class SearchController(
         @RequestBody query: SearchOperation
     ): ResponseEntity<SearchResult> {
         val searchTypeList = searchTypes.pathVariableToSearchType()
-        return if (searchTypeList == null) {
-            ResponseEntity(HttpStatus.NOT_FOUND)
-        } else {
-            ResponseEntity(
-                searchService.search(query, searchTypeList),
-                HttpStatus.OK
-            )
-        }
+            ?: return ResponseEntity(HttpStatus.NOT_FOUND)
+
+        return ResponseEntity(
+            searchService.search(query, searchTypeList),
+            HttpStatus.OK
+        )
     }
 }

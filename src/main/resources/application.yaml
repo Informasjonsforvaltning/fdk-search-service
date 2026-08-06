@@ -40,7 +40,6 @@ spring:
       ack-mode: manual_immediate
 springdoc.api-docs.version: openapi_3_0
 application:
-  prop: 1
   cors:
     originPatterns: ${CORS_ORIGIN_PATTERNS}
   elastic:
@@ -54,7 +53,6 @@ application:
 spring:
   config.activate.on-profile: develop
 application:
-  scope: test.scope
   cors:
     originPatterns: '*'
   elastic:
@@ -66,7 +64,6 @@ application:
 spring:
   config.activate.on-profile: test
 application:
-  scope: test.scope
   elastic:
     username: elastic
     password: elasticpwd

@@ -61,24 +61,24 @@ fun Dataset.getRelations(): Set<Relation> {
     return relations
 }
 
-private fun Reference.uriToRelationType(): RelationType? {
-    val basePath = "http://purl.org/dc/terms"
-    return when (referenceType?.uri) {
-        "$basePath/source" -> RelationType.source
-        "$basePath/hasVersion" -> RelationType.hasVersion
-        "$basePath/isVersionOf" -> RelationType.isVersionOf
-        "$basePath/isPartOf" -> RelationType.isPartOf
-        "$basePath/hasPart" -> RelationType.hasPart
-        "$basePath/references" -> RelationType.references
-        "$basePath/isReferencedBy" -> RelationType.isReferencedBy
-        "$basePath/replaces" -> RelationType.replaces
-        "$basePath/isReplacedBy" -> RelationType.isReplacedBy
-        "$basePath/requires" -> RelationType.requires
-        "$basePath/isRequiredBy" -> RelationType.isRequiredBy
-        "$basePath/relation" -> RelationType.relation
+private const val DC_TERMS_BASE_URI = "http://purl.org/dc/terms"
+
+private fun Reference.uriToRelationType(): RelationType? =
+    when (referenceType?.uri) {
+        "$DC_TERMS_BASE_URI/source" -> RelationType.source
+        "$DC_TERMS_BASE_URI/hasVersion" -> RelationType.hasVersion
+        "$DC_TERMS_BASE_URI/isVersionOf" -> RelationType.isVersionOf
+        "$DC_TERMS_BASE_URI/isPartOf" -> RelationType.isPartOf
+        "$DC_TERMS_BASE_URI/hasPart" -> RelationType.hasPart
+        "$DC_TERMS_BASE_URI/references" -> RelationType.references
+        "$DC_TERMS_BASE_URI/isReferencedBy" -> RelationType.isReferencedBy
+        "$DC_TERMS_BASE_URI/replaces" -> RelationType.replaces
+        "$DC_TERMS_BASE_URI/isReplacedBy" -> RelationType.isReplacedBy
+        "$DC_TERMS_BASE_URI/requires" -> RelationType.requires
+        "$DC_TERMS_BASE_URI/isRequiredBy" -> RelationType.isRequiredBy
+        "$DC_TERMS_BASE_URI/relation" -> RelationType.relation
         else -> null
     }
-}
 
 fun Dataset.getSpecializedType(): SpecializedType? {
     return when (specializedType) {

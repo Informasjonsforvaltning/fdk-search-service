@@ -23,13 +23,13 @@ import org.springframework.test.context.ContextConfiguration
 )
 @ContextConfiguration(initializers = [ApiTestContext.Initializer::class])
 @Tag("integration")
-class ServiceSearchTest : ApiTestContext() {
+class ServiceTest : ApiTestContext() {
     private val SERVICES_PATH = "/search/services"
     private val SEARCH_QUERY = "test"
     private val SEARCH_QUERY_NO_HITS = "nohits"
-    private val SEARCH_QUERYS_HIT_ALL_UNCONDITIONAL_SEARCH_FIELDS =
+    private val SEARCH_QUERIES_HIT_ALL_UNCONDITIONAL_SEARCH_FIELDS =
         listOf("title", "description", "keyword")
-    private val SEARCH_QUERYS_KEYWORD = "keyword"
+    private val SEARCH_QUERIES_KEYWORD = "keyword"
     private val mapper = jacksonObjectMapper()
     private val searchFilters = createEmptySearchFilters()
 
@@ -77,7 +77,7 @@ class ServiceSearchTest : ApiTestContext() {
 
     @Test
     fun `hit all unconditional search fields`() {
-        SEARCH_QUERYS_HIT_ALL_UNCONDITIONAL_SEARCH_FIELDS.forEach {
+        SEARCH_QUERIES_HIT_ALL_UNCONDITIONAL_SEARCH_FIELDS.forEach {
             val searchBody = mapper.writeValueAsString(SearchOperation(it, searchFilters))
             val response = requestApi(SERVICES_PATH, port, searchBody, POST)
             Assertions.assertEquals(200, response["status"])
@@ -89,7 +89,7 @@ class ServiceSearchTest : ApiTestContext() {
 
     @Test
     fun `hit keyword field`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERYS_KEYWORD, searchFilters))
+        val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERIES_KEYWORD, searchFilters))
         val response = requestApi(SERVICES_PATH, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 

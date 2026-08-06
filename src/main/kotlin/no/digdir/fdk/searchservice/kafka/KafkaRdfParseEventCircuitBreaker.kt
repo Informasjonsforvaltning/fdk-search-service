@@ -33,23 +33,33 @@ class KafkaRdfParseEventCircuitBreaker(
 
     private fun GenericRecord.getFdkId(): String = get("fdkId")?.toString() ?: ""
     private fun GenericRecord.getData(): String = get("data")?.toString() ?: ""
-    private fun GenericRecord.getTimestamp(): Long = (get("timestamp") as? Number)?.toLong() ?: 0L
-    private fun GenericRecord.getHarvestRunId(): String? = safeGetString("harvestRunId")
-    private fun GenericRecord.getUri(): String? = safeGetString("uri")
 
-    private fun <T> index(
+    /**
+     * Deserializes and saves [event] as a [clazz] search object, unless a fresher version is
+     * already indexed. Returns the resulting URI (falling back to [fallbackUri]), or `null` if
+     * the event was stale and nothing was indexed.
+     */
+    private fun <T> indexIfNewer(
         event: GenericRecord,
         searchRepository: SearchRepository,
         clazz: Class<T>,
-        index: (T) -> Unit
-    ) {
+        resourceTypeLabel: String,
+        fallbackUri: String?,
+        toSearchObject: (T) -> SearchObject
+    ): String? {
+        LOGGER.debug("Index $resourceTypeLabel - id: " + event.getFdkId())
+
         val fdkId = event.getFdkId()
         val timestamp = event.getTimestamp()
         val search = searchRepository.findById(fdkId)
         if (search.isEmpty || (search.get().metadata?.timestamp ?: 0) < timestamp) {
             val payload = jacksonObjectMapper().readValue(event.getData(), clazz)
-            index(payload)
+            val searchObject = toSearchObject(payload)
+            if (searchObject.uri == null) LOGGER.warn("No uri found for $fdkId")
+            searchRepository.save(searchObject)
+            return searchObject.uri ?: fallbackUri
         }
+        return null
     }
 
     fun process(
@@ -76,62 +86,32 @@ class KafkaRdfParseEventCircuitBreaker(
 
         try {
             val timeElapsed = measureTimedValue {
-                when (resourceType) {
-                    RdfParseResourceType.DATASET -> {
-                        LOGGER.debug("Index dataset - id: " + event.getFdkId())
-                        index(event, searchRepository, Dataset::class.java) {
-                            val searchObject = it.toSearchObject(event.getFdkId(), event.getTimestamp())
-                            resourceUri = searchObject.uri ?: uri
-                            if (searchObject.uri == null) LOGGER.warn("No uri found for ${event.getFdkId()}")
-                            searchRepository.save(searchObject)
+                resourceUri = when (resourceType) {
+                    RdfParseResourceType.DATASET ->
+                        indexIfNewer(event, searchRepository, Dataset::class.java, "dataset", uri) {
+                            it.toSearchObject(event.getFdkId(), event.getTimestamp())
                         }
-                    }
-                    RdfParseResourceType.DATA_SERVICE -> {
-                        LOGGER.debug("Index dataservice - id: " + event.getFdkId())
-                        index(event, searchRepository, DataService::class.java) {
-                            val searchObject = it.toSearchObject(event.getFdkId(), event.getTimestamp())
-                            resourceUri = searchObject.uri ?: uri
-                            if (searchObject.uri == null) LOGGER.warn("No uri found for ${event.getFdkId()}")
-                            searchRepository.save(searchObject)
+                    RdfParseResourceType.DATA_SERVICE ->
+                        indexIfNewer(event, searchRepository, DataService::class.java, "dataservice", uri) {
+                            it.toSearchObject(event.getFdkId(), event.getTimestamp())
                         }
-                    }
-                    RdfParseResourceType.CONCEPT -> {
-                        LOGGER.debug("Index concept - id: " + event.getFdkId())
-                        index(event, searchRepository, Concept::class.java) {
-                            val searchObject = it.toSearchObject(event.getFdkId(), event.getTimestamp())
-                            resourceUri = searchObject.uri ?: uri
-                            if (searchObject.uri == null) LOGGER.warn("No uri found for ${event.getFdkId()}")
-                            searchRepository.save(searchObject)
+                    RdfParseResourceType.CONCEPT ->
+                        indexIfNewer(event, searchRepository, Concept::class.java, "concept", uri) {
+                            it.toSearchObject(event.getFdkId(), event.getTimestamp())
                         }
-                    }
-                    RdfParseResourceType.INFORMATION_MODEL -> {
-                        LOGGER.debug("Index informationmodel - id: " + event.getFdkId())
-                        index(event, searchRepository, InformationModel::class.java) {
-                            val searchObject = it.toSearchObject(event.getFdkId(), event.getTimestamp())
-                            resourceUri = searchObject.uri ?: uri
-                            if (searchObject.uri == null) LOGGER.warn("No uri found for ${event.getFdkId()}")
-                            searchRepository.save(searchObject)
+                    RdfParseResourceType.INFORMATION_MODEL ->
+                        indexIfNewer(event, searchRepository, InformationModel::class.java, "informationmodel", uri) {
+                            it.toSearchObject(event.getFdkId(), event.getTimestamp())
                         }
-                    }
-                    RdfParseResourceType.EVENT -> {
-                        LOGGER.debug("Index event - id: " + event.getFdkId())
-                        index(event, searchRepository, Event::class.java) {
-                            val searchObject = it.toSearchObject(event.getFdkId(), event.getTimestamp())
-                            resourceUri = searchObject.uri ?: uri
-                            if (searchObject.uri == null) LOGGER.warn("No uri found for ${event.getFdkId()}")
-                            searchRepository.save(searchObject)
+                    RdfParseResourceType.EVENT ->
+                        indexIfNewer(event, searchRepository, Event::class.java, "event", uri) {
+                            it.toSearchObject(event.getFdkId(), event.getTimestamp())
                         }
-                    }
-                    RdfParseResourceType.SERVICE -> {
-                        LOGGER.debug("Index service - id: " + event.getFdkId())
-                        index(event, searchRepository, Service::class.java) {
-                            val searchObject = it.toSearchObject(event.getFdkId(), event.getTimestamp())
-                            resourceUri = searchObject.uri ?: uri
-                            if (searchObject.uri == null) LOGGER.warn("No uri found for ${event.getFdkId()}")
-                            searchRepository.save(searchObject)
+                    RdfParseResourceType.SERVICE ->
+                        indexIfNewer(event, searchRepository, Service::class.java, "service", uri) {
+                            it.toSearchObject(event.getFdkId(), event.getTimestamp())
                         }
-                    }
-                    null -> { /* unknown resource type, skip */ }
+                    null -> null
                 }
             }
             if (resourceType != null) {
