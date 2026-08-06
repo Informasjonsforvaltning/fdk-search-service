@@ -9,5 +9,5 @@ data class ElasticProperties(
     val host: String,
     val ssl: Boolean,
     val storePath: String,
-    val storePass: String
+    val storePass: String,
 )

@@ -14,18 +14,23 @@ import no.digdir.fdk.searchservice.model.SearchResult
 import no.digdir.fdk.searchservice.service.SearchService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping(value = ["/search"], produces = ["application/json"])
 @Tag(name = "Search", description = "API for searching resources in the data catalog")
 class SearchController(
-    private val searchService: SearchService
+    private val searchService: SearchService,
 ) {
     @PostMapping
     @Operation(
         summary = "Search all resources",
-        description = "Perform a full-text search across all resource types in the data catalog. " +
+        description =
+            "Perform a full-text search across all resource types in the data catalog. " +
                 "Supports advanced filtering, pagination, sorting, and field-specific querying. " +
                 "The search operation allows you to search across titles, descriptions, keywords, and additional metadata, " +
                 "apply filters for access rights, data themes, spatial coverage, organization, formats, and more, " +
@@ -50,17 +55,18 @@ class SearchController(
             description = "Search operation containing query, filters, pagination, sorting, and other search parameters",
             required = true,
         )
-        @RequestBody query: SearchOperation
+        @RequestBody query: SearchOperation,
     ): ResponseEntity<SearchResult> =
         ResponseEntity(
             searchService.search(query, null),
-            HttpStatus.OK
+            HttpStatus.OK,
         )
 
     @PostMapping(value = ["/{searchTypes}"])
     @Operation(
         summary = "Search specific resource types",
-        description = "Perform a full-text search within specific resource types. " +
+        description =
+            "Perform a full-text search within specific resource types. " +
                 "This endpoint allows you to limit your search to one or more resource types. " +
                 "Available resource types: concepts (controlled vocabularies and taxonomies), " +
                 "datasets (structured data collections), dataservices/data-services (APIs and data services), " +
@@ -87,7 +93,10 @@ class SearchController(
     )
     fun searchInSpecificResource(
         @Parameter(
-            description = "Resource type(s) to search in. Available values: concepts, datasets, dataservices, data-services, informationmodels, information-models, services, events, public-services-and-events, services-and-events",
+            description =
+                "Resource type(s) to search in. Available values: concepts, datasets, dataservices, " +
+                    "data-services, informationmodels, information-models, services, events, " +
+                    "public-services-and-events, services-and-events",
             required = true,
             `in` = ParameterIn.PATH,
             example = "datasets",
@@ -97,14 +106,15 @@ class SearchController(
             description = "Search operation containing query, filters, pagination, sorting, and other search parameters",
             required = true,
         )
-        @RequestBody query: SearchOperation
+        @RequestBody query: SearchOperation,
     ): ResponseEntity<SearchResult> {
-        val searchTypeList = searchTypes.pathVariableToSearchType()
-            ?: return ResponseEntity(HttpStatus.NOT_FOUND)
+        val searchTypeList =
+            searchTypes.pathVariableToSearchType()
+                ?: return ResponseEntity(HttpStatus.NOT_FOUND)
 
         return ResponseEntity(
             searchService.search(query, searchTypeList),
-            HttpStatus.OK
+            HttpStatus.OK,
         )
     }
 }

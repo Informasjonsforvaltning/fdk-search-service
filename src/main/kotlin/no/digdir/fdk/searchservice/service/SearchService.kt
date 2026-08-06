@@ -7,7 +7,21 @@ import co.elastic.clients.elasticsearch._types.aggregations.StringTermsAggregate
 import co.elastic.clients.elasticsearch._types.query_dsl.Operator
 import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType
 import io.micrometer.core.instrument.Metrics
-import no.digdir.fdk.searchservice.model.*
+import no.digdir.fdk.searchservice.model.BucketCount
+import no.digdir.fdk.searchservice.model.PageMeta
+import no.digdir.fdk.searchservice.model.Pagination
+import no.digdir.fdk.searchservice.model.QueryFields
+import no.digdir.fdk.searchservice.model.SEARCH_INDEX_NAME
+import no.digdir.fdk.searchservice.model.SearchFilters
+import no.digdir.fdk.searchservice.model.SearchObject
+import no.digdir.fdk.searchservice.model.SearchOperation
+import no.digdir.fdk.searchservice.model.SearchProfile
+import no.digdir.fdk.searchservice.model.SearchResult
+import no.digdir.fdk.searchservice.model.SearchType
+import no.digdir.fdk.searchservice.model.SortDirection
+import no.digdir.fdk.searchservice.model.SortField
+import no.digdir.fdk.searchservice.model.SortFieldEnum
+import no.digdir.fdk.searchservice.model.toPageable
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchAggregation
 import org.springframework.data.elasticsearch.client.elc.NativeQuery
 import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder
@@ -25,18 +39,21 @@ import co.elastic.clients.elasticsearch._types.query_dsl.Query as DSLQuery
 
 @Component
 class SearchService(
-    private val elasticSearchOperations: ElasticsearchOperations
+    private val elasticSearchOperations: ElasticsearchOperations,
 ) {
-    fun search(search: SearchOperation, searchTypes: List<SearchType>?): SearchResult {
-        val (result, timeElapsed) = measureTimedValue {
-            elasticSearchOperations
-                .search(
-                    search.toElasticQuery(searchTypes),
-                    SearchObject::class.java,
-                    IndexCoordinates.of(SEARCH_INDEX_NAME)
-                )
-                .toSearchResult(search.pagination ?: Pagination())
-        }
+    fun search(
+        search: SearchOperation,
+        searchTypes: List<SearchType>?,
+    ): SearchResult {
+        val (result, timeElapsed) =
+            measureTimedValue {
+                elasticSearchOperations
+                    .search(
+                        search.toElasticQuery(searchTypes),
+                        SearchObject::class.java,
+                        IndexCoordinates.of(SEARCH_INDEX_NAME),
+                    ).toSearchResult(search.pagination ?: Pagination())
+            }
         Metrics.timer("search").record(timeElapsed.toJavaDuration())
         return result
     }
@@ -44,14 +61,19 @@ class SearchService(
     private fun SearchOperation.toElasticQuery(searchTypes: List<SearchType>?): Query {
         val queryFields = fields ?: QueryFields()
         val pageable = pagination?.toPageable() ?: Pagination().toPageable()
-        val builder = NativeQuery.builder()
-            .withPageable(pageable)
-            .addAggregations()
+        val builder =
+            NativeQuery
+                .builder()
+                .withPageable(pageable)
+                .addAggregations()
 
         if (sort != null) builder.addSorting(sort)
 
-        if (query.isNullOrBlank()) builder.addEmptyQueryWithFilters(filters, searchTypes, profile)
-        else builder.addFilteredQuery(queryFields, query, filters, searchTypes, profile)
+        if (query.isNullOrBlank()) {
+            builder.addEmptyQueryWithFilters(filters, searchTypes, profile)
+        } else {
+            builder.addFilteredQuery(queryFields, query, filters, searchTypes, profile)
+        }
 
         return builder.build()
     }
@@ -61,7 +83,7 @@ class SearchService(
         queryValue: String,
         filters: SearchFilters?,
         searchTypes: List<SearchType>?,
-        profile: SearchProfile?
+        profile: SearchProfile?,
     ) {
         withQuery { queryBuilder ->
             queryBuilder.bool { boolBuilder ->
@@ -77,7 +99,8 @@ class SearchService(
 
                 boolBuilder.should {
                     it.multiMatch { matchBuilder ->
-                        matchBuilder.fields(queryFields.matchPaths(titleBoost = PHRASE_MATCH_TITLE_BOOST))
+                        matchBuilder
+                            .fields(queryFields.matchPaths(titleBoost = PHRASE_MATCH_TITLE_BOOST))
                             .query(queryValue)
                             .operator(Operator.And)
                             .type(TextQueryType.Phrase)
@@ -93,7 +116,7 @@ class SearchService(
     private fun NativeQueryBuilder.addEmptyQueryWithFilters(
         filters: SearchFilters?,
         searchTypes: List<SearchType>?,
-        profile: SearchProfile?
+        profile: SearchProfile?,
     ) {
         withQuery { queryBuilder ->
             queryBuilder.bool { boolBuilder ->
@@ -138,7 +161,7 @@ class SearchService(
     private fun createQueryFilters(
         filters: SearchFilters?,
         searchTypes: List<SearchType>?,
-        profile: SearchProfile?
+        profile: SearchProfile?,
     ): List<DSLQuery> {
         val queryFilters = commonQueryFilters(searchTypes, profile)
 
@@ -178,33 +201,44 @@ class SearchService(
 
     private fun QueryFields.matchPaths(titleBoost: Int): List<String> =
         listOf(
-            if (title != false) languagePaths("title", titleBoost)
-            else emptyList(),
+            if (title != false) {
+                languagePaths("title", titleBoost)
+            } else {
+                emptyList()
+            },
+            if (description != false) {
+                languagePaths("description")
+            } else {
+                emptyList()
+            },
+            if (keyword != false) {
+                languagePaths("keyword", 5)
+            } else {
+                emptyList()
+            },
+            if (additionalTitles != false) {
+                languagePaths("additionalTitles", 10)
+            } else {
+                emptyList()
+            },
+        ).flatten()
 
-            if (description != false) languagePaths("description")
-            else emptyList(),
-
-            if (keyword != false) languagePaths("keyword", 5)
-            else emptyList(),
-
-            if (additionalTitles != false) languagePaths("additionalTitles", 10)
-            else emptyList(),
-
-            ).flatten()
-
-    private fun languagePaths(basePath: String, boost: Int? = null): List<String> =
+    private fun languagePaths(
+        basePath: String,
+        boost: Int? = null,
+    ): List<String> =
         listOf(
             "$basePath.nb${if (boost != null) "^$boost" else ""}",
             "$basePath.nn${if (boost != null) "^$boost" else ""}",
             "$basePath.no${if (boost != null) "^$boost" else ""}",
-            "$basePath.en${if (boost != null) "^$boost" else ""}"
+            "$basePath.en${if (boost != null) "^$boost" else ""}",
         )
 
     private fun StringTermsAggregate.toBucketCounts(): List<BucketCount> =
         buckets().array().map {
             BucketCount(
                 key = it.key().stringValue(),
-                count = it.docCount()
+                count = it.docCount(),
             )
         }
 
@@ -212,7 +246,7 @@ class SearchService(
         buckets().array().map {
             BucketCount(
                 key = it.keyAsString() ?: "null",
-                count = it.docCount()
+                count = it.docCount(),
             )
         }
 
@@ -231,25 +265,25 @@ class SearchService(
 
     private fun AggregationsContainer<*>.toAggregationCounts(): Map<String, List<BucketCount>> {
         val aggregations = aggregations() as List<ElasticsearchAggregation>
-        return aggregations.map { it.aggregation() }
+        return aggregations
+            .map { it.aggregation() }
             .associate { it.name to it.aggregate.toBucketCounts(it.name) }
     }
 
-    private fun SearchHits<SearchObject>.toSearchResult(
-        pagination: Pagination
-    ): SearchResult =
+    private fun SearchHits<SearchObject>.toSearchResult(pagination: Pagination): SearchResult =
         map { it.content }
             .toList()
             .let {
                 SearchResult(
                     hits = it,
                     aggregations = aggregations?.toAggregationCounts() ?: emptyMap(),
-                    page = PageMeta(
-                        currentPage = pagination.getPage(),
-                        size = it.size,
-                        totalElements = totalHits,
-                        totalPages = ceil(totalHits.toDouble() / pagination.getSize()).roundToLong()
-                    )
+                    page =
+                        PageMeta(
+                            currentPage = pagination.getPage(),
+                            size = it.size,
+                            totalElements = totalHits,
+                            totalPages = ceil(totalHits.toDouble() / pagination.getSize()).roundToLong(),
+                        ),
                 )
             }
 }

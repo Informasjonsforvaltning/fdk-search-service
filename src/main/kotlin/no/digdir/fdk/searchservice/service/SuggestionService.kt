@@ -1,7 +1,11 @@
 package no.digdir.fdk.searchservice.service
 
 import io.micrometer.core.instrument.Metrics
-import no.digdir.fdk.searchservice.model.*
+import no.digdir.fdk.searchservice.model.SearchObject
+import no.digdir.fdk.searchservice.model.SearchProfile
+import no.digdir.fdk.searchservice.model.SearchType
+import no.digdir.fdk.searchservice.model.Suggestion
+import no.digdir.fdk.searchservice.model.SuggestionsResult
 import org.springframework.data.elasticsearch.client.elc.NativeQuery
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations
 import org.springframework.data.elasticsearch.core.SearchHits
@@ -12,13 +16,13 @@ import co.elastic.clients.elasticsearch._types.query_dsl.Query as DSLQuery
 
 @Service
 class SuggestionService(
-    private val elasticsearchOperations: ElasticsearchOperations
+    private val elasticsearchOperations: ElasticsearchOperations,
 ) {
     private fun suggestResource(
         query: String,
         searchType: List<SearchType>?,
         profile: SearchProfile?,
-        orgId: String?
+        orgId: String?,
     ): SearchHits<SearchObject> =
         elasticsearchOperations.search(suggestionQuery(query, searchType, profile, orgId), SearchObject::class.java)
 
@@ -26,14 +30,17 @@ class SuggestionService(
         query: String,
         searchType: List<SearchType>?,
         profile: SearchProfile?,
-        orgId: String?
+        orgId: String?,
     ): SuggestionsResult {
-        val (result, timeElapsed) = kotlin.time.measureTimedValue {
-            SuggestionsResult(suggestResource(query, searchType, profile, orgId)
-                .map { it.content }
-                .map { it.toSuggestion() }
-                .toList())
-        }
+        val (result, timeElapsed) =
+            kotlin.time.measureTimedValue {
+                SuggestionsResult(
+                    suggestResource(query, searchType, profile, orgId)
+                        .map { it.content }
+                        .map { it.toSuggestion() }
+                        .toList(),
+                )
+            }
         Metrics.timer("search_suggestion").record(timeElapsed.toJavaDuration())
         return result
     }
@@ -45,14 +52,14 @@ class SuggestionService(
             description = description,
             uri = uri,
             organization = organization,
-            searchType = searchType
+            searchType = searchType,
         )
 
     private fun suggestionQuery(
         query: String,
         searchTypes: List<SearchType>?,
         profile: SearchProfile?,
-        orgId: String?
+        orgId: String?,
     ): Query {
         val builder = NativeQuery.builder()
 
@@ -65,7 +72,6 @@ class SuggestionService(
                                 .field(field)
                                 .query(query)
                         }
-
                     }
 
                     boolBuilder.should {
@@ -87,7 +93,7 @@ class SuggestionService(
     private fun createQueryFilters(
         searchTypes: List<SearchType>?,
         profile: SearchProfile?,
-        orgId: String?
+        orgId: String?,
     ): List<DSLQuery> {
         val queryFilters = commonQueryFilters(searchTypes, profile)
 

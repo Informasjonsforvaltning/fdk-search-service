@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.6</version>
+        <version>4.1.0</version>
         <relativePath/>
     </parent>
 
@@ -33,10 +33,10 @@
         <maven.compiler.target>${java.release}</maven.compiler.target>
         <maven.exec.skip>false</maven.exec.skip>
 
-        <kotlin.version>2.3.21</kotlin.version>
+        <kotlin.version>2.4.10</kotlin.version>
         <testcontainers.version>2.0.5</testcontainers.version>
         <avro.version>1.12.1</avro.version>
-        <confluent.version>8.2.0</confluent.version>
+        <confluent.version>8.3.0</confluent.version>
     </properties>
 
     <dependencies>
@@ -97,7 +97,7 @@
         <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
             <artifactId>httpclient5</artifactId>
-            <version>5.6.1</version>
+            <version>5.6.2</version>
         </dependency>
         <!-- defines an API for working with compression and archive formats. -->
         <dependency>
@@ -198,6 +198,8 @@
     </dependencies>
     <build>
         <finalName>app</finalName>
+        <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
+        <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
         <resources>
             <resource>
                 <directory>${project.basedir}/src/main/resources</directory>
@@ -278,7 +280,6 @@
                 <executions>
                     <execution>
                         <id>ktlint-check</id>
-                        <phase>test-compile</phase>
                         <goals>
                             <goal>check</goal>
                         </goals>
@@ -289,7 +290,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.14</version>
+                <version>0.8.15</version>
                 <executions>
                     <execution>
                         <id>before-unit-test-execution</id>
@@ -347,7 +348,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>3.5.5</version>
+                <version>3.5.6</version>
                 <configuration>
                     <!--suppress UnresolvedMavenProperty -->
                     <argLine>${failsafe.jacoco.args}</argLine>
@@ -362,7 +363,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.5.5</version>
+                <version>3.5.6</version>
                 <configuration>
                     <useSystemClassLoader>false</useSystemClassLoader>
                     <!--suppress UnresolvedMavenProperty -->

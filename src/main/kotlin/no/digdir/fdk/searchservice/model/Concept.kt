@@ -3,7 +3,6 @@ package no.digdir.fdk.searchservice.model
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import org.springframework.data.annotation.Id
 
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Concept(
     val identifier: String?,
@@ -22,5 +21,5 @@ data class Concept(
     val replaces: List<String>?,
     val seeAlso: List<String>?,
     val hiddenLabel: List<LocalizedStrings>?,
-    val altLabel: List<LocalizedStrings>?
+    val altLabel: List<LocalizedStrings>?,
 )

@@ -5,7 +5,13 @@ import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
 import io.micrometer.core.instrument.Metrics
 import no.digdir.fdk.searchservice.elastic.SearchRepository
 import no.digdir.fdk.searchservice.mapper.toSearchObject
-import no.digdir.fdk.searchservice.model.*
+import no.digdir.fdk.searchservice.model.Concept
+import no.digdir.fdk.searchservice.model.DataService
+import no.digdir.fdk.searchservice.model.Dataset
+import no.digdir.fdk.searchservice.model.Event
+import no.digdir.fdk.searchservice.model.InformationModel
+import no.digdir.fdk.searchservice.model.SearchObject
+import no.digdir.fdk.searchservice.model.Service
 import no.fdk.rdf.parse.RdfParseResourceType
 import org.apache.avro.generic.GenericRecord
 import org.slf4j.Logger
@@ -32,6 +38,7 @@ class KafkaRdfParseEventCircuitBreaker(
     }
 
     private fun GenericRecord.getFdkId(): String = get("fdkId")?.toString() ?: ""
+
     private fun GenericRecord.getData(): String = get("data")?.toString() ?: ""
 
     /**
@@ -45,7 +52,7 @@ class KafkaRdfParseEventCircuitBreaker(
         clazz: Class<T>,
         resourceTypeLabel: String,
         fallbackUri: String?,
-        toSearchObject: (T) -> SearchObject
+        toSearchObject: (T) -> SearchObject,
     ): String? {
         LOGGER.debug("Index $resourceTypeLabel - id: " + event.getFdkId())
 
@@ -64,7 +71,7 @@ class KafkaRdfParseEventCircuitBreaker(
 
     fun process(
         event: GenericRecord?,
-        searchRepository: SearchRepository
+        searchRepository: SearchRepository,
     ) {
         if (event == null) return
         circuitBreaker.executeRunnable {
@@ -74,7 +81,7 @@ class KafkaRdfParseEventCircuitBreaker(
 
     private fun processInternal(
         event: GenericRecord,
-        searchRepository: SearchRepository
+        searchRepository: SearchRepository,
     ) {
         LOGGER.debug("CB Received message")
 
@@ -85,37 +92,54 @@ class KafkaRdfParseEventCircuitBreaker(
         var resourceUri: String? = null
 
         try {
-            val timeElapsed = measureTimedValue {
-                resourceUri = when (resourceType) {
-                    RdfParseResourceType.DATASET ->
-                        indexIfNewer(event, searchRepository, Dataset::class.java, "dataset", uri) {
-                            it.toSearchObject(event.getFdkId(), event.getTimestamp())
+            val timeElapsed =
+                measureTimedValue {
+                    resourceUri =
+                        when (resourceType) {
+                            RdfParseResourceType.DATASET -> {
+                                indexIfNewer(event, searchRepository, Dataset::class.java, "dataset", uri) {
+                                    it.toSearchObject(event.getFdkId(), event.getTimestamp())
+                                }
+                            }
+
+                            RdfParseResourceType.DATA_SERVICE -> {
+                                indexIfNewer(event, searchRepository, DataService::class.java, "dataservice", uri) {
+                                    it.toSearchObject(event.getFdkId(), event.getTimestamp())
+                                }
+                            }
+
+                            RdfParseResourceType.CONCEPT -> {
+                                indexIfNewer(event, searchRepository, Concept::class.java, "concept", uri) {
+                                    it.toSearchObject(event.getFdkId(), event.getTimestamp())
+                                }
+                            }
+
+                            RdfParseResourceType.INFORMATION_MODEL -> {
+                                indexIfNewer(event, searchRepository, InformationModel::class.java, "informationmodel", uri) {
+                                    it.toSearchObject(event.getFdkId(), event.getTimestamp())
+                                }
+                            }
+
+                            RdfParseResourceType.EVENT -> {
+                                indexIfNewer(event, searchRepository, Event::class.java, "event", uri) {
+                                    it.toSearchObject(event.getFdkId(), event.getTimestamp())
+                                }
+                            }
+
+                            RdfParseResourceType.SERVICE -> {
+                                indexIfNewer(event, searchRepository, Service::class.java, "service", uri) {
+                                    it.toSearchObject(event.getFdkId(), event.getTimestamp())
+                                }
+                            }
+
+                            null -> {
+                                null
+                            }
                         }
-                    RdfParseResourceType.DATA_SERVICE ->
-                        indexIfNewer(event, searchRepository, DataService::class.java, "dataservice", uri) {
-                            it.toSearchObject(event.getFdkId(), event.getTimestamp())
-                        }
-                    RdfParseResourceType.CONCEPT ->
-                        indexIfNewer(event, searchRepository, Concept::class.java, "concept", uri) {
-                            it.toSearchObject(event.getFdkId(), event.getTimestamp())
-                        }
-                    RdfParseResourceType.INFORMATION_MODEL ->
-                        indexIfNewer(event, searchRepository, InformationModel::class.java, "informationmodel", uri) {
-                            it.toSearchObject(event.getFdkId(), event.getTimestamp())
-                        }
-                    RdfParseResourceType.EVENT ->
-                        indexIfNewer(event, searchRepository, Event::class.java, "event", uri) {
-                            it.toSearchObject(event.getFdkId(), event.getTimestamp())
-                        }
-                    RdfParseResourceType.SERVICE ->
-                        indexIfNewer(event, searchRepository, Service::class.java, "service", uri) {
-                            it.toSearchObject(event.getFdkId(), event.getTimestamp())
-                        }
-                    null -> null
                 }
-            }
             if (resourceType != null) {
-                Metrics.timer("search_index", "type", resourceType.name.lowercase())
+                Metrics
+                    .timer("search_index", "type", resourceType.name.lowercase())
                     .record(timeElapsed.duration.toJavaDuration())
 
                 val endTime = Instant.now()
@@ -126,16 +150,18 @@ class KafkaRdfParseEventCircuitBreaker(
                     resourceUri = resourceUri,
                     startTime = startTime,
                     endTime = endTime,
-                    errorMessage = null
+                    errorMessage = null,
                 )
             }
         } catch (e: Exception) {
             LOGGER.error("Error processing message: " + e.message)
             if (resourceType != null) {
-                Metrics.counter(
-                    "search_index_error",
-                    "type", resourceType.name.lowercase()
-                ).increment()
+                Metrics
+                    .counter(
+                        "search_index_error",
+                        "type",
+                        resourceType.name.lowercase(),
+                    ).increment()
 
                 val endTime = Instant.now()
                 harvestEventProducer.produceSearchProcessingEvent(
@@ -145,7 +171,7 @@ class KafkaRdfParseEventCircuitBreaker(
                     resourceUri = uri,
                     startTime = startTime,
                     endTime = endTime,
-                    errorMessage = e.message
+                    errorMessage = e.message,
                 )
             }
 

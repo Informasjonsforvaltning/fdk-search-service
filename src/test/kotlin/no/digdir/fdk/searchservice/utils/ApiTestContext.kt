@@ -1,6 +1,18 @@
 package no.digdir.fdk.searchservice.utils
 
-import no.digdir.fdk.searchservice.data.*
+import no.digdir.fdk.searchservice.data.TEST_CONCEPT_HIT_ALL_FIELDS
+import no.digdir.fdk.searchservice.data.TEST_DATASET_FILTERS
+import no.digdir.fdk.searchservice.data.TEST_DATASET_HIT_ALL_FIELDS
+import no.digdir.fdk.searchservice.data.TEST_DATASET_HIT_IS_OPEN
+import no.digdir.fdk.searchservice.data.TEST_DATA_SERVICE_HIT_ALL_FIELDS
+import no.digdir.fdk.searchservice.data.TEST_EVENT
+import no.digdir.fdk.searchservice.data.TEST_EVENT_HIT_ALL_FIELDS
+import no.digdir.fdk.searchservice.data.TEST_INFORMATION_MODEL_HIT_ALL_FIELDS
+import no.digdir.fdk.searchservice.data.TEST_SEARCH_OBJECT_AND_HIT_ALL_FIELDS
+import no.digdir.fdk.searchservice.data.TEST_SERVICE
+import no.digdir.fdk.searchservice.data.TEST_SERVICE_HIT_ALL_FIELDS
+import no.digdir.fdk.searchservice.data.TEST_SERVICE_HIT_HAS_COMPETENT_AUTHORITY
+import no.digdir.fdk.searchservice.data.TEST_SERVICE_HIT_OWNED_BY
 import no.digdir.fdk.searchservice.elastic.SearchRepository
 import no.digdir.fdk.searchservice.mapper.toSearchObject
 import org.junit.jupiter.api.BeforeEach
@@ -15,7 +27,6 @@ import java.net.HttpURLConnection
 import java.net.URI
 
 abstract class ApiTestContext {
-
     @LocalServerPort
     var port = 0
 
@@ -39,16 +50,18 @@ abstract class ApiTestContext {
                 TEST_SERVICE_HIT_HAS_COMPETENT_AUTHORITY.toSearchObject("0103", System.currentTimeMillis()),
                 TEST_DATASET_FILTERS.toSearchObject("3", System.currentTimeMillis()),
                 TEST_SERVICE.toSearchObject("678", System.currentTimeMillis()),
-                TEST_EVENT.toSearchObject("111", System.currentTimeMillis())
-            ))
+                TEST_EVENT.toSearchObject("111", System.currentTimeMillis()),
+            ),
+        )
     }
 
     internal class Initializer : ApplicationContextInitializer<ConfigurableApplicationContext> {
         override fun initialize(configurableApplicationContext: ConfigurableApplicationContext) {
-            TestPropertyValues.of(
-                "application.elastic.host=localhost:${elasticContainer.getMappedPort(9200)}",
-                "application.cors.originPatterns=*",
-            ).applyTo(configurableApplicationContext.environment)
+            TestPropertyValues
+                .of(
+                    "application.elastic.host=localhost:${elasticContainer.getMappedPort(9200)}",
+                    "application.cors.originPatterns=*",
+                ).applyTo(configurableApplicationContext.environment)
         }
     }
 

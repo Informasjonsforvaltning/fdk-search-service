@@ -25,32 +25,70 @@ class KafkaRemovedEventCircuitBreaker(
 ) {
     private val circuitBreaker = circuitBreakerRegistry.circuitBreaker("remove")
 
-    private fun GenericRecord.getTypeSymbol(): String? =
-        (get("type")?.toString())?.takeIf { it.isNotBlank() }
+    private fun GenericRecord.getTypeSymbol(): String? = (get("type")?.toString())?.takeIf { it.isNotBlank() }
 
-    private fun GenericRecord.getFdkId(): String? =
-        get("fdkId")?.toString()?.takeIf { it.isNotBlank() }
+    private fun GenericRecord.getFdkId(): String? = get("fdkId")?.toString()?.takeIf { it.isNotBlank() }
 
     private fun GenericRecord.getResourceTypeName(): String =
         when (getTypeSymbol()) {
-            "DATASET_REMOVED", "DATASET_HARVESTED", "DATASET_REASONED" -> "dataset"
-            "DATA_SERVICE_REMOVED", "DATA_SERVICE_HARVESTED", "DATA_SERVICE_REASONED" -> "data-service"
-            "CONCEPT_REMOVED", "CONCEPT_HARVESTED", "CONCEPT_REASONED" -> "concept"
-            "INFORMATION_MODEL_REMOVED", "INFORMATION_MODEL_HARVESTED", "INFORMATION_MODEL_REASONED" -> "information-model"
-            "SERVICE_REMOVED", "SERVICE_HARVESTED", "SERVICE_REASONED" -> "service"
-            "EVENT_REMOVED", "EVENT_HARVESTED", "EVENT_REASONED" -> "event"
-            else -> "invalid-type"
+            "DATASET_REMOVED", "DATASET_HARVESTED", "DATASET_REASONED" -> {
+                "dataset"
+            }
+
+            "DATA_SERVICE_REMOVED", "DATA_SERVICE_HARVESTED", "DATA_SERVICE_REASONED" -> {
+                "data-service"
+            }
+
+            "CONCEPT_REMOVED", "CONCEPT_HARVESTED", "CONCEPT_REASONED" -> {
+                "concept"
+            }
+
+            "INFORMATION_MODEL_REMOVED", "INFORMATION_MODEL_HARVESTED", "INFORMATION_MODEL_REASONED" -> {
+                "information-model"
+            }
+
+            "SERVICE_REMOVED", "SERVICE_HARVESTED", "SERVICE_REASONED" -> {
+                "service"
+            }
+
+            "EVENT_REMOVED", "EVENT_HARVESTED", "EVENT_REASONED" -> {
+                "event"
+            }
+
+            else -> {
+                "invalid-type"
+            }
         }
 
     private fun GenericRecord.getRdfParseResourceType(): RdfParseResourceType? =
         when (getTypeSymbol()) {
-            "DATASET_REMOVED", "DATASET_HARVESTED", "DATASET_REASONED" -> RdfParseResourceType.DATASET
-            "DATA_SERVICE_REMOVED", "DATA_SERVICE_HARVESTED", "DATA_SERVICE_REASONED" -> RdfParseResourceType.DATA_SERVICE
-            "CONCEPT_REMOVED", "CONCEPT_HARVESTED", "CONCEPT_REASONED" -> RdfParseResourceType.CONCEPT
-            "INFORMATION_MODEL_REMOVED", "INFORMATION_MODEL_HARVESTED", "INFORMATION_MODEL_REASONED" -> RdfParseResourceType.INFORMATION_MODEL
-            "SERVICE_REMOVED", "SERVICE_HARVESTED", "SERVICE_REASONED" -> RdfParseResourceType.SERVICE
-            "EVENT_REMOVED", "EVENT_HARVESTED", "EVENT_REASONED" -> RdfParseResourceType.EVENT
-            else -> null
+            "DATASET_REMOVED", "DATASET_HARVESTED", "DATASET_REASONED" -> {
+                RdfParseResourceType.DATASET
+            }
+
+            "DATA_SERVICE_REMOVED", "DATA_SERVICE_HARVESTED", "DATA_SERVICE_REASONED" -> {
+                RdfParseResourceType.DATA_SERVICE
+            }
+
+            "CONCEPT_REMOVED", "CONCEPT_HARVESTED", "CONCEPT_REASONED" -> {
+                RdfParseResourceType.CONCEPT
+            }
+
+            "INFORMATION_MODEL_REMOVED", "INFORMATION_MODEL_HARVESTED", "INFORMATION_MODEL_REASONED" -> {
+                RdfParseResourceType.INFORMATION_MODEL
+            }
+
+            "SERVICE_REMOVED", "SERVICE_HARVESTED", "SERVICE_REASONED" -> {
+                RdfParseResourceType.SERVICE
+            }
+
+            "EVENT_REMOVED", "EVENT_HARVESTED", "EVENT_REASONED" -> {
+                RdfParseResourceType.EVENT
+            }
+
+            else -> {
+                null
+            }
         }
 
     private fun GenericRecord.getSearchType(): SearchType? =
@@ -83,24 +121,26 @@ class KafkaRemovedEventCircuitBreaker(
         var fdkId: String? = event.getFdkId()
 
         try {
-            val (deleted, timeElapsed) = measureTimedValue {
-                if (searchType != null && fdkId != null) {
-                    LOGGER.debug("Remove {} - id: {}", event.getResourceTypeName(), fdkId)
-                    resourceUri = searchRepository.findByIdOrNull(fdkId)?.uri ?: eventUri
-                    searchRepository.markDeletedIfTimestampIsNewer(
-                        fdkId,
-                        event.getTimestamp(),
-                        searchType
-                    )
-                    true
-                } else {
-                    LOGGER.debug("Unknown event type: {}, skipping", event.getTypeSymbol())
-                    false
+            val (deleted, timeElapsed) =
+                measureTimedValue {
+                    if (searchType != null && fdkId != null) {
+                        LOGGER.debug("Remove {} - id: {}", event.getResourceTypeName(), fdkId)
+                        resourceUri = searchRepository.findByIdOrNull(fdkId)?.uri ?: eventUri
+                        searchRepository.markDeletedIfTimestampIsNewer(
+                            fdkId,
+                            event.getTimestamp(),
+                            searchType,
+                        )
+                        true
+                    } else {
+                        LOGGER.debug("Unknown event type: {}, skipping", event.getTypeSymbol())
+                        false
+                    }
                 }
-            }
 
             if (deleted) {
-                Metrics.timer("search_delete", "type", event.getResourceTypeName())
+                Metrics
+                    .timer("search_delete", "type", event.getResourceTypeName())
                     .record(timeElapsed.toJavaDuration())
 
                 if (harvestRunId != null && fdkId != null && resourceType != null) {
@@ -112,7 +152,7 @@ class KafkaRemovedEventCircuitBreaker(
                         resourceUri = resourceUri,
                         startTime = startTime,
                         endTime = endTime,
-                        errorMessage = null
+                        errorMessage = null,
                     )
                 }
             }
@@ -124,12 +164,14 @@ class KafkaRemovedEventCircuitBreaker(
                 record.partition(),
                 record.offset(),
                 e.message,
-                e
+                e,
             )
-            Metrics.counter(
-                "search_delete_error",
-                "type", event.getResourceTypeName()
-            ).increment()
+            Metrics
+                .counter(
+                    "search_delete_error",
+                    "type",
+                    event.getResourceTypeName(),
+                ).increment()
 
             if (harvestRunId != null && fdkId != null && resourceType != null) {
                 val endTime = Instant.now()
@@ -140,7 +182,7 @@ class KafkaRemovedEventCircuitBreaker(
                     resourceUri = eventUri,
                     startTime = startTime,
                     endTime = endTime,
-                    errorMessage = e.message
+                    errorMessage = e.message,
                 )
             }
 
@@ -148,7 +190,11 @@ class KafkaRemovedEventCircuitBreaker(
         }
     }
 
-    private fun SearchRepository.markDeletedIfTimestampIsNewer(id: String, timestamp: Long, searchType: SearchType) {
+    private fun SearchRepository.markDeletedIfTimestampIsNewer(
+        id: String,
+        timestamp: Long,
+        searchType: SearchType,
+    ) {
         findByIdOrNull(id)?.let {
             if (it.metadata?.timestamp!! < timestamp) {
                 save(it.copy(metadata = it.metadata.copy(deleted = true, timestamp = timestamp)))
@@ -156,12 +202,13 @@ class KafkaRemovedEventCircuitBreaker(
         } ?: run {
             SearchObject(
                 id = id,
-                metadata = Metadata(
-                    firstHarvested = null,
-                    modified = null,
-                    deleted = true,
-                    timestamp = timestamp
-                ),
+                metadata =
+                    Metadata(
+                        firstHarvested = null,
+                        modified = null,
+                        deleted = true,
+                        timestamp = timestamp,
+                    ),
                 searchType = searchType,
                 uri = null,
                 accessRights = null,
@@ -180,7 +227,7 @@ class KafkaRemovedEventCircuitBreaker(
                 specializedType = null,
                 isAuthoritative = null,
                 isRelatedToTransportportal = null,
-                additionalTitles = null
+                additionalTitles = null,
             ).let { save(it) }
         }
     }

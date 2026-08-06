@@ -22,21 +22,20 @@ import org.springframework.test.context.ContextConfiguration
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(
     properties = ["spring.profiles.active=test"],
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 )
 @ContextConfiguration(initializers = [ApiTestContext.Initializer::class])
 @Tag("integration")
-class Profile: ApiTestContext() {
-    private val PATH = "/search"
+class Profile : ApiTestContext() {
+    private val path = "/search"
     private val mapper = jacksonObjectMapper()
 
     @Nested
     inner class Transport {
-
         @Test
         fun `transport filters are added when no other filters are present`() {
             val searchBody = mapper.writeValueAsString(SearchOperation(profile = SearchProfile.TRANSPORT))
-            val response = requestApi(PATH, port, searchBody, HttpMethod.POST)
+            val response = requestApi(path, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 
             val result: SearchResult = mapper.readValue(response["body"] as String)
@@ -44,10 +43,11 @@ class Profile: ApiTestContext() {
             Assertions.assertNotEquals(0, result.hits.size)
             Assertions.assertTrue(result.hits.all { it.isRelatedToTransportportal ?: false })
         }
+
         @Test
         fun `transport filters are added on endpoint for specific resource`() {
             val searchBody = mapper.writeValueAsString(SearchOperation(profile = SearchProfile.TRANSPORT))
-            val response = requestApi("$PATH/datasets", port, searchBody, HttpMethod.POST)
+            val response = requestApi("$path/datasets", port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 
             val result: SearchResult = mapper.readValue(response["body"] as String)
@@ -61,7 +61,7 @@ class Profile: ApiTestContext() {
         fun `transport filters are added in combination with los filter`() {
             val filters = createEmptySearchFilters().copy(losTheme = SearchFilter(listOf("familie-og-barn")))
             val searchBody = mapper.writeValueAsString(SearchOperation(filters = filters, profile = SearchProfile.TRANSPORT))
-            val response = requestApi(PATH, port, searchBody, HttpMethod.POST)
+            val response = requestApi(path, port, searchBody, HttpMethod.POST)
             Assertions.assertEquals(200, response["status"])
 
             val result: SearchResult = mapper.readValue(response["body"] as String)
@@ -69,9 +69,11 @@ class Profile: ApiTestContext() {
             Assertions.assertNotEquals(0, result.hits.size)
             Assertions.assertTrue(result.hits.all { it.isRelatedToTransportportal ?: false })
 
-            val losPaths: List<List<String>> = result.hits.map { it.losTheme?.flatMap { los -> los.losPaths ?: emptyList() } ?: emptyList() }
+            val losPaths: List<List<String>> =
+                result.hits.map {
+                    it.losTheme?.flatMap { los -> los.losPaths ?: emptyList() } ?: emptyList()
+                }
             Assertions.assertTrue(losPaths.all { it.contains("familie-og-barn") })
         }
     }
-
 }

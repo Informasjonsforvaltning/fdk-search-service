@@ -19,23 +19,23 @@ import org.springframework.test.context.ContextConfiguration
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(
     properties = ["spring.profiles.active=test"],
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 )
 @ContextConfiguration(initializers = [ApiTestContext.Initializer::class])
 @Tag("integration")
 class EventTest : ApiTestContext() {
-    private val EVENTS_PATH = "/search/events"
-    private val SEARCH_QUERY = "test"
-    private val SEARCH_QUERY_NO_HITS = "nohits"
-    private val SEARCH_QUERIES_HIT_ALL_SEARCH_FIELDS =
+    private val eventsPath = "/search/events"
+    private val searchQuery = "test"
+    private val searchQueryNoHits = "nohits"
+    private val searchQueriesHitAllSearchFields =
         listOf("title", "description")
     private val searchFilters = createEmptySearchFilters()
     private val mapper = jacksonObjectMapper()
 
     @Test
     fun `search with at least one hit`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERY, searchFilters))
-        val response = requestApi(EVENTS_PATH, port, searchBody, POST)
+        val searchBody = mapper.writeValueAsString(SearchOperation(searchQuery, searchFilters))
+        val response = requestApi(eventsPath, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
         val result: SearchResult = mapper.readValue(response["body"] as String)
@@ -44,8 +44,8 @@ class EventTest : ApiTestContext() {
 
     @Test
     fun `check searchType`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERY, searchFilters))
-        val response = requestApi(EVENTS_PATH, port, searchBody, POST)
+        val searchBody = mapper.writeValueAsString(SearchOperation(searchQuery, searchFilters))
+        val response = requestApi(eventsPath, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
         val result: SearchResult = mapper.readValue(response["body"] as String)
@@ -56,8 +56,8 @@ class EventTest : ApiTestContext() {
 
     @Test
     fun `search with no hits`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERY_NO_HITS, searchFilters))
-        val response = requestApi(EVENTS_PATH, port, searchBody, POST)
+        val searchBody = mapper.writeValueAsString(SearchOperation(searchQueryNoHits, searchFilters))
+        val response = requestApi(eventsPath, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
         val result: SearchResult = mapper.readValue(response["body"] as String)
@@ -67,7 +67,7 @@ class EventTest : ApiTestContext() {
     @Test
     fun `search with empty query`() {
         val searchBody = mapper.writeValueAsString(SearchOperation("", searchFilters))
-        val response = requestApi(EVENTS_PATH, port, searchBody, POST)
+        val response = requestApi(eventsPath, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
         val result: SearchResult = mapper.readValue(response["body"] as String)
@@ -76,9 +76,9 @@ class EventTest : ApiTestContext() {
 
     @Test
     fun `search and hit all search fields successfully`() {
-        SEARCH_QUERIES_HIT_ALL_SEARCH_FIELDS.forEach {
+        searchQueriesHitAllSearchFields.forEach {
             val searchBody = mapper.writeValueAsString(SearchOperation(it, searchFilters))
-            val response = requestApi(EVENTS_PATH, port, searchBody, POST)
+            val response = requestApi(eventsPath, port, searchBody, POST)
             Assertions.assertEquals(200, response["status"])
 
             val result: SearchResult = mapper.readValue(response["body"] as String)
@@ -88,13 +88,13 @@ class EventTest : ApiTestContext() {
 
     @Test
     fun `events uses org data from catalog`() {
-        SEARCH_QUERIES_HIT_ALL_SEARCH_FIELDS.forEach {
+        searchQueriesHitAllSearchFields.forEach {
             val searchBody = mapper.writeValueAsString(SearchOperation("NB title 1061", searchFilters))
-            val response = requestApi(EVENTS_PATH, port, searchBody, POST)
+            val response = requestApi(eventsPath, port, searchBody, POST)
             Assertions.assertEquals(200, response["status"])
 
             val result: SearchResult = mapper.readValue(response["body"] as String)
-           Assertions.assertTrue(result.hits.any { it.organization?.orgPath == "/PRIVAT/111222333/333222111" })
+            Assertions.assertTrue(result.hits.any { it.organization?.orgPath == "/PRIVAT/111222333/333222111" })
         }
     }
 }

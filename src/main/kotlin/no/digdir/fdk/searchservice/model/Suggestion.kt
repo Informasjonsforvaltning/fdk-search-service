@@ -9,5 +9,5 @@ data class Suggestion(
     val description: LocalizedStrings?,
     val uri: String?,
     val organization: Organization?,
-    val searchType: SearchType
+    val searchType: SearchType,
 )

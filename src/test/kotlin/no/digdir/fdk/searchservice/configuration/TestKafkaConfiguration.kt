@@ -21,7 +21,7 @@ class TestKafkaConfiguration {
         // which requires Kafka and Schema Registry to be available
         val template = mock<KafkaTemplate<String, HarvestEvent>>()
         whenever(template.send(any(), any(), any())).thenReturn(
-            CompletableFuture.completedFuture(mock<SendResult<String, HarvestEvent>>())
+            CompletableFuture.completedFuture(mock<SendResult<String, HarvestEvent>>()),
         )
         return template
     }

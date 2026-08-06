@@ -7,12 +7,10 @@ import no.digdir.fdk.searchservice.data.TEST_NULL_SERVICE
 import no.digdir.fdk.searchservice.mapper.toSearchObject
 import no.digdir.fdk.searchservice.model.SpecializedType
 import org.junit.jupiter.api.Nested
-
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-
 
 @Tag("unit")
 class SpecializedTypeTest {

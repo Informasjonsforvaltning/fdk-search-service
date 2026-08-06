@@ -14,18 +14,23 @@ import no.digdir.fdk.searchservice.model.SuggestionsResult
 import no.digdir.fdk.searchservice.service.SuggestionService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping(value = ["/suggestions"], produces = ["application/json"])
 @Tag(name = "Suggestions", description = "API for getting search suggestions and autocomplete results")
 class SuggestionsController(
-    private val suggestionService: SuggestionService
+    private val suggestionService: SuggestionService,
 ) {
     @GetMapping
     @Operation(
         summary = "Get search suggestions for all resources",
-        description = "Retrieve search suggestions (autocomplete) across all resource types in the data catalog. " +
+        description =
+            "Retrieve search suggestions (autocomplete) across all resource types in the data catalog. " +
                 "This endpoint is useful for implementing autocomplete functionality in search interfaces. " +
                 "The suggestions are based on matching titles, descriptions, and other metadata fields. " +
                 "You can optionally filter suggestions by search profile (e.g., TRANSPORT for transport-specific suggestions) " +
@@ -64,13 +69,14 @@ class SuggestionsController(
     ): ResponseEntity<SuggestionsResult> =
         ResponseEntity(
             suggestionService.suggestResources(query, null, searchProfile, org),
-            HttpStatus.OK
+            HttpStatus.OK,
         )
 
     @GetMapping(value = ["/{searchTypes}"])
     @Operation(
         summary = "Get search suggestions for specific resource types",
-        description = "Retrieve search suggestions (autocomplete) for specific resource types. " +
+        description =
+            "Retrieve search suggestions (autocomplete) for specific resource types. " +
                 "This endpoint allows you to limit suggestions to one or more resource types. " +
                 "Available resource types: concepts (controlled vocabularies and taxonomies), " +
                 "datasets (structured data collections), dataservices/data-services (APIs and data services), " +
@@ -98,7 +104,10 @@ class SuggestionsController(
     )
     fun suggestionsForSpecificResource(
         @Parameter(
-            description = "Resource type(s) to get suggestions for. Available values: concepts, datasets, dataservices, data-services, informationmodels, information-models, services, events, public-services-and-events, services-and-events",
+            description =
+                "Resource type(s) to get suggestions for. Available values: concepts, datasets, dataservices, " +
+                    "data-services, informationmodels, information-models, services, events, " +
+                    "public-services-and-events, services-and-events",
             required = true,
             `in` = ParameterIn.PATH,
             example = "datasets",
@@ -121,12 +130,13 @@ class SuggestionsController(
         )
         @RequestParam(value = "org") org: String?,
     ): ResponseEntity<SuggestionsResult> {
-        val searchTypeList = searchTypes.pathVariableToSearchType()
-            ?: return ResponseEntity.notFound().build()
+        val searchTypeList =
+            searchTypes.pathVariableToSearchType()
+                ?: return ResponseEntity.notFound().build()
 
         return ResponseEntity(
             suggestionService.suggestResources(query, searchTypeList, searchProfile, org),
-            HttpStatus.OK
+            HttpStatus.OK,
         )
     }
 }

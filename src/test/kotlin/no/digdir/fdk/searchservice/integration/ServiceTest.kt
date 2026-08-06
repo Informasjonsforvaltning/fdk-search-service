@@ -19,24 +19,24 @@ import org.springframework.test.context.ContextConfiguration
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(
     properties = ["spring.profiles.active=test"],
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 )
 @ContextConfiguration(initializers = [ApiTestContext.Initializer::class])
 @Tag("integration")
 class ServiceTest : ApiTestContext() {
-    private val SERVICES_PATH = "/search/services"
-    private val SEARCH_QUERY = "test"
-    private val SEARCH_QUERY_NO_HITS = "nohits"
-    private val SEARCH_QUERIES_HIT_ALL_UNCONDITIONAL_SEARCH_FIELDS =
+    private val servicesPath = "/search/services"
+    private val searchQuery = "test"
+    private val searchQueryNoHits = "nohits"
+    private val searchQueriesHitAllUnconditionalSearchFields =
         listOf("title", "description", "keyword")
-    private val SEARCH_QUERIES_KEYWORD = "keyword"
+    private val searchQueriesKeyword = "keyword"
     private val mapper = jacksonObjectMapper()
     private val searchFilters = createEmptySearchFilters()
 
     @Test
     fun `search with at least one hit`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERY, searchFilters))
-        val response = requestApi(SERVICES_PATH, port, searchBody, POST)
+        val searchBody = mapper.writeValueAsString(SearchOperation(searchQuery, searchFilters))
+        val response = requestApi(servicesPath, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
         val result: SearchResult = mapper.readValue(response["body"] as String)
@@ -45,8 +45,8 @@ class ServiceTest : ApiTestContext() {
 
     @Test
     fun `check searchType`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERY, searchFilters))
-        val response = requestApi(SERVICES_PATH, port, searchBody, POST)
+        val searchBody = mapper.writeValueAsString(SearchOperation(searchQuery, searchFilters))
+        val response = requestApi(servicesPath, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
         val result: SearchResult = mapper.readValue(response["body"] as String)
@@ -57,8 +57,8 @@ class ServiceTest : ApiTestContext() {
 
     @Test
     fun `search with no hits`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERY_NO_HITS, searchFilters))
-        val response = requestApi(SERVICES_PATH, port, searchBody, POST)
+        val searchBody = mapper.writeValueAsString(SearchOperation(searchQueryNoHits, searchFilters))
+        val response = requestApi(servicesPath, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
         val result: SearchResult = mapper.readValue(response["body"] as String)
@@ -68,7 +68,7 @@ class ServiceTest : ApiTestContext() {
     @Test
     fun `search with empty query`() {
         val searchBody = mapper.writeValueAsString(SearchOperation("", searchFilters))
-        val response = requestApi(SERVICES_PATH, port, searchBody, POST)
+        val response = requestApi(servicesPath, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
         val result: SearchResult = mapper.readValue(response["body"] as String)
@@ -77,9 +77,9 @@ class ServiceTest : ApiTestContext() {
 
     @Test
     fun `hit all unconditional search fields`() {
-        SEARCH_QUERIES_HIT_ALL_UNCONDITIONAL_SEARCH_FIELDS.forEach {
+        searchQueriesHitAllUnconditionalSearchFields.forEach {
             val searchBody = mapper.writeValueAsString(SearchOperation(it, searchFilters))
-            val response = requestApi(SERVICES_PATH, port, searchBody, POST)
+            val response = requestApi(servicesPath, port, searchBody, POST)
             Assertions.assertEquals(200, response["status"])
 
             val result: SearchResult = mapper.readValue(response["body"] as String)
@@ -89,8 +89,8 @@ class ServiceTest : ApiTestContext() {
 
     @Test
     fun `hit keyword field`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERIES_KEYWORD, searchFilters))
-        val response = requestApi(SERVICES_PATH, port, searchBody, POST)
+        val searchBody = mapper.writeValueAsString(SearchOperation(searchQueriesKeyword, searchFilters))
+        val response = requestApi(servicesPath, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
         val result: SearchResult = mapper.readValue(response["body"] as String)

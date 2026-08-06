@@ -19,23 +19,23 @@ import org.springframework.test.context.ContextConfiguration
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(
     properties = ["spring.profiles.active=test"],
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 )
 @ContextConfiguration(initializers = [ApiTestContext.Initializer::class])
 @Tag("integration")
 class InformationModelTest : ApiTestContext() {
-    private val INFORMATION_MODELS_PATH = "/search/informationmodels"
-    private val SEARCH_QUERY = "test"
-    private val SEARCH_QUERY_NO_HITS = "nohits"
-    private val SEARCH_QUERIES_HIT_ALL_SEARCH_FIELDS =
+    private val informationModelsPath = "/search/informationmodels"
+    private val searchQuery = "test"
+    private val searchQueryNoHits = "nohits"
+    private val searchQueriesHitAllSearchFields =
         listOf("title", "description", "keyword")
     private val searchFilters = createEmptySearchFilters()
     private val mapper = jacksonObjectMapper()
 
     @Test
     fun `search with at least one hit`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERY, searchFilters))
-        val response = requestApi(INFORMATION_MODELS_PATH, port, searchBody, POST)
+        val searchBody = mapper.writeValueAsString(SearchOperation(searchQuery, searchFilters))
+        val response = requestApi(informationModelsPath, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
         val result: SearchResult = mapper.readValue(response["body"] as String)
@@ -44,8 +44,8 @@ class InformationModelTest : ApiTestContext() {
 
     @Test
     fun `check searchType`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERY, searchFilters))
-        val response = requestApi(INFORMATION_MODELS_PATH, port, searchBody, POST)
+        val searchBody = mapper.writeValueAsString(SearchOperation(searchQuery, searchFilters))
+        val response = requestApi(informationModelsPath, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
         val result: SearchResult = mapper.readValue(response["body"] as String)
@@ -56,8 +56,8 @@ class InformationModelTest : ApiTestContext() {
 
     @Test
     fun `search with no hits`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERY_NO_HITS, searchFilters))
-        val response = requestApi(INFORMATION_MODELS_PATH, port, searchBody, POST)
+        val searchBody = mapper.writeValueAsString(SearchOperation(searchQueryNoHits, searchFilters))
+        val response = requestApi(informationModelsPath, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
         val result: SearchResult = mapper.readValue(response["body"] as String)
@@ -67,7 +67,7 @@ class InformationModelTest : ApiTestContext() {
     @Test
     fun `search with empty query`() {
         val searchBody = mapper.writeValueAsString(SearchOperation("", searchFilters))
-        val response = requestApi(INFORMATION_MODELS_PATH, port, searchBody, POST)
+        val response = requestApi(informationModelsPath, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
         val result: SearchResult = mapper.readValue(response["body"] as String)
@@ -76,9 +76,9 @@ class InformationModelTest : ApiTestContext() {
 
     @Test
     fun `search and hit all search fields successfully`() {
-        SEARCH_QUERIES_HIT_ALL_SEARCH_FIELDS.forEach {
+        searchQueriesHitAllSearchFields.forEach {
             val searchBody = mapper.writeValueAsString(SearchOperation(it, searchFilters))
-            val response = requestApi(INFORMATION_MODELS_PATH, port, searchBody, POST)
+            val response = requestApi(informationModelsPath, port, searchBody, POST)
             Assertions.assertEquals(200, response["status"])
 
             val result: SearchResult = mapper.readValue(response["body"] as String)

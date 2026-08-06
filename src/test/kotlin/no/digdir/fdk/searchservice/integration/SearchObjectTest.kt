@@ -18,24 +18,24 @@ import org.springframework.test.context.ContextConfiguration
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(
     properties = ["spring.profiles.active=test"],
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 )
 @ContextConfiguration(initializers = [ApiTestContext.Initializer::class])
 @Tag("integration")
-class SearchObjectTest: ApiTestContext() {
-    private val PATH = "/search"
-    private val PATH_NONE_EXISTING_RESOURCE = "$PATH/none-existing-resource"
-    private val SEARCH_QUERY = "test"
-    private val SEARCH_QUERY_NO_HITS = "nohits"
-    private val SEARCH_QUERIES_SUCCESS_ALL_SEARCH_FIELDS =
+class SearchObjectTest : ApiTestContext() {
+    private val path = "/search"
+    private val pathNoneExistingResource = "$path/none-existing-resource"
+    private val searchQuery = "test"
+    private val searchQueryNoHits = "nohits"
+    private val searchQueriesSuccessAllSearchFields =
         listOf("title", "description", "keyword")
     private val mapper = jacksonObjectMapper()
     private val searchFilters = createEmptySearchFilters()
 
     @Test
     fun `search with at least one hit`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERY, searchFilters))
-        val response = requestApi(PATH, port, searchBody, POST)
+        val searchBody = mapper.writeValueAsString(SearchOperation(searchQuery, searchFilters))
+        val response = requestApi(path, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
         val result: SearchResult = mapper.readValue(response["body"] as String)
@@ -44,8 +44,8 @@ class SearchObjectTest: ApiTestContext() {
 
     @Test
     fun `search with no hits`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERY_NO_HITS, searchFilters))
-        val response = requestApi(PATH, port, searchBody, POST)
+        val searchBody = mapper.writeValueAsString(SearchOperation(searchQueryNoHits, searchFilters))
+        val response = requestApi(path, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
         val result: SearchResult = mapper.readValue(response["body"] as String)
@@ -55,7 +55,7 @@ class SearchObjectTest: ApiTestContext() {
     @Test
     fun `search with empty query`() {
         val searchBody = mapper.writeValueAsString(SearchOperation("", searchFilters))
-        val response = requestApi(PATH, port, searchBody, POST)
+        val response = requestApi(path, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
         val result: SearchResult = mapper.readValue(response["body"] as String)
@@ -64,9 +64,9 @@ class SearchObjectTest: ApiTestContext() {
 
     @Test
     fun `search and hit all search fields successfully`() {
-        SEARCH_QUERIES_SUCCESS_ALL_SEARCH_FIELDS.forEach {
+        searchQueriesSuccessAllSearchFields.forEach {
             val searchBody = mapper.writeValueAsString(SearchOperation(it, searchFilters))
-            val response = requestApi(PATH, port, searchBody, POST)
+            val response = requestApi(path, port, searchBody, POST)
             Assertions.assertEquals(200, response["status"])
 
             val result: SearchResult = mapper.readValue(response["body"] as String)
@@ -77,7 +77,7 @@ class SearchObjectTest: ApiTestContext() {
     @Test
     fun `not found for unsupported searchTypes`() {
         val searchBody = mapper.writeValueAsString(SearchOperation("", searchFilters))
-        val response = requestApi(PATH_NONE_EXISTING_RESOURCE, port, searchBody, POST)
+        val response = requestApi(pathNoneExistingResource, port, searchBody, POST)
         Assertions.assertEquals(404, response["status"])
     }
 }
