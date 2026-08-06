@@ -120,13 +120,13 @@ class SuggestionsController(
             required = false,
         )
         @RequestParam(value = "org") org: String?,
-    ): ResponseEntity<SuggestionsResult> = (
-        if (searchTypes.pathVariableToSearchType() == null) {
-            ResponseEntity.notFound().build()
-        } else {
-            ResponseEntity(
-                suggestionService.suggestResources(query, searchTypes.pathVariableToSearchType(), searchProfile, org),
-                HttpStatus.OK
-            )
-        })
+    ): ResponseEntity<SuggestionsResult> {
+        val searchTypeList = searchTypes.pathVariableToSearchType()
+            ?: return ResponseEntity.notFound().build()
+
+        return ResponseEntity(
+            suggestionService.suggestResources(query, searchTypeList, searchProfile, org),
+            HttpStatus.OK
+        )
+    }
 }

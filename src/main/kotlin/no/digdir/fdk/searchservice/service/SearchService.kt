@@ -1,14 +1,11 @@
 package no.digdir.fdk.searchservice.service
 
-import co.elastic.clients.elasticsearch._types.FieldValue
 import co.elastic.clients.elasticsearch._types.SortOrder
 import co.elastic.clients.elasticsearch._types.aggregations.Aggregate
-import co.elastic.clients.elasticsearch._types.aggregations.AggregationBuilders
 import co.elastic.clients.elasticsearch._types.aggregations.LongTermsAggregate
 import co.elastic.clients.elasticsearch._types.aggregations.StringTermsAggregate
 import co.elastic.clients.elasticsearch._types.query_dsl.Operator
 import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType
-import co.elastic.clients.json.JsonData
 import io.micrometer.core.instrument.Metrics
 import no.digdir.fdk.searchservice.model.*
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchAggregation
@@ -71,7 +68,7 @@ class SearchService(
                 boolBuilder.should {
                     it.multiMatch { matchBuilder ->
                         matchBuilder
-                            .fields(queryFields.prefixMatchPaths())
+                            .fields(queryFields.matchPaths(titleBoost = PREFIX_MATCH_TITLE_BOOST))
                             .query(queryValue)
                             .operator(Operator.And)
                             .type(TextQueryType.BoolPrefix)
@@ -80,7 +77,7 @@ class SearchService(
 
                 boolBuilder.should {
                     it.multiMatch { matchBuilder ->
-                        matchBuilder.fields(queryFields.phraseMatchPaths())
+                        matchBuilder.fields(queryFields.matchPaths(titleBoost = PHRASE_MATCH_TITLE_BOOST))
                             .query(queryValue)
                             .operator(Operator.And)
                             .type(TextQueryType.Phrase)
@@ -107,65 +104,14 @@ class SearchService(
     }
 
     private fun NativeQueryBuilder.addAggregations(): NativeQueryBuilder {
-        val aggSize = 15000
-        withAggregation(
-            FilterFields.AccessRights.aggregationName(),
-            AggregationBuilders.terms { builder ->
-                builder.field(FilterFields.AccessRights.jsonPath())
-                    .missing(MISSING_VALUE_AGGREGATE)
-                    .size(aggSize)
-            }
-        )
-        withAggregation(
-            FilterFields.DataTheme.aggregationName(),
-            AggregationBuilders.terms { builder ->
-                builder.field(FilterFields.DataTheme.jsonPath())
-                    .size(aggSize)
-            }
-        )
-        withAggregation(
-            FilterFields.Format.aggregationName(),
-            AggregationBuilders.terms { builder ->
-                builder.field(FilterFields.Format.jsonPath())
-                    .size(aggSize)
-            }
-        )
-        withAggregation(
-            FilterFields.LosTheme.aggregationName(),
-            AggregationBuilders.terms { builder ->
-                builder.field(FilterFields.LosTheme.jsonPath())
-                    .size(aggSize)
-            }
-        )
-        withAggregation(
-            FilterFields.OrgPath.aggregationName(),
-            AggregationBuilders.terms { builder ->
-                builder.field(FilterFields.OrgPath.jsonPath())
-                    .missing(MISSING_VALUE_AGGREGATE)
-                    .size(aggSize)
-            }
-        )
-        withAggregation(
-            FilterFields.OpenData.aggregationName(),
-            AggregationBuilders.terms { builder ->
-                builder.field(FilterFields.OpenData.jsonPath())
-                    .size(aggSize)
-            }
-        )
-        withAggregation(
-            FilterFields.Provenance.aggregationName(),
-            AggregationBuilders.terms { builder ->
-                builder.field(FilterFields.Provenance.jsonPath())
-                    .size(aggSize)
-            }
-        )
-        withAggregation(
-            FilterFields.Spatial.aggregationName(),
-            AggregationBuilders.terms { builder ->
-                builder.field(FilterFields.Spatial.jsonPath())
-                    .size(aggSize)
-            }
-        )
+        addTermsAggregation(FilterFields.AccessRights, withMissingValue = true)
+        addTermsAggregation(FilterFields.DataTheme)
+        addTermsAggregation(FilterFields.Format)
+        addTermsAggregation(FilterFields.LosTheme)
+        addTermsAggregation(FilterFields.OrgPath, withMissingValue = true)
+        addTermsAggregation(FilterFields.OpenData)
+        addTermsAggregation(FilterFields.Provenance)
+        addTermsAggregation(FilterFields.Spatial)
 
         return this
     }
@@ -194,214 +140,45 @@ class SearchService(
         searchTypes: List<SearchType>?,
         profile: SearchProfile?
     ): List<DSLQuery> {
-        val queryFilters = mutableListOf<DSLQuery>()
+        val queryFilters = commonQueryFilters(searchTypes, profile)
 
-        queryFilters.add(DSLQuery.of { queryBuilder ->
-            queryBuilder.term { termBuilder ->
-                termBuilder
-                    .field(FilterFields.Deleted.jsonPath())
-                    .value(FieldValue.of(false))
-            }
-        })
-
-        if (searchTypes != null) {
-            queryFilters.add(
-                DSLQuery.of { queryBuilder ->
-                    queryBuilder.terms { termsBuilder ->
-                        termsBuilder
-                            .field(FilterFields.SearchType.jsonPath())
-                            .terms { termsQueryBuilder ->
-                                termsQueryBuilder
-                                    .value(searchTypes.map { FieldValue.of(it.name) })
-                            }
-                    }
-                })
-        }
-
-        filters?.openData?.value?.let { openDataValue ->
-            queryFilters.add(DSLQuery.of { queryBuilder ->
-                queryBuilder.term { termBuilder ->
-                    termBuilder
-                        .field(FilterFields.OpenData.jsonPath())
-                        .value(FieldValue.of(openDataValue))
-                }
-            })
-        }
-
-        filters?.accessRights?.value?.let { accessRightsValue ->
-            queryFilters.add(DSLQuery.of { queryBuilder ->
-                queryBuilder.term { termBuilder ->
-                    termBuilder
-                        .field(FilterFields.AccessRights.jsonPath())
-                        .value(FieldValue.of(accessRightsValue))
-                }
-            })
-        }
-
-        filters?.dataTheme?.value?.let { themes ->
-            themes.forEach { themeValue ->
-                queryFilters.add(DSLQuery.of { queryBuilder ->
-                    queryBuilder.term { termBuilder ->
-                        termBuilder
-                            .field(FilterFields.DataTheme.jsonPath())
-                            .value(FieldValue.of(themeValue))
-                    }
-                })
-            }
-        }
-
-        filters?.provenance?.value?.let { provenanceValue ->
-            queryFilters.add(DSLQuery.of { queryBuilder ->
-                queryBuilder.term { termBuilder ->
-                    termBuilder
-                        .field(FilterFields.Provenance.jsonPath())
-                        .value(FieldValue.of(provenanceValue))
-                }
-            })
-        }
-
-        filters?.spatial?.value?.let { spatialValues ->
-            spatialValues.forEach { spatialValue ->
-                queryFilters.add(DSLQuery.of { queryBuilder ->
-                    queryBuilder.term { termBuilder ->
-                        termBuilder
-                            .field(FilterFields.Spatial.jsonPath())
-                            .value(FieldValue.of(spatialValue))
-                    }
-                })
-            }
-        }
-
-        filters?.losTheme?.value?.let { losValues ->
-            losValues.forEach { losValue ->
-                queryFilters.add(DSLQuery.of { queryBuilder ->
-                    queryBuilder.term { termBuilder ->
-                        termBuilder
-                            .field(FilterFields.LosTheme.jsonPath())
-                            .value(FieldValue.of(losValue))
-                    }
-                })
-            }
-        }
-
-        filters?.orgPath?.value?.let { orgPathValue ->
-            queryFilters.add(DSLQuery.of { queryBuilder ->
-                queryBuilder.term { termBuilder ->
-                    termBuilder
-                        .field(FilterFields.OrgPath.jsonPath())
-                        .value(FieldValue.of(orgPathValue))
-                }
-            })
-        }
-
-        filters?.formats?.value?.forEach { formatValue ->
-            queryFilters.add(DSLQuery.of { queryBuilder ->
-                queryBuilder.match { matchBuilder ->
-                    matchBuilder
-                        .field(FilterFields.Format.jsonPath())
-                        .query(FieldValue.of(formatValue))
-                }
-            })
-        }
-
-        filters?.relations?.value?.let { relationValue ->
-            queryFilters.add(DSLQuery.of { queryBuilder ->
-                queryBuilder.term { termBuilder ->
-                    termBuilder
-                        .field(FilterFields.Relations.jsonPath())
-                        .value(FieldValue.of(relationValue))
-                }
-            })
-        }
-
-        filters?.lastXDays?.value?.let { daysAgo ->
-            queryFilters.add(DSLQuery.of { queryBuilder ->
-                queryBuilder.range { rangeBuilder ->
-                    rangeBuilder.term { termRangeBuilder ->
-                        termRangeBuilder.field(FilterFields.FirstHarvested.jsonPath())
-                            .gte("now-${daysAgo}d/d")
-                    }
-                }
-            })
-        }
-
-        filters?.lastXDaysModified?.value?.let { daysAgo ->
-            queryFilters.add(DSLQuery.of { queryBuilder ->
-                queryBuilder.range { rangeBuilder ->
-                    rangeBuilder.term { termRangeBuilder ->
-                        termRangeBuilder.field(FilterFields.Modified.jsonPath())
-                            .gte("now-${daysAgo}d/d")
-                    }
-                }
-            })
-        }
-
-        filters?.uri?.value?.let { uriValues ->
-            queryFilters.add(DSLQuery.of { queryBuilder ->
-                queryBuilder.terms { termsBuilder ->
-                    termsBuilder
-                        .field(FilterFields.Uri.jsonPath())
-                        .terms { fieldBuilder ->
-                            fieldBuilder.value(
-                                uriValues.map { uri -> FieldValue.of(uri) }
-                            )
-                        }
-                }
-            })
-        }
-
-        if (profile == SearchProfile.TRANSPORT) queryFilters.add(filtersForProfile(profile))
+        filters?.openData?.value?.let { queryFilters.add(termFilter(FilterFields.OpenData, it)) }
+        filters?.accessRights?.value?.let { queryFilters.add(termFilter(FilterFields.AccessRights, it)) }
+        filters?.dataTheme?.value?.forEach { queryFilters.add(termFilter(FilterFields.DataTheme, it)) }
+        filters?.provenance?.value?.let { queryFilters.add(termFilter(FilterFields.Provenance, it)) }
+        filters?.spatial?.value?.forEach { queryFilters.add(termFilter(FilterFields.Spatial, it)) }
+        filters?.losTheme?.value?.forEach { queryFilters.add(termFilter(FilterFields.LosTheme, it)) }
+        filters?.orgPath?.value?.let { queryFilters.add(termFilter(FilterFields.OrgPath, it)) }
+        filters?.formats?.value?.forEach { queryFilters.add(matchFilter(FilterFields.Format, it)) }
+        filters?.relations?.value?.let { queryFilters.add(termFilter(FilterFields.Relations, it)) }
+        filters?.lastXDays?.value?.let { queryFilters.add(rangeFromDaysAgoFilter(FilterFields.FirstHarvested, it)) }
+        filters?.lastXDaysModified?.value?.let { queryFilters.add(rangeFromDaysAgoFilter(FilterFields.Modified, it)) }
+        filters?.uri?.value?.let { queryFilters.add(termsFilter(FilterFields.Uri, it)) }
 
         return queryFilters
     }
 
-    private fun createNullFilters(
-        filters: SearchFilters?,
-    ): List<DSLQuery> {
+    /**
+     * Filters that ask for the *absence* of a field: when a filter is supplied with a `null`
+     * value, that's interpreted as "only match documents where this field is missing".
+     */
+    private fun createNullFilters(filters: SearchFilters?): List<DSLQuery> {
         val queryFilters = mutableListOf<DSLQuery>()
 
-        filters?.accessRights?.let { accessRights ->
-            if (accessRights.value == null) {
-                queryFilters.add(DSLQuery.of { queryBuilder ->
-                    queryBuilder.exists { existsBuilder ->
-                        existsBuilder.field(FilterFields.AccessRights.jsonPath())
-                    }
-                })
-            }
+        if (filters?.accessRights != null && filters.accessRights.value == null) {
+            queryFilters.add(existsFilter(FilterFields.AccessRights))
         }
 
-        filters?.orgPath?.let { orgPath ->
-            if (orgPath.value == null) {
-                queryFilters.add(DSLQuery.of { queryBuilder ->
-                    queryBuilder.exists { existsBuilder ->
-                        existsBuilder.field(FilterFields.OrgPath.jsonPath())
-                    }
-                })
-            }
+        if (filters?.orgPath != null && filters.orgPath.value == null) {
+            queryFilters.add(existsFilter(FilterFields.OrgPath))
         }
 
         return queryFilters
     }
 
-    private fun QueryFields.prefixMatchPaths(): List<String> =
+    private fun QueryFields.matchPaths(titleBoost: Int): List<String> =
         listOf(
-            if (title != false) languagePaths("title", 15)
-            else emptyList(),
-
-            if (description != false) languagePaths("description")
-            else emptyList(),
-
-            if (keyword != false) languagePaths("keyword", 5)
-            else emptyList(),
-
-            if (additionalTitles != false) languagePaths("additionalTitles", 10)
-            else emptyList(),
-
-            ).flatten()
-
-    private fun QueryFields.phraseMatchPaths(): List<String> =
-        listOf(
-            if (title != false) languagePaths("title", 30)
+            if (title != false) languagePaths("title", titleBoost)
             else emptyList(),
 
             if (description != false) languagePaths("description")
@@ -477,60 +254,5 @@ class SearchService(
             }
 }
 
-internal fun filtersForProfile(profile: SearchProfile) = when (profile) {
-    SearchProfile.TRANSPORT -> {
-        DSLQuery.of { queryBuilder ->
-            queryBuilder.term { termBuilder ->
-                termBuilder
-                    .field(FilterFields.TransportRelation.jsonPath())
-                    .value(FieldValue.of(true))
-            }
-        }
-    }
-}
-
-internal enum class FilterFields {
-    AccessRights, DataTheme, Deleted, FirstHarvested, Modified, Format, LosTheme,
-    OpenData, OrgPath, OrgId, Provenance, Relations, SearchType, Spatial, Uri,
-    TransportRelation
-}
-
-private const val MISSING_VALUE_AGGREGATE = "null"
-
-internal fun FilterFields.jsonPath(): String = when (this) {
-    FilterFields.AccessRights -> "accessRights.code.keyword"
-    FilterFields.DataTheme -> "dataTheme.code.keyword"
-    FilterFields.Deleted -> "metadata.deleted"
-    FilterFields.FirstHarvested -> "metadata.firstHarvested"
-    FilterFields.Modified -> "metadata.modified"
-    FilterFields.Format -> "fdkFormatPrefixed.keyword"
-    FilterFields.LosTheme -> "losTheme.losPaths.keyword"
-    FilterFields.OpenData -> "isOpenData"
-    FilterFields.OrgPath -> "organization.orgPath.keyword"
-    FilterFields.OrgId -> "organization.id.keyword"
-    FilterFields.Provenance -> "provenance.code.keyword"
-    FilterFields.Relations -> "relations.uri.keyword"
-    FilterFields.SearchType -> "searchType.keyword"
-    FilterFields.Spatial -> "spatial.prefLabel.nb.keyword"
-    FilterFields.Uri -> "uri.keyword"
-    FilterFields.TransportRelation -> "isRelatedToTransportportal"
-}
-
-private fun FilterFields.aggregationName(): String = when (this) {
-    FilterFields.AccessRights -> "accessRights"
-    FilterFields.DataTheme -> "dataTheme"
-    FilterFields.Deleted -> "deleted"
-    FilterFields.FirstHarvested -> "firstHarvested"
-    FilterFields.Modified -> "modified"
-    FilterFields.Format -> "format"
-    FilterFields.LosTheme -> "losTheme"
-    FilterFields.OpenData -> "openData"
-    FilterFields.OrgPath -> "orgPath"
-    FilterFields.OrgId -> "orgId"
-    FilterFields.Provenance -> "provenance"
-    FilterFields.Relations -> "relations"
-    FilterFields.SearchType -> "searchType"
-    FilterFields.Spatial -> "spatial"
-    FilterFields.Uri -> "uri"
-    FilterFields.TransportRelation -> "transportportal"
-}
+private const val PREFIX_MATCH_TITLE_BOOST = 15
+private const val PHRASE_MATCH_TITLE_BOOST = 30

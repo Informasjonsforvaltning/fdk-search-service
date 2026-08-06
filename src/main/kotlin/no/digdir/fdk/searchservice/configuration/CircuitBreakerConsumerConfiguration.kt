@@ -16,40 +16,28 @@ class CircuitBreakerConsumerConfiguration(
 
     init {
         LOGGER.debug("Configuring circuit breaker event listener")
-        circuitBreakerRegistry.circuitBreaker("rdf-parse").eventPublisher.onStateTransition { event: CircuitBreakerOnStateTransitionEvent ->
+        registerPauseResumeListener("rdf-parse", lagDescription = "rdf-parse-events lag will grow until it closes")
+        registerPauseResumeListener("remove", lagDescription = "dataset/removed-event lag will grow until it closes")
+    }
+
+    private fun registerPauseResumeListener(breakerName: String, lagDescription: String) {
+        circuitBreakerRegistry.circuitBreaker(breakerName).eventPublisher.onStateTransition { event: CircuitBreakerOnStateTransitionEvent ->
             when (event.stateTransition) {
                 StateTransition.CLOSED_TO_OPEN,
                 StateTransition.CLOSED_TO_FORCED_OPEN,
                 StateTransition.HALF_OPEN_TO_OPEN -> {
-                    LOGGER.warn("Circuit breaker 'rdf-parse' opened ({}); pausing Kafka listener - rdf-parse-events lag will grow until it closes", event.stateTransition)
-                    kafkaManager.pause("rdf-parse")
+                    LOGGER.warn(
+                        "Circuit breaker '{}' opened ({}); pausing Kafka listener - {}",
+                        breakerName, event.stateTransition, lagDescription
+                    )
+                    kafkaManager.pause(breakerName)
                 }
                 StateTransition.OPEN_TO_HALF_OPEN,
                 StateTransition.HALF_OPEN_TO_CLOSED,
                 StateTransition.FORCED_OPEN_TO_CLOSED,
                 StateTransition.FORCED_OPEN_TO_HALF_OPEN -> {
-                    LOGGER.warn("Circuit breaker 'rdf-parse' closed; resuming Kafka listener - consumption will resume")
-                    kafkaManager.resume("rdf-parse")
-                }
-
-                else -> throw IllegalStateException("Unknown transition state: " + event.stateTransition)
-            }
-        }
-
-        circuitBreakerRegistry.circuitBreaker("remove").eventPublisher.onStateTransition { event: CircuitBreakerOnStateTransitionEvent ->
-            when (event.stateTransition) {
-                StateTransition.CLOSED_TO_OPEN,
-                StateTransition.CLOSED_TO_FORCED_OPEN,
-                StateTransition.HALF_OPEN_TO_OPEN -> {
-                    LOGGER.warn("Circuit breaker 'remove' opened ({}); pausing Kafka listener - dataset/removed-event lag will grow until it closes", event.stateTransition)
-                    kafkaManager.pause("remove")
-                }
-                StateTransition.OPEN_TO_HALF_OPEN,
-                StateTransition.HALF_OPEN_TO_CLOSED,
-                StateTransition.FORCED_OPEN_TO_CLOSED,
-                StateTransition.FORCED_OPEN_TO_HALF_OPEN -> {
-                    LOGGER.warn("Circuit breaker 'remove' closed; resuming Kafka listener - consumption will resume")
-                    kafkaManager.resume("remove")
+                    LOGGER.warn("Circuit breaker '{}' closed; resuming Kafka listener - consumption will resume", breakerName)
+                    kafkaManager.resume(breakerName)
                 }
 
                 else -> throw IllegalStateException("Unknown transition state: " + event.stateTransition)

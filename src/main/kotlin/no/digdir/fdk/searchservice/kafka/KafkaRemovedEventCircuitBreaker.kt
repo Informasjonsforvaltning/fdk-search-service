@@ -28,14 +28,8 @@ class KafkaRemovedEventCircuitBreaker(
     private fun GenericRecord.getTypeSymbol(): String? =
         (get("type")?.toString())?.takeIf { it.isNotBlank() }
 
-    private fun GenericRecord.getHarvestRunId(): String? = safeGetString("harvestRunId")
-    private fun GenericRecord.getUri(): String? = safeGetString("uri")
-
     private fun GenericRecord.getFdkId(): String? =
         get("fdkId")?.toString()?.takeIf { it.isNotBlank() }
-
-    private fun GenericRecord.getTimestamp(): Long =
-        (get("timestamp") as? Number)?.toLong() ?: 0L
 
     private fun GenericRecord.getResourceTypeName(): String =
         when (getTypeSymbol()) {

@@ -54,10 +54,18 @@ fun requestApi(
     }
 }
 
-fun createEmptySearchFilters(): SearchFilters {
-    return SearchFilters(
-        null, null, null,
-        null, null, null, null, null,
-        null, null, null, null
+fun createEmptySearchFilters(): SearchFilters =
+    SearchFilters(
+        openData = null,
+        accessRights = null,
+        dataTheme = null,
+        spatial = null,
+        provenance = null,
+        losTheme = null,
+        orgPath = null,
+        formats = null,
+        relations = null,
+        lastXDays = null,
+        lastXDaysModified = null,
+        uri = null
     )
-}
