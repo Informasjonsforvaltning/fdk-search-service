@@ -20,27 +20,27 @@ import org.springframework.test.context.ContextConfiguration
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(
     properties = ["spring.profiles.active=test"],
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 )
 @ContextConfiguration(initializers = [ApiTestContext.Initializer::class])
 @Tag("integration")
 class DataServiceTest : ApiTestContext() {
     private val mapper = jacksonObjectMapper()
     private val searchFilters = createEmptySearchFilters()
-    private val SEARCH_QUERY = "test"
-    private val SEARCH_QUERY_NO_HITS = "nohits"
-    private val SEARCH_QUERIES_HIT_ALL_SEARCH_FIELDS =
+    private val searchQuery = "test"
+    private val searchQueryNoHits = "nohits"
+    private val searchQueriesHitAllSearchFields =
         listOf(
             "title",
             "description",
             "keyword",
         )
-    private val DATA_SERVICES_PATH = "/search/dataservices"
+    private val dataServicesPath = "/search/dataservices"
 
     @Test
     fun `search with at least one hit`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERY, searchFilters))
-        val response = requestApi(DATA_SERVICES_PATH, port, searchBody, POST)
+        val searchBody = mapper.writeValueAsString(SearchOperation(searchQuery, searchFilters))
+        val response = requestApi(dataServicesPath, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
         val result: SearchResult = mapper.readValue(response["body"] as String)
@@ -49,8 +49,8 @@ class DataServiceTest : ApiTestContext() {
 
     @Test
     fun `check searchType`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERY, searchFilters))
-        val response = requestApi(DATA_SERVICES_PATH, port, searchBody, POST)
+        val searchBody = mapper.writeValueAsString(SearchOperation(searchQuery, searchFilters))
+        val response = requestApi(dataServicesPath, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
         val result: SearchResult = mapper.readValue(response["body"] as String)
@@ -61,8 +61,8 @@ class DataServiceTest : ApiTestContext() {
 
     @Test
     fun `search with no hits`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(SEARCH_QUERY_NO_HITS, searchFilters))
-        val response = requestApi(DATA_SERVICES_PATH, port, searchBody, POST)
+        val searchBody = mapper.writeValueAsString(SearchOperation(searchQueryNoHits, searchFilters))
+        val response = requestApi(dataServicesPath, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
         val result: SearchResult = mapper.readValue(response["body"] as String)
@@ -72,7 +72,7 @@ class DataServiceTest : ApiTestContext() {
     @Test
     fun `search with empty query`() {
         val searchBody = mapper.writeValueAsString(SearchOperation("", searchFilters))
-        val response = requestApi(DATA_SERVICES_PATH, port, searchBody, POST)
+        val response = requestApi(dataServicesPath, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
         val result: SearchResult = mapper.readValue(response["body"] as String)
@@ -81,9 +81,9 @@ class DataServiceTest : ApiTestContext() {
 
     @Test
     fun `search and hit all search fields successfully`() {
-        SEARCH_QUERIES_HIT_ALL_SEARCH_FIELDS.forEach {
+        searchQueriesHitAllSearchFields.forEach {
             val searchBody = mapper.writeValueAsString(SearchOperation(it, searchFilters))
-            val response = requestApi(DATA_SERVICES_PATH, port, searchBody, POST)
+            val response = requestApi(dataServicesPath, port, searchBody, POST)
             Assertions.assertEquals(200, response["status"])
 
             val result: SearchResult = mapper.readValue(response["body"] as String)
@@ -93,8 +93,11 @@ class DataServiceTest : ApiTestContext() {
 
     @Test
     fun `data service with unknown format type is indexed as fdkFormat=UNKNOWN`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(filters = searchFilters.copy(formats = SearchFilter(value = listOf("UNKNOWN")))))
-        val response = requestApi(DATA_SERVICES_PATH, port, searchBody, POST)
+        val searchBody =
+            mapper.writeValueAsString(
+                SearchOperation(filters = searchFilters.copy(formats = SearchFilter(value = listOf("UNKNOWN")))),
+            )
+        val response = requestApi(dataServicesPath, port, searchBody, POST)
         Assertions.assertEquals(200, response["status"])
 
         val result: SearchResult = mapper.readValue(response["body"] as String)

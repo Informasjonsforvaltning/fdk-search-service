@@ -1,7 +1,10 @@
 package no.digdir.fdk.searchservice.mapper
 
-import no.digdir.fdk.searchservice.model.*
+import no.digdir.fdk.searchservice.model.Catalog
 import no.digdir.fdk.searchservice.model.Collection
+import no.digdir.fdk.searchservice.model.HarvestMetadata
+import no.digdir.fdk.searchservice.model.Metadata
+import no.digdir.fdk.searchservice.model.SearchType
 
 fun Collection.toCatalog() =
     Catalog(
@@ -9,16 +12,18 @@ fun Collection.toCatalog() =
         uri = uri,
         description = description,
         publisher = publisher,
-        title = label
+        title = label,
     )
 
-fun HarvestMetadata.toMetadata(timestamp: Long, deleted: Boolean = false) =
-    Metadata(
-        firstHarvested = firstHarvested,
-        modified = modified,
-        deleted = deleted,
-        timestamp = timestamp
-    )
+fun HarvestMetadata.toMetadata(
+    timestamp: Long,
+    deleted: Boolean = false,
+) = Metadata(
+    firstHarvested = firstHarvested,
+    modified = modified,
+    deleted = deleted,
+    timestamp = timestamp,
+)
 
 fun String.pathVariableToSearchType(): List<SearchType>? =
     when (this) {

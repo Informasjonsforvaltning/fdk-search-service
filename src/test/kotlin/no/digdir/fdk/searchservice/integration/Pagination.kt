@@ -19,19 +19,19 @@ import kotlin.test.Test
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(
     properties = ["spring.profiles.active=test"],
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 )
 @ContextConfiguration(initializers = [ApiTestContext.Initializer::class])
 @Tag("integration")
 class Pagination : ApiTestContext() {
-    private val SEARCH_PATH = "/search"
+    private val searchPath = "/search"
     private val mapper = jacksonObjectMapper()
-    private val SEARCH_FILTER = createEmptySearchFilters()
+    private val searchFilter = createEmptySearchFilters()
 
     @Test
     fun `SearchResult has more than one pages`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation("", SEARCH_FILTER))
-        val response = requestApi(SEARCH_PATH, port, searchBody, HttpMethod.POST)
+        val searchBody = mapper.writeValueAsString(SearchOperation("", searchFilter))
+        val response = requestApi(searchPath, port, searchBody, HttpMethod.POST)
         Assertions.assertEquals(200, response["status"])
 
         val result: SearchResult = mapper.readValue(response["body"] as String)
@@ -41,8 +41,8 @@ class Pagination : ApiTestContext() {
 
     @Test
     fun `get second search page`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation("", SEARCH_FILTER, pagination = Pagination(1, 10)))
-        val response = requestApi(SEARCH_PATH, port, searchBody, HttpMethod.POST)
+        val searchBody = mapper.writeValueAsString(SearchOperation("", searchFilter, pagination = Pagination(1, 10)))
+        val response = requestApi(searchPath, port, searchBody, HttpMethod.POST)
         Assertions.assertEquals(200, response["status"])
 
         val result: SearchResult = mapper.readValue(response["body"] as String)
@@ -51,8 +51,8 @@ class Pagination : ApiTestContext() {
 
     @Test
     fun `change the number of items per page`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation("", SEARCH_FILTER, pagination = Pagination(0, 1000)))
-        val response = requestApi(SEARCH_PATH, port, searchBody, HttpMethod.POST)
+        val searchBody = mapper.writeValueAsString(SearchOperation("", searchFilter, pagination = Pagination(0, 1000)))
+        val response = requestApi(searchPath, port, searchBody, HttpMethod.POST)
         Assertions.assertEquals(200, response["status"])
 
         val result: SearchResult = mapper.readValue(response["body"] as String)

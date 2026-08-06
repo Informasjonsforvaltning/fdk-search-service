@@ -7,12 +7,12 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertNotNull
 
 class SearchOperationDeserializationTest {
-
     private val mapper = jacksonObjectMapper()
 
     @Test
     fun `fields=null does not fail and falls back to defaults`() {
-        val json = """
+        val json =
+            """
             {
               "query": "test",
               "filters": null,
@@ -21,7 +21,7 @@ class SearchOperationDeserializationTest {
               "pagination": { "size": 10, "page": 0 },
               "profile": null
             }
-        """.trimIndent()
+            """.trimIndent()
 
         val op: SearchOperation = mapper.readValue(json, SearchOperation::class.java)
         // Deserialization should succeed and SearchService will fall back when fields is null.
@@ -31,11 +31,12 @@ class SearchOperationDeserializationTest {
 
     @Test
     fun `pagination nulls do not fail`() {
-        val json = """
+        val json =
+            """
             {
               "pagination": { "page": null, "size": null }
             }
-        """.trimIndent()
+            """.trimIndent()
 
         val op: SearchOperation = mapper.readValue(json, SearchOperation::class.java)
         assertNotNull(op.pagination)
@@ -46,13 +47,14 @@ class SearchOperationDeserializationTest {
 
     @Test
     fun `numeric filter value nulls do not fail`() {
-        val json = """
+        val json =
+            """
             {
               "filters": {
                 "lastXDays": { "value": null }
               }
             }
-        """.trimIndent()
+            """.trimIndent()
 
         val op: SearchOperation = mapper.readValue(json, SearchOperation::class.java)
         Assertions.assertNotNull(op.filters)
@@ -62,15 +64,15 @@ class SearchOperationDeserializationTest {
 
     @Test
     fun `fields title null does not fail`() {
-        val json = """
+        val json =
+            """
             {
               "fields": { "title": null }
             }
-        """.trimIndent()
+            """.trimIndent()
 
         val op: SearchOperation = mapper.readValue(json, SearchOperation::class.java)
         Assertions.assertNotNull(op.fields)
         Assertions.assertNull(op.fields?.title)
     }
 }
-

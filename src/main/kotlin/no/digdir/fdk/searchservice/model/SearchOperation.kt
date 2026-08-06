@@ -9,7 +9,7 @@ data class SearchOperation(
     val fields: QueryFields? = QueryFields(),
     val sort: SortField? = null,
     val pagination: Pagination? = Pagination(),
-    val profile: SearchProfile? = null
+    val profile: SearchProfile? = null,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -17,7 +17,7 @@ class QueryFields(
     val title: Boolean? = true,
     val description: Boolean? = true,
     val keyword: Boolean? = true,
-    val additionalTitles: Boolean? = true
+    val additionalTitles: Boolean? = true,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -33,7 +33,7 @@ data class SearchFilters(
     val relations: SearchFilter<String>?,
     val lastXDays: SearchFilter<Int>?,
     val lastXDaysModified: SearchFilter<Int>?,
-    val uri: SearchFilter<List<String>>?
+    val uri: SearchFilter<List<String>>?,
 )
 
 class SortField(
@@ -42,7 +42,7 @@ class SortField(
 )
 
 enum class SortFieldEnum {
-    FIRST_HARVESTED
+    FIRST_HARVESTED,
 }
 
 enum class SortDirection {
@@ -56,5 +56,5 @@ enum class SearchProfile {
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 class SearchFilter<T>(
-    val value: T?
+    val value: T?,
 )

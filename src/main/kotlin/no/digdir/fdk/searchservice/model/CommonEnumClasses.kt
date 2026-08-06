@@ -14,13 +14,17 @@ enum class SearchType {
 enum class MediaTypeOrExtentType {
     UNKNOWN,
     MEDIA_TYPE,
-    FILE_TYPE
+    FILE_TYPE,
 }
 
 enum class SpecializedType {
     DATASET_SERIES,
     LIFE_EVENT,
     BUSINESS_EVENT,
-    @JsonProperty("publicService") PUBLIC_SERVICE,
-    @JsonProperty("service") SERVICE,
+
+    @JsonProperty("publicService")
+    PUBLIC_SERVICE,
+
+    @JsonProperty("service")
+    SERVICE,
 }

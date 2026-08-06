@@ -9,24 +9,27 @@ import kotlin.test.assertEquals
 
 @Tag("unit")
 class MappingTest {
-
     @Test
     fun `hiddenTerm and altTerm relations to searchObject additionalTitle`() {
-        assertEquals(expectedAdditionalTitles, TEST_CONCEPT_HIT_ALL_FIELDS.toSearchObject(id = "1234", timestamp = 1727765537686).additionalTitles)
+        assertEquals(
+            expectedAdditionalTitles,
+            TEST_CONCEPT_HIT_ALL_FIELDS.toSearchObject(id = "1234", timestamp = 1727765537686).additionalTitles,
+        )
     }
 }
 
-val expectedAdditionalTitles = setOf(
-    LocalizedStrings(
-        "NB: Frarådet term",
-        "NN: Fråråda term",
-        "NO: Frarådet term",
-        "EN: Hidden term"
-    ),
-    LocalizedStrings(
-        "NB: Tillatt term",
-        "NN: Tillatt term",
-        "NO: Tillatt term",
-        "EN: Alternative term"
+val expectedAdditionalTitles =
+    setOf(
+        LocalizedStrings(
+            "NB: Frarådet term",
+            "NN: Fråråda term",
+            "NO: Frarådet term",
+            "EN: Hidden term",
+        ),
+        LocalizedStrings(
+            "NB: Tillatt term",
+            "NN: Tillatt term",
+            "NO: Tillatt term",
+            "EN: Alternative term",
+        ),
     )
-)

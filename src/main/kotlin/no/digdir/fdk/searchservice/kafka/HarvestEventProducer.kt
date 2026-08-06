@@ -1,8 +1,8 @@
 package no.digdir.fdk.searchservice.kafka
 
+import no.fdk.harvest.DataType
 import no.fdk.harvest.HarvestEvent
 import no.fdk.harvest.HarvestPhase
-import no.fdk.harvest.DataType
 import no.fdk.rdf.parse.RdfParseResourceType
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -12,7 +12,7 @@ import java.time.Instant
 
 @Component
 class HarvestEventProducer(
-    private val kafkaTemplate: KafkaTemplate<String, HarvestEvent>
+    private val kafkaTemplate: KafkaTemplate<String, HarvestEvent>,
 ) {
     fun produceSearchProcessingEvent(
         harvestRunId: String?,
@@ -21,7 +21,7 @@ class HarvestEventProducer(
         resourceUri: String?,
         startTime: Instant,
         endTime: Instant,
-        errorMessage: String? = null
+        errorMessage: String? = null,
     ) {
         if (harvestRunId == null) {
             LOGGER.debug("Skipping harvest event production - no harvestRunId provided for fdkId: $fdkId")
@@ -29,23 +29,25 @@ class HarvestEventProducer(
         }
 
         val dataType = mapResourceTypeToDataType(resourceType)
-        val harvestEvent = HarvestEvent.newBuilder()
-            .setPhase(HarvestPhase.SEARCH_PROCESSING)
-            .setRunId(harvestRunId)
-            .setDataType(dataType)
-            .setFdkId(fdkId)
-            .setResourceUri(resourceUri)
-            .setStartTime(startTime.toString())
-            .setEndTime(endTime.toString())
-            .setErrorMessage(errorMessage)
-            .setDataSourceId(null)
-            .setDataSourceUrl(null)
-            .setAcceptHeader(null)
-            .setChangedResourcesCount(null)
-            .setRemovedResourcesCount(null)
-            .setRemoveAll(null)
-            .setForced(false)
-            .build()
+        val harvestEvent =
+            HarvestEvent
+                .newBuilder()
+                .setPhase(HarvestPhase.SEARCH_PROCESSING)
+                .setRunId(harvestRunId)
+                .setDataType(dataType)
+                .setFdkId(fdkId)
+                .setResourceUri(resourceUri)
+                .setStartTime(startTime.toString())
+                .setEndTime(endTime.toString())
+                .setErrorMessage(errorMessage)
+                .setDataSourceId(null)
+                .setDataSourceUrl(null)
+                .setAcceptHeader(null)
+                .setChangedResourcesCount(null)
+                .setRemovedResourcesCount(null)
+                .setRemoveAll(null)
+                .setForced(false)
+                .build()
 
         try {
             kafkaTemplate.send("harvest-events", harvestRunId, harvestEvent)
@@ -56,8 +58,8 @@ class HarvestEventProducer(
         }
     }
 
-    private fun mapResourceTypeToDataType(resourceType: RdfParseResourceType): DataType {
-        return when (resourceType) {
+    private fun mapResourceTypeToDataType(resourceType: RdfParseResourceType): DataType =
+        when (resourceType) {
             RdfParseResourceType.DATASET -> DataType.dataset
             RdfParseResourceType.DATA_SERVICE -> DataType.dataservice
             RdfParseResourceType.CONCEPT -> DataType.concept
@@ -65,7 +67,6 @@ class HarvestEventProducer(
             RdfParseResourceType.SERVICE -> DataType.publicService
             RdfParseResourceType.EVENT -> DataType.event
         }
-    }
 
     companion object {
         private val LOGGER: Logger = LoggerFactory.getLogger(HarvestEventProducer::class.java)

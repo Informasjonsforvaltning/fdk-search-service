@@ -10,21 +10,22 @@ import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Component
 import java.time.Duration
 
-
 @Component
 class KafkaRdfParseEventConsumer(
     private val searchRepository: SearchRepository,
-    private val kafkaRdfParseEventCircuitBreaker: KafkaRdfParseEventCircuitBreaker
+    private val kafkaRdfParseEventCircuitBreaker: KafkaRdfParseEventCircuitBreaker,
 ) {
-
     @KafkaListener(
         topics = ["rdf-parse-events"],
         groupId = "fdk-search-service",
         containerFactory = "kafkaListenerContainerFactory",
         concurrency = "4",
-        id = "rdf-parse"
+        id = "rdf-parse",
     )
-    fun listen(record: ConsumerRecord<String, GenericRecord>, ack: Acknowledgment) {
+    fun listen(
+        record: ConsumerRecord<String, GenericRecord>,
+        ack: Acknowledgment,
+    ) {
         try {
             kafkaRdfParseEventCircuitBreaker.process(record.value(), searchRepository)
             ack.acknowledge()

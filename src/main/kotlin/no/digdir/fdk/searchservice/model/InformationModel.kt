@@ -3,7 +3,6 @@ package no.digdir.fdk.searchservice.model
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import org.springframework.data.annotation.Id
 
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class InformationModel(
     val uri: String?,
@@ -20,5 +19,5 @@ data class InformationModel(
     val isPartOf: String?,
     val isReplacedBy: String?,
     val replaces: String?,
-    val subjects: List<String>?
+    val subjects: List<String>?,
 )

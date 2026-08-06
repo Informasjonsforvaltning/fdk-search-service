@@ -15,9 +15,10 @@ import org.springframework.kafka.listener.ContainerProperties
 @EnableKafka
 @Configuration
 class KafkaConsumerConfig {
-
     @Bean
-    fun kafkaListenerContainerFactory(consumerFactory: ConsumerFactory<String, GenericRecord>): ConcurrentKafkaListenerContainerFactory<String, GenericRecord> {
+    fun kafkaListenerContainerFactory(
+        consumerFactory: ConsumerFactory<String, GenericRecord>,
+    ): ConcurrentKafkaListenerContainerFactory<String, GenericRecord> {
         val factory = ConcurrentKafkaListenerContainerFactory<String, GenericRecord>()
         factory.setConsumerFactory(consumerFactory)
         factory.containerProperties.ackMode = ContainerProperties.AckMode.MANUAL_IMMEDIATE

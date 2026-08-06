@@ -25,5 +25,5 @@ data class Dataset(
     val subject: List<ObjectWithURI>?,
     val specializedType: String?,
     val isAuthoritative: Boolean?,
-    val isRelatedToTransportportal: Boolean?
+    val isRelatedToTransportportal: Boolean?,
 )
