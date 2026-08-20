@@ -23,18 +23,16 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping(value = ["/suggestions"], produces = ["application/json"])
 @Tag(name = "Suggestions", description = "API for getting search suggestions and autocomplete results")
-class SuggestionsController(
-    private val suggestionService: SuggestionService,
-) {
+class SuggestionsController(private val suggestionService: SuggestionService) {
     @GetMapping
     @Operation(
         summary = "Get search suggestions for all resources",
         description =
-            "Retrieve search suggestions (autocomplete) across all resource types in the data catalog. " +
-                "This endpoint is useful for implementing autocomplete functionality in search interfaces. " +
-                "The suggestions are based on matching titles, descriptions, and other metadata fields. " +
-                "You can optionally filter suggestions by search profile (e.g., TRANSPORT for transport-specific suggestions) " +
-                "or organization (limit suggestions to resources from a specific organization).",
+        "Retrieve search suggestions (autocomplete) across all resource types in the data catalog. " +
+            "This endpoint is useful for implementing autocomplete functionality in search interfaces. " +
+            "The suggestions are based on matching titles, descriptions, and other metadata fields. " +
+            "You can optionally filter suggestions by search profile (e.g., TRANSPORT for transport-specific suggestions) " +
+            "or organization (limit suggestions to resources from a specific organization).",
     )
     @ApiResponses(
         value = [
@@ -66,24 +64,23 @@ class SuggestionsController(
             required = false,
         )
         @RequestParam(value = "org") org: String?,
-    ): ResponseEntity<SuggestionsResult> =
-        ResponseEntity(
-            suggestionService.suggestResources(query, null, searchProfile, org),
-            HttpStatus.OK,
-        )
+    ): ResponseEntity<SuggestionsResult> = ResponseEntity(
+        suggestionService.suggestResources(query, null, searchProfile, org),
+        HttpStatus.OK,
+    )
 
     @GetMapping(value = ["/{searchTypes}"])
     @Operation(
         summary = "Get search suggestions for specific resource types",
         description =
-            "Retrieve search suggestions (autocomplete) for specific resource types. " +
-                "This endpoint allows you to limit suggestions to one or more resource types. " +
-                "Available resource types: concepts (controlled vocabularies and taxonomies), " +
-                "datasets (structured data collections), dataservices/data-services (APIs and data services), " +
-                "informationmodels/information-models (data schemas and specifications), services (service descriptions), " +
-                "events (event information), public-services-and-events, and services-and-events. " +
-                "The suggestions are based on matching titles, descriptions, and other metadata fields. " +
-                "You can optionally filter suggestions by search profile and organization.",
+        "Retrieve search suggestions (autocomplete) for specific resource types. " +
+            "This endpoint allows you to limit suggestions to one or more resource types. " +
+            "Available resource types: concepts (controlled vocabularies and taxonomies), " +
+            "datasets (structured data collections), dataservices/data-services (APIs and data services), " +
+            "informationmodels/information-models (data schemas and specifications), services (service descriptions), " +
+            "events (event information), public-services-and-events, and services-and-events. " +
+            "The suggestions are based on matching titles, descriptions, and other metadata fields. " +
+            "You can optionally filter suggestions by search profile and organization.",
     )
     @ApiResponses(
         value = [
@@ -105,9 +102,9 @@ class SuggestionsController(
     fun suggestionsForSpecificResource(
         @Parameter(
             description =
-                "Resource type(s) to get suggestions for. Available values: concepts, datasets, dataservices, " +
-                    "data-services, informationmodels, information-models, services, events, " +
-                    "public-services-and-events, services-and-events",
+            "Resource type(s) to get suggestions for. Available values: concepts, datasets, dataservices, " +
+                "data-services, informationmodels, information-models, services, events, " +
+                "public-services-and-events, services-and-events",
             required = true,
             `in` = ParameterIn.PATH,
             example = "datasets",

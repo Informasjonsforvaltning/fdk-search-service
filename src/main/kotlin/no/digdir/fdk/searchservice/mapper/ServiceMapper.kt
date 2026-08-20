@@ -9,11 +9,7 @@ import no.digdir.fdk.searchservice.model.Service
 import no.digdir.fdk.searchservice.model.ServiceOrganization
 import no.digdir.fdk.searchservice.model.SpecializedType
 
-fun Service.toSearchObject(
-    id: String,
-    timestamp: Long,
-    deleted: Boolean = false,
-) = SearchObject(
+fun Service.toSearchObject(id: String, timestamp: Long, deleted: Boolean = false) = SearchObject(
     id = id,
     uri = uri,
     accessRights = null,
@@ -37,21 +33,19 @@ fun Service.toSearchObject(
     additionalTitles = null,
 )
 
-private fun Service.getOrganization() =
-    if (hasCompetentAuthority.isNullOrEmpty()) {
-        ownedBy?.get(0)
-    } else {
-        hasCompetentAuthority[0]
-    }
+private fun Service.getOrganization() = if (hasCompetentAuthority.isNullOrEmpty()) {
+    ownedBy?.get(0)
+} else {
+    hasCompetentAuthority[0]
+}
 
-private fun ServiceOrganization.toSearchOrg(): Organization =
-    Organization(
-        id = identifier,
-        uri = uri,
-        orgPath = orgPath,
-        name = title?.nb ?: prefLabel?.nb,
-        prefLabel = prefLabel ?: title,
-    )
+private fun ServiceOrganization.toSearchOrg(): Organization = Organization(
+    id = identifier,
+    uri = uri,
+    orgPath = orgPath,
+    name = title?.nb ?: prefLabel?.nb,
+    prefLabel = prefLabel ?: title,
+)
 
 fun Service.getRelations(): Set<Relation> {
     val relations: MutableSet<Relation> = mutableSetOf()
@@ -83,9 +77,8 @@ fun Service.getRelations(): Set<Relation> {
     return relations
 }
 
-fun Service.getSpecializedType(): SpecializedType? =
-    when (specializedType) {
-        "publicService" -> SpecializedType.PUBLIC_SERVICE
-        "service" -> SpecializedType.SERVICE
-        else -> null
-    }
+fun Service.getSpecializedType(): SpecializedType? = when (specializedType) {
+    "publicService" -> SpecializedType.PUBLIC_SERVICE
+    "service" -> SpecializedType.SERVICE
+    else -> null
+}

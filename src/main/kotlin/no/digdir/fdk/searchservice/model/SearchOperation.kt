@@ -36,10 +36,7 @@ data class SearchFilters(
     val uri: SearchFilter<List<String>>?,
 )
 
-class SortField(
-    val field: SortFieldEnum,
-    val direction: SortDirection,
-)
+class SortField(val field: SortFieldEnum, val direction: SortDirection)
 
 enum class SortFieldEnum {
     FIRST_HARVESTED,
@@ -55,6 +52,4 @@ enum class SearchProfile {
 }
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-class SearchFilter<T>(
-    val value: T?,
-)
+class SearchFilter<T>(val value: T?)

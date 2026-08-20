@@ -11,9 +11,7 @@ import org.springframework.stereotype.Component
 import java.time.Instant
 
 @Component
-class HarvestEventProducer(
-    private val kafkaTemplate: KafkaTemplate<String, HarvestEvent>,
-) {
+class HarvestEventProducer(private val kafkaTemplate: KafkaTemplate<String, HarvestEvent>) {
     fun produceSearchProcessingEvent(
         harvestRunId: String?,
         resourceType: RdfParseResourceType,
@@ -58,15 +56,14 @@ class HarvestEventProducer(
         }
     }
 
-    private fun mapResourceTypeToDataType(resourceType: RdfParseResourceType): DataType =
-        when (resourceType) {
-            RdfParseResourceType.DATASET -> DataType.dataset
-            RdfParseResourceType.DATA_SERVICE -> DataType.dataservice
-            RdfParseResourceType.CONCEPT -> DataType.concept
-            RdfParseResourceType.INFORMATION_MODEL -> DataType.informationmodel
-            RdfParseResourceType.SERVICE -> DataType.publicService
-            RdfParseResourceType.EVENT -> DataType.event
-        }
+    private fun mapResourceTypeToDataType(resourceType: RdfParseResourceType): DataType = when (resourceType) {
+        RdfParseResourceType.DATASET -> DataType.dataset
+        RdfParseResourceType.DATA_SERVICE -> DataType.dataservice
+        RdfParseResourceType.CONCEPT -> DataType.concept
+        RdfParseResourceType.INFORMATION_MODEL -> DataType.informationmodel
+        RdfParseResourceType.SERVICE -> DataType.publicService
+        RdfParseResourceType.EVENT -> DataType.event
+    }
 
     companion object {
         private val LOGGER: Logger = LoggerFactory.getLogger(HarvestEventProducer::class.java)

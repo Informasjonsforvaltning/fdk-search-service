@@ -15,9 +15,7 @@ import kotlin.time.toJavaDuration
 import co.elastic.clients.elasticsearch._types.query_dsl.Query as DSLQuery
 
 @Service
-class SuggestionService(
-    private val elasticsearchOperations: ElasticsearchOperations,
-) {
+class SuggestionService(private val elasticsearchOperations: ElasticsearchOperations) {
     private fun suggestResource(
         query: String,
         searchType: List<SearchType>?,
@@ -26,12 +24,7 @@ class SuggestionService(
     ): SearchHits<SearchObject> =
         elasticsearchOperations.search(suggestionQuery(query, searchType, profile, orgId), SearchObject::class.java)
 
-    fun suggestResources(
-        query: String,
-        searchType: List<SearchType>?,
-        profile: SearchProfile?,
-        orgId: String?,
-    ): SuggestionsResult {
+    fun suggestResources(query: String, searchType: List<SearchType>?, profile: SearchProfile?, orgId: String?): SuggestionsResult {
         val (result, timeElapsed) =
             kotlin.time.measureTimedValue {
                 SuggestionsResult(
@@ -45,22 +38,16 @@ class SuggestionService(
         return result
     }
 
-    private fun SearchObject.toSuggestion(): Suggestion =
-        Suggestion(
-            id = id,
-            title = title,
-            description = description,
-            uri = uri,
-            organization = organization,
-            searchType = searchType,
-        )
+    private fun SearchObject.toSuggestion(): Suggestion = Suggestion(
+        id = id,
+        title = title,
+        description = description,
+        uri = uri,
+        organization = organization,
+        searchType = searchType,
+    )
 
-    private fun suggestionQuery(
-        query: String,
-        searchTypes: List<SearchType>?,
-        profile: SearchProfile?,
-        orgId: String?,
-    ): Query {
+    private fun suggestionQuery(query: String, searchTypes: List<SearchType>?, profile: SearchProfile?, orgId: String?): Query {
         val builder = NativeQuery.builder()
 
         builder.withQuery { queryBuilder ->
@@ -90,11 +77,7 @@ class SuggestionService(
         return builder.build()
     }
 
-    private fun createQueryFilters(
-        searchTypes: List<SearchType>?,
-        profile: SearchProfile?,
-        orgId: String?,
-    ): List<DSLQuery> {
+    private fun createQueryFilters(searchTypes: List<SearchType>?, profile: SearchProfile?, orgId: String?): List<DSLQuery> {
         val queryFilters = commonQueryFilters(searchTypes, profile)
 
         orgId?.let { queryFilters.add(termFilter(FilterFields.OrgId, it)) }

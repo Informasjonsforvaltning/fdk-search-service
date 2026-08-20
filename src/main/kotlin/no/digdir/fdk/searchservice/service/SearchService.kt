@@ -38,13 +38,8 @@ import kotlin.time.toJavaDuration
 import co.elastic.clients.elasticsearch._types.query_dsl.Query as DSLQuery
 
 @Component
-class SearchService(
-    private val elasticSearchOperations: ElasticsearchOperations,
-) {
-    fun search(
-        search: SearchOperation,
-        searchTypes: List<SearchType>?,
-    ): SearchResult {
+class SearchService(private val elasticSearchOperations: ElasticsearchOperations) {
+    fun search(search: SearchOperation, searchTypes: List<SearchType>?): SearchResult {
         val (result, timeElapsed) =
             measureTimedValue {
                 elasticSearchOperations
@@ -147,22 +142,16 @@ class SearchService(
         }
     }
 
-    private fun SortField.sortField(): String =
-        when (field) {
-            SortFieldEnum.FIRST_HARVESTED -> FilterFields.FirstHarvested.jsonPath()
-        }
+    private fun SortField.sortField(): String = when (field) {
+        SortFieldEnum.FIRST_HARVESTED -> FilterFields.FirstHarvested.jsonPath()
+    }
 
-    private fun SortField.sortDirection(): SortOrder =
-        when (direction) {
-            SortDirection.ASC -> SortOrder.Asc
-            else -> SortOrder.Desc
-        }
+    private fun SortField.sortDirection(): SortOrder = when (direction) {
+        SortDirection.ASC -> SortOrder.Asc
+        else -> SortOrder.Desc
+    }
 
-    private fun createQueryFilters(
-        filters: SearchFilters?,
-        searchTypes: List<SearchType>?,
-        profile: SearchProfile?,
-    ): List<DSLQuery> {
+    private fun createQueryFilters(filters: SearchFilters?, searchTypes: List<SearchType>?, profile: SearchProfile?): List<DSLQuery> {
         val queryFilters = commonQueryFilters(searchTypes, profile)
 
         filters?.openData?.value?.let { queryFilters.add(termFilter(FilterFields.OpenData, it)) }
@@ -199,69 +188,61 @@ class SearchService(
         return queryFilters
     }
 
-    private fun QueryFields.matchPaths(titleBoost: Int): List<String> =
-        listOf(
-            if (title != false) {
-                languagePaths("title", titleBoost)
-            } else {
-                emptyList()
-            },
-            if (description != false) {
-                languagePaths("description")
-            } else {
-                emptyList()
-            },
-            if (keyword != false) {
-                languagePaths("keyword", 5)
-            } else {
-                emptyList()
-            },
-            if (additionalTitles != false) {
-                languagePaths("additionalTitles", 10)
-            } else {
-                emptyList()
-            },
-        ).flatten()
+    private fun QueryFields.matchPaths(titleBoost: Int): List<String> = listOf(
+        if (title != false) {
+            languagePaths("title", titleBoost)
+        } else {
+            emptyList()
+        },
+        if (description != false) {
+            languagePaths("description")
+        } else {
+            emptyList()
+        },
+        if (keyword != false) {
+            languagePaths("keyword", 5)
+        } else {
+            emptyList()
+        },
+        if (additionalTitles != false) {
+            languagePaths("additionalTitles", 10)
+        } else {
+            emptyList()
+        },
+    ).flatten()
 
-    private fun languagePaths(
-        basePath: String,
-        boost: Int? = null,
-    ): List<String> =
-        listOf(
-            "$basePath.nb${if (boost != null) "^$boost" else ""}",
-            "$basePath.nn${if (boost != null) "^$boost" else ""}",
-            "$basePath.no${if (boost != null) "^$boost" else ""}",
-            "$basePath.en${if (boost != null) "^$boost" else ""}",
+    private fun languagePaths(basePath: String, boost: Int? = null): List<String> = listOf(
+        "$basePath.nb${if (boost != null) "^$boost" else ""}",
+        "$basePath.nn${if (boost != null) "^$boost" else ""}",
+        "$basePath.no${if (boost != null) "^$boost" else ""}",
+        "$basePath.en${if (boost != null) "^$boost" else ""}",
+    )
+
+    private fun StringTermsAggregate.toBucketCounts(): List<BucketCount> = buckets().array().map {
+        BucketCount(
+            key = it.key().stringValue(),
+            count = it.docCount(),
         )
+    }
 
-    private fun StringTermsAggregate.toBucketCounts(): List<BucketCount> =
-        buckets().array().map {
-            BucketCount(
-                key = it.key().stringValue(),
-                count = it.docCount(),
-            )
-        }
+    private fun LongTermsAggregate.toOpenDataCounts(): List<BucketCount> = buckets().array().map {
+        BucketCount(
+            key = it.keyAsString() ?: "null",
+            count = it.docCount(),
+        )
+    }
 
-    private fun LongTermsAggregate.toOpenDataCounts(): List<BucketCount> =
-        buckets().array().map {
-            BucketCount(
-                key = it.keyAsString() ?: "null",
-                count = it.docCount(),
-            )
-        }
-
-    private fun Aggregate.toBucketCounts(aggregateName: String): List<BucketCount> =
-        when (aggregateName) {
-            FilterFields.AccessRights.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
-            FilterFields.DataTheme.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
-            FilterFields.Format.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
-            FilterFields.LosTheme.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
-            FilterFields.OrgPath.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
-            FilterFields.OpenData.aggregationName() -> (_get() as LongTermsAggregate).toOpenDataCounts()
-            FilterFields.Provenance.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
-            FilterFields.Spatial.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
-            else -> emptyList()
-        }
+    private fun Aggregate.toBucketCounts(aggregateName: String): List<BucketCount> = when (aggregateName) {
+        FilterFields.AccessRights.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
+        FilterFields.DataTheme.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
+        FilterFields.Format.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
+        FilterFields.LosTheme.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
+        FilterFields.OrgPath.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
+        FilterFields.OpenData.aggregationName() -> (_get() as LongTermsAggregate).toOpenDataCounts()
+        FilterFields.Provenance.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
+        FilterFields.Spatial.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
+        else -> emptyList()
+    }
 
     private fun AggregationsContainer<*>.toAggregationCounts(): Map<String, List<BucketCount>> {
         val aggregations = aggregations() as List<ElasticsearchAggregation>
@@ -270,22 +251,21 @@ class SearchService(
             .associate { it.name to it.aggregate.toBucketCounts(it.name) }
     }
 
-    private fun SearchHits<SearchObject>.toSearchResult(pagination: Pagination): SearchResult =
-        map { it.content }
-            .toList()
-            .let {
-                SearchResult(
-                    hits = it,
-                    aggregations = aggregations?.toAggregationCounts() ?: emptyMap(),
-                    page =
-                        PageMeta(
-                            currentPage = pagination.getPage(),
-                            size = it.size,
-                            totalElements = totalHits,
-                            totalPages = ceil(totalHits.toDouble() / pagination.getSize()).roundToLong(),
-                        ),
-                )
-            }
+    private fun SearchHits<SearchObject>.toSearchResult(pagination: Pagination): SearchResult = map { it.content }
+        .toList()
+        .let {
+            SearchResult(
+                hits = it,
+                aggregations = aggregations?.toAggregationCounts() ?: emptyMap(),
+                page =
+                PageMeta(
+                    currentPage = pagination.getPage(),
+                    size = it.size,
+                    totalElements = totalHits,
+                    totalPages = ceil(totalHits.toDouble() / pagination.getSize()).roundToLong(),
+                ),
+            )
+        }
 }
 
 private const val PREFIX_MATCH_TITLE_BOOST = 15
