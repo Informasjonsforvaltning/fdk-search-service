@@ -6,11 +6,7 @@ import no.digdir.fdk.searchservice.model.RelationType
 import no.digdir.fdk.searchservice.model.SearchObject
 import no.digdir.fdk.searchservice.model.SearchType
 
-fun Concept.toSearchObject(
-    id: String,
-    timestamp: Long,
-    deleted: Boolean = false,
-) = SearchObject(
+fun Concept.toSearchObject(id: String, timestamp: Long, deleted: Boolean = false) = SearchObject(
     id = id,
     // identifier from concepts are the resource uri
     uri = identifier,

@@ -29,78 +29,75 @@ class KafkaRemovedEventCircuitBreaker(
 
     private fun GenericRecord.getFdkId(): String? = get("fdkId")?.toString()?.takeIf { it.isNotBlank() }
 
-    private fun GenericRecord.getResourceTypeName(): String =
-        when (getTypeSymbol()) {
-            "DATASET_REMOVED", "DATASET_HARVESTED", "DATASET_REASONED" -> {
-                "dataset"
-            }
-
-            "DATA_SERVICE_REMOVED", "DATA_SERVICE_HARVESTED", "DATA_SERVICE_REASONED" -> {
-                "data-service"
-            }
-
-            "CONCEPT_REMOVED", "CONCEPT_HARVESTED", "CONCEPT_REASONED" -> {
-                "concept"
-            }
-
-            "INFORMATION_MODEL_REMOVED", "INFORMATION_MODEL_HARVESTED", "INFORMATION_MODEL_REASONED" -> {
-                "information-model"
-            }
-
-            "SERVICE_REMOVED", "SERVICE_HARVESTED", "SERVICE_REASONED" -> {
-                "service"
-            }
-
-            "EVENT_REMOVED", "EVENT_HARVESTED", "EVENT_REASONED" -> {
-                "event"
-            }
-
-            else -> {
-                "invalid-type"
-            }
+    private fun GenericRecord.getResourceTypeName(): String = when (getTypeSymbol()) {
+        "DATASET_REMOVED", "DATASET_HARVESTED", "DATASET_REASONED" -> {
+            "dataset"
         }
 
-    private fun GenericRecord.getRdfParseResourceType(): RdfParseResourceType? =
-        when (getTypeSymbol()) {
-            "DATASET_REMOVED", "DATASET_HARVESTED", "DATASET_REASONED" -> {
-                RdfParseResourceType.DATASET
-            }
-
-            "DATA_SERVICE_REMOVED", "DATA_SERVICE_HARVESTED", "DATA_SERVICE_REASONED" -> {
-                RdfParseResourceType.DATA_SERVICE
-            }
-
-            "CONCEPT_REMOVED", "CONCEPT_HARVESTED", "CONCEPT_REASONED" -> {
-                RdfParseResourceType.CONCEPT
-            }
-
-            "INFORMATION_MODEL_REMOVED", "INFORMATION_MODEL_HARVESTED", "INFORMATION_MODEL_REASONED" -> {
-                RdfParseResourceType.INFORMATION_MODEL
-            }
-
-            "SERVICE_REMOVED", "SERVICE_HARVESTED", "SERVICE_REASONED" -> {
-                RdfParseResourceType.SERVICE
-            }
-
-            "EVENT_REMOVED", "EVENT_HARVESTED", "EVENT_REASONED" -> {
-                RdfParseResourceType.EVENT
-            }
-
-            else -> {
-                null
-            }
+        "DATA_SERVICE_REMOVED", "DATA_SERVICE_HARVESTED", "DATA_SERVICE_REASONED" -> {
+            "data-service"
         }
 
-    private fun GenericRecord.getSearchType(): SearchType? =
-        when (getTypeSymbol()) {
-            "DATASET_REMOVED" -> SearchType.DATASET
-            "DATA_SERVICE_REMOVED" -> SearchType.DATA_SERVICE
-            "CONCEPT_REMOVED" -> SearchType.CONCEPT
-            "INFORMATION_MODEL_REMOVED" -> SearchType.INFORMATION_MODEL
-            "SERVICE_REMOVED" -> SearchType.SERVICE
-            "EVENT_REMOVED" -> SearchType.EVENT
-            else -> null
+        "CONCEPT_REMOVED", "CONCEPT_HARVESTED", "CONCEPT_REASONED" -> {
+            "concept"
         }
+
+        "INFORMATION_MODEL_REMOVED", "INFORMATION_MODEL_HARVESTED", "INFORMATION_MODEL_REASONED" -> {
+            "information-model"
+        }
+
+        "SERVICE_REMOVED", "SERVICE_HARVESTED", "SERVICE_REASONED" -> {
+            "service"
+        }
+
+        "EVENT_REMOVED", "EVENT_HARVESTED", "EVENT_REASONED" -> {
+            "event"
+        }
+
+        else -> {
+            "invalid-type"
+        }
+    }
+
+    private fun GenericRecord.getRdfParseResourceType(): RdfParseResourceType? = when (getTypeSymbol()) {
+        "DATASET_REMOVED", "DATASET_HARVESTED", "DATASET_REASONED" -> {
+            RdfParseResourceType.DATASET
+        }
+
+        "DATA_SERVICE_REMOVED", "DATA_SERVICE_HARVESTED", "DATA_SERVICE_REASONED" -> {
+            RdfParseResourceType.DATA_SERVICE
+        }
+
+        "CONCEPT_REMOVED", "CONCEPT_HARVESTED", "CONCEPT_REASONED" -> {
+            RdfParseResourceType.CONCEPT
+        }
+
+        "INFORMATION_MODEL_REMOVED", "INFORMATION_MODEL_HARVESTED", "INFORMATION_MODEL_REASONED" -> {
+            RdfParseResourceType.INFORMATION_MODEL
+        }
+
+        "SERVICE_REMOVED", "SERVICE_HARVESTED", "SERVICE_REASONED" -> {
+            RdfParseResourceType.SERVICE
+        }
+
+        "EVENT_REMOVED", "EVENT_HARVESTED", "EVENT_REASONED" -> {
+            RdfParseResourceType.EVENT
+        }
+
+        else -> {
+            null
+        }
+    }
+
+    private fun GenericRecord.getSearchType(): SearchType? = when (getTypeSymbol()) {
+        "DATASET_REMOVED" -> SearchType.DATASET
+        "DATA_SERVICE_REMOVED" -> SearchType.DATA_SERVICE
+        "CONCEPT_REMOVED" -> SearchType.CONCEPT
+        "INFORMATION_MODEL_REMOVED" -> SearchType.INFORMATION_MODEL
+        "SERVICE_REMOVED" -> SearchType.SERVICE
+        "EVENT_REMOVED" -> SearchType.EVENT
+        else -> null
+    }
 
     fun process(record: ConsumerRecord<String, GenericRecord>) {
         circuitBreaker.executeRunnable {
@@ -190,11 +187,7 @@ class KafkaRemovedEventCircuitBreaker(
         }
     }
 
-    private fun SearchRepository.markDeletedIfTimestampIsNewer(
-        id: String,
-        timestamp: Long,
-        searchType: SearchType,
-    ) {
+    private fun SearchRepository.markDeletedIfTimestampIsNewer(id: String, timestamp: Long, searchType: SearchType) {
         findByIdOrNull(id)?.let {
             if (it.metadata?.timestamp!! < timestamp) {
                 save(it.copy(metadata = it.metadata.copy(deleted = true, timestamp = timestamp)))
@@ -203,12 +196,12 @@ class KafkaRemovedEventCircuitBreaker(
             SearchObject(
                 id = id,
                 metadata =
-                    Metadata(
-                        firstHarvested = null,
-                        modified = null,
-                        deleted = true,
-                        timestamp = timestamp,
-                    ),
+                Metadata(
+                    firstHarvested = null,
+                    modified = null,
+                    deleted = true,
+                    timestamp = timestamp,
+                ),
                 searchType = searchType,
                 uri = null,
                 accessRights = null,

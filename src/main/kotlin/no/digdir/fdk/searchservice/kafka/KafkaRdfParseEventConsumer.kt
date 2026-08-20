@@ -22,10 +22,7 @@ class KafkaRdfParseEventConsumer(
         concurrency = "4",
         id = "rdf-parse",
     )
-    fun listen(
-        record: ConsumerRecord<String, GenericRecord>,
-        ack: Acknowledgment,
-    ) {
+    fun listen(record: ConsumerRecord<String, GenericRecord>, ack: Acknowledgment) {
         try {
             kafkaRdfParseEventCircuitBreaker.process(record.value(), searchRepository)
             ack.acknowledge()

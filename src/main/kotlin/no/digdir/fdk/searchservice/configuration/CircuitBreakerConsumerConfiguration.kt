@@ -19,10 +19,7 @@ class CircuitBreakerConsumerConfiguration(
         registerPauseResumeListener("remove", lagDescription = "dataset/removed-event lag will grow until it closes")
     }
 
-    private fun registerPauseResumeListener(
-        breakerName: String,
-        lagDescription: String,
-    ) {
+    private fun registerPauseResumeListener(breakerName: String, lagDescription: String) {
         circuitBreakerRegistry.circuitBreaker(breakerName).eventPublisher.onStateTransition { event: CircuitBreakerOnStateTransitionEvent ->
             when (event.stateTransition) {
                 StateTransition.CLOSED_TO_OPEN,

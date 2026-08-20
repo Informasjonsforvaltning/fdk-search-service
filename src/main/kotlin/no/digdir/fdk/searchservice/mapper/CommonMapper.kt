@@ -6,36 +6,31 @@ import no.digdir.fdk.searchservice.model.HarvestMetadata
 import no.digdir.fdk.searchservice.model.Metadata
 import no.digdir.fdk.searchservice.model.SearchType
 
-fun Collection.toCatalog() =
-    Catalog(
-        id = id,
-        uri = uri,
-        description = description,
-        publisher = publisher,
-        title = label,
-    )
+fun Collection.toCatalog() = Catalog(
+    id = id,
+    uri = uri,
+    description = description,
+    publisher = publisher,
+    title = label,
+)
 
-fun HarvestMetadata.toMetadata(
-    timestamp: Long,
-    deleted: Boolean = false,
-) = Metadata(
+fun HarvestMetadata.toMetadata(timestamp: Long, deleted: Boolean = false) = Metadata(
     firstHarvested = firstHarvested,
     modified = modified,
     deleted = deleted,
     timestamp = timestamp,
 )
 
-fun String.pathVariableToSearchType(): List<SearchType>? =
-    when (this) {
-        "concepts" -> listOf(SearchType.CONCEPT)
-        "datasets" -> listOf(SearchType.DATASET)
-        "dataservices" -> listOf(SearchType.DATA_SERVICE)
-        "data-services" -> listOf(SearchType.DATA_SERVICE)
-        "informationmodels" -> listOf(SearchType.INFORMATION_MODEL)
-        "information-models" -> listOf(SearchType.INFORMATION_MODEL)
-        "services" -> listOf(SearchType.SERVICE)
-        "events" -> listOf(SearchType.EVENT)
-        "public-services-and-events" -> listOf(SearchType.SERVICE, SearchType.EVENT)
-        "services-and-events" -> listOf(SearchType.SERVICE, SearchType.EVENT)
-        else -> null
-    }
+fun String.pathVariableToSearchType(): List<SearchType>? = when (this) {
+    "concepts" -> listOf(SearchType.CONCEPT)
+    "datasets" -> listOf(SearchType.DATASET)
+    "dataservices" -> listOf(SearchType.DATA_SERVICE)
+    "data-services" -> listOf(SearchType.DATA_SERVICE)
+    "informationmodels" -> listOf(SearchType.INFORMATION_MODEL)
+    "information-models" -> listOf(SearchType.INFORMATION_MODEL)
+    "services" -> listOf(SearchType.SERVICE)
+    "events" -> listOf(SearchType.EVENT)
+    "public-services-and-events" -> listOf(SearchType.SERVICE, SearchType.EVENT)
+    "services-and-events" -> listOf(SearchType.SERVICE, SearchType.EVENT)
+    else -> null
+}

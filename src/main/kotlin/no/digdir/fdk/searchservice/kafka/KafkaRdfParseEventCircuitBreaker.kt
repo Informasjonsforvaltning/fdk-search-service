@@ -69,20 +69,14 @@ class KafkaRdfParseEventCircuitBreaker(
         return null
     }
 
-    fun process(
-        event: GenericRecord?,
-        searchRepository: SearchRepository,
-    ) {
+    fun process(event: GenericRecord?, searchRepository: SearchRepository) {
         if (event == null) return
         circuitBreaker.executeRunnable {
             processInternal(event, searchRepository)
         }
     }
 
-    private fun processInternal(
-        event: GenericRecord,
-        searchRepository: SearchRepository,
-    ) {
+    private fun processInternal(event: GenericRecord, searchRepository: SearchRepository) {
         LOGGER.debug("CB Received message")
 
         val harvestRunId = event.getHarvestRunId()

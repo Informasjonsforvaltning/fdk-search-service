@@ -36,20 +36,15 @@ class FilterTest : ApiTestContext() {
     private val dataservicesPath = "/search/dataservices"
     private val allResourcesPath = "/search"
 
-    private fun search(
-        operation: SearchOperation,
-        path: String = datasetsPath,
-    ): SearchResult {
+    private fun search(operation: SearchOperation, path: String = datasetsPath): SearchResult {
         val searchBody = mapper.writeValueAsString(operation)
         val response = requestApi(path, port, searchBody, HttpMethod.POST)
         Assertions.assertEquals(200, response["status"])
         return mapper.readValue(response["body"] as String)
     }
 
-    private fun searchWithFilters(
-        filters: SearchFilters,
-        path: String = datasetsPath,
-    ): SearchResult = search(SearchOperation(filters = filters), path)
+    private fun searchWithFilters(filters: SearchFilters, path: String = datasetsPath): SearchResult =
+        search(SearchOperation(filters = filters), path)
 
     @Nested
     inner class IsOpen {

@@ -48,15 +48,10 @@ data class SearchObject(
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class Relation(
-    val uri: String?,
-    val type: RelationType?,
-)
+data class Relation(val uri: String?, val type: RelationType?)
 
 /** Wire format is camelCase in Elasticsearch and the API; see elasticsearch converters. */
-enum class RelationType(
-    @get:JsonValue val value: String,
-) {
+enum class RelationType(@get:JsonValue val value: String) {
     ASSOCIATIVE_RELATION("associativeRelation"),
     CLOSE_MATCH("closeMatch"),
     EXACT_MATCH("exactMatch"),
@@ -91,9 +86,8 @@ enum class RelationType(
 
         @JvmStatic
         @JsonCreator
-        fun fromValue(value: String): RelationType =
-            byValue[value]
-                ?: byName[value]
-                ?: throw IllegalArgumentException("Unknown RelationType: $value")
+        fun fromValue(value: String): RelationType = byValue[value]
+            ?: byName[value]
+            ?: throw IllegalArgumentException("Unknown RelationType: $value")
     }
 }

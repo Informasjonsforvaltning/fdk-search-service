@@ -20,17 +20,14 @@ import javax.net.ssl.TrustManagerFactory
 
 @Configuration
 @EnableElasticsearchRepositories
-class ElasticsearchConfig(
-    private val elasticProperties: ElasticProperties,
-) : ElasticsearchConfiguration() {
+class ElasticsearchConfig(private val elasticProperties: ElasticProperties) : ElasticsearchConfiguration() {
     @Bean
-    override fun elasticsearchCustomConversions(): ElasticsearchCustomConversions =
-        ElasticsearchCustomConversions(
-            listOf(
-                RelationTypeToStringConverter(),
-                StringToRelationTypeConverter(),
-            ),
-        )
+    override fun elasticsearchCustomConversions(): ElasticsearchCustomConversions = ElasticsearchCustomConversions(
+        listOf(
+            RelationTypeToStringConverter(),
+            StringToRelationTypeConverter(),
+        ),
+    )
 
     private fun sslContext(): SSLContext {
         val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())

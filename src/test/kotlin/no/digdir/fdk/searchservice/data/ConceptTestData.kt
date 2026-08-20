@@ -37,102 +37,102 @@ val TEST_CONCEPT_HIT_ALL_FIELDS =
     TEST_NULL_CONCEPT.copy(
         identifier = "concept.uri.0",
         publisher =
+        Organization(
+            orgPath = "/STAT/102117858",
+            id = "102117858",
+            uri = "Test publisher > uri 1021",
+            name = "Test publisher > name",
+            prefLabel =
+            LocalizedStrings(
+                "NB Test publisher > prefLabel",
+                "NN Test publisher > prefLabel",
+                "NO Test publisher > prefLabel",
+                "EN Test publisher > prefLabel",
+            ),
+        ),
+        definition =
+        Definition(
+            LocalizedStrings(
+                "NB Test definition > text",
+                "NN Test definition > text",
+                "NO Test definition > text",
+                "EN Test definition > text",
+            ),
+            listOf(
+                TextAndURI(
+                    LocalizedStrings(
+                        "NB Test definition > sources > text",
+                        "NN Test definition > sources > text",
+                        "NO Test definition > sources > text",
+                        "EN Test definition > sources > text",
+                    ),
+                ),
+            ),
+            "Test definition > sourceRelationship",
+        ),
+        prefLabel =
+        LocalizedStrings(
+            "NB Test prefLabel, title",
+            "NN Test prefLabel",
+            "NO Test prefLabel, title",
+            "EN Test prefLabel",
+        ),
+        harvest =
+        HarvestMetadata(
+            "2022-02-15T11:00:05Z",
+            "2022-02-15T11:00:05Z",
+        ),
+        collection =
+        Collection(
+            id = "Test collection > id 1021",
+            uri = "Test collection > uri 1021",
+            label =
+            LocalizedStrings(
+                "NB Test collection > label",
+                "NN Test collection > label",
+                "NO Test collection > label",
+                "EN Test collection > label",
+            ),
+            description =
+            LocalizedStrings(
+                "NB Test collection > description",
+                "NN Test collection > description",
+                "NO Test collection > description",
+                "EN Test collection > description",
+            ),
+            publisher =
             Organization(
-                orgPath = "/STAT/102117858",
-                id = "102117858",
-                uri = "Test publisher > uri 1021",
+                orgPath = "/KOMMUNE/102117858",
+                id = "Test publisher > identifier",
+                uri = "Test publisher > uri ",
                 name = "Test publisher > name",
                 prefLabel =
-                    LocalizedStrings(
-                        "NB Test publisher > prefLabel",
-                        "NN Test publisher > prefLabel",
-                        "NO Test publisher > prefLabel",
-                        "EN Test publisher > prefLabel",
-                    ),
-            ),
-        definition =
-            Definition(
                 LocalizedStrings(
-                    "NB Test definition > text",
-                    "NN Test definition > text",
-                    "NO Test definition > text",
-                    "EN Test definition > text",
+                    "NB Test publisher > prefLabel",
+                    "NN Test publisher > prefLabel",
+                    "NO Test publisher > prefLabel",
+                    "EN Test publisher > prefLabel",
                 ),
-                listOf(
-                    TextAndURI(
-                        LocalizedStrings(
-                            "NB Test definition > sources > text",
-                            "NN Test definition > sources > text",
-                            "NO Test definition > sources > text",
-                            "EN Test definition > sources > text",
-                        ),
-                    ),
-                ),
-                "Test definition > sourceRelationship",
             ),
-        prefLabel =
-            LocalizedStrings(
-                "NB Test prefLabel, title",
-                "NN Test prefLabel",
-                "NO Test prefLabel, title",
-                "EN Test prefLabel",
-            ),
-        harvest =
-            HarvestMetadata(
-                "2022-02-15T11:00:05Z",
-                "2022-02-15T11:00:05Z",
-            ),
-        collection =
-            Collection(
-                id = "Test collection > id 1021",
-                uri = "Test collection > uri 1021",
-                label =
-                    LocalizedStrings(
-                        "NB Test collection > label",
-                        "NN Test collection > label",
-                        "NO Test collection > label",
-                        "EN Test collection > label",
-                    ),
-                description =
-                    LocalizedStrings(
-                        "NB Test collection > description",
-                        "NN Test collection > description",
-                        "NO Test collection > description",
-                        "EN Test collection > description",
-                    ),
-                publisher =
-                    Organization(
-                        orgPath = "/KOMMUNE/102117858",
-                        id = "Test publisher > identifier",
-                        uri = "Test publisher > uri ",
-                        name = "Test publisher > name",
-                        prefLabel =
-                            LocalizedStrings(
-                                "NB Test publisher > prefLabel",
-                                "NN Test publisher > prefLabel",
-                                "NO Test publisher > prefLabel",
-                                "EN Test publisher > prefLabel",
-                            ),
-                    ),
-            ),
+        ),
         hiddenLabel =
-            listOf(
-                LocalizedStrings(
-                    "NB: Frarådet term",
-                    "NN: Fråråda term",
-                    "NO: Frarådet term",
-                    "EN: Hidden term",
-                ),
+        listOf(
+            LocalizedStrings(
+                "NB: Frarådet term",
+                "NN: Fråråda term",
+                "NO: Frarådet term",
+                "EN: Hidden term",
             ),
+        ),
         altLabel =
-            listOf(
-                LocalizedStrings(
-                    "NB: Tillatt term",
-                    "NN: Tillatt term",
-                    "NO: Tillatt term",
-                    "EN: Alternative term",
-                ),
+        listOf(
+            LocalizedStrings(
+                "NB: Tillatt term",
+                "NN: Tillatt term",
+                "NO: Tillatt term",
+                "EN: Alternative term",
             ),
+        ),
     )
 
 val CONCEPT_WITH_RELATIONS =
@@ -144,16 +144,16 @@ val CONCEPT_WITH_RELATIONS =
         seeAlso = listOf("seeAlso_uri"),
         associativeRelation = listOf(AssociativeRelation(description = null, related = "associativeRelation_uri")),
         partitiveRelation =
-            listOf(
-                PartitiveRelation(description = null, hasPart = null, isPartOf = "partitiveRelation_isPartOf_uri"),
-                PartitiveRelation(description = null, hasPart = "partitiveRelation_hasPart_uri", isPartOf = null),
-            ),
+        listOf(
+            PartitiveRelation(description = null, hasPart = null, isPartOf = "partitiveRelation_isPartOf_uri"),
+            PartitiveRelation(description = null, hasPart = "partitiveRelation_hasPart_uri", isPartOf = null),
+        ),
         isReplacedBy = listOf("isReplacedBy_uri"),
         closeMatch = listOf("closeMatch_uri"),
         exactMatch = listOf("exactMatch_uri"),
         genericRelation =
-            listOf(
-                GenericRelation(divisioncriterion = null, generalizes = null, specializes = "genericRelation_specializes_uri"),
-                GenericRelation(divisioncriterion = null, generalizes = "genericRelation_generalizes_uri", specializes = null),
-            ),
+        listOf(
+            GenericRelation(divisioncriterion = null, generalizes = null, specializes = "genericRelation_specializes_uri"),
+            GenericRelation(divisioncriterion = null, generalizes = "genericRelation_generalizes_uri", specializes = null),
+        ),
     )

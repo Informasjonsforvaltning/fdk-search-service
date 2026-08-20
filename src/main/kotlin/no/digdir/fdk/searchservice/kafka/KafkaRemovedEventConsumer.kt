@@ -10,9 +10,7 @@ import org.springframework.stereotype.Component
 import java.time.Duration
 
 @Component
-class KafkaRemovedEventConsumer(
-    private val kafkaRemovedEventCircuitBreaker: KafkaRemovedEventCircuitBreaker,
-) {
+class KafkaRemovedEventConsumer(private val kafkaRemovedEventCircuitBreaker: KafkaRemovedEventCircuitBreaker) {
     @KafkaListener(
         topics = [
             "dataset-events",
@@ -27,10 +25,7 @@ class KafkaRemovedEventConsumer(
         containerFactory = "kafkaListenerContainerFactory",
         id = "remove",
     )
-    fun listen(
-        record: ConsumerRecord<String, GenericRecord>,
-        ack: Acknowledgment,
-    ) {
+    fun listen(record: ConsumerRecord<String, GenericRecord>, ack: Acknowledgment) {
         try {
             kafkaRemovedEventCircuitBreaker.process(record)
             ack.acknowledge()
