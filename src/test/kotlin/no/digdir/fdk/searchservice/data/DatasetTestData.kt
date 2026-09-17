@@ -39,6 +39,7 @@ val TEST_NULL_DATASET =
         specializedType = null,
         isAuthoritative = null,
         isRelatedToTransportportal = null,
+        dcatProfiles = null,
     )
 
 val TEST_DATASET_HIT_ALL_FIELDS =
@@ -268,6 +269,7 @@ val TEST_DATASET_FILTERS =
                 ),
             ),
         ),
+        dcatProfiles = listOf("MOBILITY_DCAT_AP"),
     )
 
 val TEST_DATASET_HIT_IS_OPEN =
@@ -275,6 +277,7 @@ val TEST_DATASET_HIT_IS_OPEN =
         uri = "dataset.uri.2",
         isOpenData = true,
         conformsTo = listOf(ObjectWithURI(uri = TEST_DATASET_FILTERS.uri)),
+        dcatProfiles = listOf("HVD_DCAT_AP_NO", "DCAT_AP_NO"),
     )
 
 val basePath = "http://purl.org/dc/terms"

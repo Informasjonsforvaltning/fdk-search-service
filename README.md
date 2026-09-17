@@ -170,6 +170,27 @@ Payload:
 }
 ```
 
+#### Filter datasets on dcat profile:
+
+Unlike the theme filters, which narrow the result to resources matching *every* given value, this
+filter returns the union, so mobility and HVD datasets can be requested together. Datasets harvested
+before the field existed have no value for it and are treated as `DCAT_AP_NO`.
+
+Payload:
+
+```
+{
+    "filters": {
+        "dcatProfiles": {
+            "value": [
+                "MOBILITY_DCAT_AP",
+                "HVD_DCAT_AP_NO"
+            ]
+        }
+    }
+}
+```
+
 ### Formatting code
 
 This project uses [ktlint](https://github.com/gantsign/ktlint-maven-plugin) to enforce a consistent code style.

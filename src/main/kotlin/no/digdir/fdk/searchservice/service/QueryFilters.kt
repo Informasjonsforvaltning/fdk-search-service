@@ -15,6 +15,7 @@ import co.elastic.clients.elasticsearch._types.query_dsl.Query as DSLQuery
 internal enum class FilterFields {
     AccessRights,
     DataTheme,
+    DcatProfiles,
     Deleted,
     FirstHarvested,
     Modified,
@@ -34,6 +35,7 @@ internal enum class FilterFields {
 internal fun FilterFields.jsonPath(): String = when (this) {
     FilterFields.AccessRights -> "accessRights.code.keyword"
     FilterFields.DataTheme -> "dataTheme.code.keyword"
+    FilterFields.DcatProfiles -> "dcatProfiles.keyword"
     FilterFields.Deleted -> "metadata.deleted"
     FilterFields.FirstHarvested -> "metadata.firstHarvested"
     FilterFields.Modified -> "metadata.modified"
@@ -53,6 +55,7 @@ internal fun FilterFields.jsonPath(): String = when (this) {
 internal fun FilterFields.aggregationName(): String = when (this) {
     FilterFields.AccessRights -> "accessRights"
     FilterFields.DataTheme -> "dataTheme"
+    FilterFields.DcatProfiles -> "dcatProfiles"
     FilterFields.Deleted -> "deleted"
     FilterFields.FirstHarvested -> "firstHarvested"
     FilterFields.Modified -> "modified"
@@ -69,19 +72,28 @@ internal fun FilterFields.aggregationName(): String = when (this) {
     FilterFields.TransportRelation -> "transportportal"
 }
 
-private const val MISSING_VALUE_AGGREGATE = "null"
+internal const val MISSING_VALUE_AGGREGATE = "null"
+
+/**
+ * Resources harvested before dcatProfiles was introduced have no value for it, and resources that
+ * are not described in accordance with a specialized profile need not state the default one, so a
+ * missing value counts as DCAT-AP-NO both when aggregating and when filtering.
+ */
+internal const val DEFAULT_DCAT_PROFILE = "DCAT_AP_NO"
+
 private const val MAX_AGGREGATION_BUCKETS = 15_000
 
 /**
  * Registers a terms aggregation for [field], collapsing the boilerplate that would otherwise be
- * repeated for every facet shown in the search response.
+ * repeated for every facet shown in the search response. Documents without a value for the field
+ * are counted in the [missingValue] bucket when one is given, and left out otherwise.
  */
-internal fun NativeQueryBuilder.addTermsAggregation(field: FilterFields, withMissingValue: Boolean = false): NativeQueryBuilder {
+internal fun NativeQueryBuilder.addTermsAggregation(field: FilterFields, missingValue: String? = null): NativeQueryBuilder {
     withAggregation(
         field.aggregationName(),
         AggregationBuilders.terms { builder ->
             val sized = builder.field(field.jsonPath()).size(MAX_AGGREGATION_BUCKETS)
-            if (withMissingValue) sized.missing(MISSING_VALUE_AGGREGATE) else sized
+            if (missingValue != null) sized.missing(missingValue) else sized
         },
     )
     return this
@@ -126,6 +138,35 @@ internal fun existsFilter(field: FilterFields): DSLQuery = DSLQuery.of { queryBu
 }
 
 internal fun transportProfileFilter(): DSLQuery = termFilter(FilterFields.TransportRelation, true)
+
+/**
+ * Filters on any of the given dcat profiles, a resource matching one of them is a hit. Asking for
+ * [DEFAULT_DCAT_PROFILE] also matches datasets that have no profiles at all.
+ */
+internal fun dcatProfilesFilter(values: List<String>): DSLQuery = when {
+    values.contains(DEFAULT_DCAT_PROFILE) ->
+        DSLQuery.of { queryBuilder ->
+            queryBuilder.bool { boolBuilder ->
+                boolBuilder
+                    .should(
+                        listOf(
+                            termsFilter(FilterFields.DcatProfiles, values),
+                            missingDcatProfilesFilter(),
+                        ),
+                    ).minimumShouldMatch("1")
+            }
+        }
+
+    else -> termsFilter(FilterFields.DcatProfiles, values)
+}
+
+private fun missingDcatProfilesFilter(): DSLQuery = DSLQuery.of { queryBuilder ->
+    queryBuilder.bool { boolBuilder ->
+        boolBuilder
+            .filter(listOf(termFilter(FilterFields.SearchType, SearchType.DATASET.name)))
+            .mustNot(listOf(existsFilter(FilterFields.DcatProfiles)))
+    }
+}
 
 /**
  * The filters every search and suggestion query needs regardless of caller-specific criteria:

@@ -221,6 +221,7 @@ class KafkaRemovedEventCircuitBreaker(
                 isAuthoritative = null,
                 isRelatedToTransportportal = null,
                 additionalTitles = null,
+                dcatProfiles = null,
             ).let { save(it) }
         }
     }
