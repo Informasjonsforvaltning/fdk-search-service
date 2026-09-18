@@ -140,24 +140,25 @@ internal fun existsFilter(field: FilterFields): DSLQuery = DSLQuery.of { queryBu
 internal fun transportProfileFilter(): DSLQuery = termFilter(FilterFields.TransportRelation, true)
 
 /**
- * Filters on any of the given dcat profiles, a resource matching one of them is a hit. Asking for
- * [DEFAULT_DCAT_PROFILE] also matches datasets that have no profiles at all.
+ * Filters on a single dcat profile, added once per requested value so that several values narrow
+ * the result the same way the theme and spatial filters do. Asking for [DEFAULT_DCAT_PROFILE] also
+ * matches datasets that have no profiles at all.
  */
-internal fun dcatProfilesFilter(values: List<String>): DSLQuery = when {
-    values.contains(DEFAULT_DCAT_PROFILE) ->
+internal fun dcatProfileFilter(value: String): DSLQuery = when (value) {
+    DEFAULT_DCAT_PROFILE ->
         DSLQuery.of { queryBuilder ->
             queryBuilder.bool { boolBuilder ->
                 boolBuilder
                     .should(
                         listOf(
-                            termsFilter(FilterFields.DcatProfiles, values),
+                            termFilter(FilterFields.DcatProfiles, value),
                             missingDcatProfilesFilter(),
                         ),
                     ).minimumShouldMatch("1")
             }
         }
 
-    else -> termsFilter(FilterFields.DcatProfiles, values)
+    else -> termFilter(FilterFields.DcatProfiles, value)
 }
 
 private fun missingDcatProfilesFilter(): DSLQuery = DSLQuery.of { queryBuilder ->

@@ -94,9 +94,9 @@ class Aggregations : ApiTestContext() {
         val result: SearchResult = mapper.readValue(response["body"] as String)
         val counts = result.aggregations["dcatProfiles"]?.associate { it.key to it.count }
 
-        Assertions.assertEquals(3, counts?.get("DCAT_AP_NO"))
+        Assertions.assertEquals(2, counts?.get("DCAT_AP_NO"))
         Assertions.assertEquals(1, counts?.get("HVD_DCAT_AP_NO"))
-        Assertions.assertEquals(1, counts?.get("MOBILITY_DCAT_AP"))
+        Assertions.assertEquals(2, counts?.get("MOBILITY_DCAT_AP"))
     }
 
     @Test

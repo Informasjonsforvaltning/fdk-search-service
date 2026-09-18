@@ -191,4 +191,5 @@ val TEST_SEARCH_OBJECT_AND_HIT_ALL_FIELDS =
             "NO Test title",
             "EN Test title",
         ),
+        dcatProfiles = setOf("DCAT_AP_NO"),
     )

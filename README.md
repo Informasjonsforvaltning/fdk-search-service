@@ -172,9 +172,9 @@ Payload:
 
 #### Filter datasets on dcat profile:
 
-Unlike the theme filters, which narrow the result to resources matching *every* given value, this
-filter returns the union, so mobility and HVD datasets can be requested together. Datasets harvested
-before the field existed have no value for it and are treated as `DCAT_AP_NO`.
+Like the theme filters, several values narrow the result: the payload below returns only datasets
+described in accordance with both mobilityDCAT-AP and HVD-DCAT-AP-NO. Datasets harvested before the
+field existed have no value for it and are treated as `DCAT_AP_NO`.
 
 Payload:
 

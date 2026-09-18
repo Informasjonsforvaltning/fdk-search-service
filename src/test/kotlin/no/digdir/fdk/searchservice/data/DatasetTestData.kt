@@ -277,7 +277,7 @@ val TEST_DATASET_HIT_IS_OPEN =
         uri = "dataset.uri.2",
         isOpenData = true,
         conformsTo = listOf(ObjectWithURI(uri = TEST_DATASET_FILTERS.uri)),
-        dcatProfiles = listOf("HVD_DCAT_AP_NO", "DCAT_AP_NO"),
+        dcatProfiles = listOf("MOBILITY_DCAT_AP", "HVD_DCAT_AP_NO"),
     )
 
 val basePath = "http://purl.org/dc/terms"

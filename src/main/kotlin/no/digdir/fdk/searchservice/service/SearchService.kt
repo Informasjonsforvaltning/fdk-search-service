@@ -158,7 +158,7 @@ class SearchService(private val elasticSearchOperations: ElasticsearchOperations
         filters?.openData?.value?.let { queryFilters.add(termFilter(FilterFields.OpenData, it)) }
         filters?.accessRights?.value?.let { queryFilters.add(termFilter(FilterFields.AccessRights, it)) }
         filters?.dataTheme?.value?.forEach { queryFilters.add(termFilter(FilterFields.DataTheme, it)) }
-        filters?.dcatProfiles?.value?.let { queryFilters.add(dcatProfilesFilter(it)) }
+        filters?.dcatProfiles?.value?.forEach { queryFilters.add(dcatProfileFilter(it)) }
         filters?.provenance?.value?.let { queryFilters.add(termFilter(FilterFields.Provenance, it)) }
         filters?.spatial?.value?.forEach { queryFilters.add(termFilter(FilterFields.Spatial, it)) }
         filters?.losTheme?.value?.forEach { queryFilters.add(termFilter(FilterFields.LosTheme, it)) }
