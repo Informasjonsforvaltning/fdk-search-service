@@ -140,8 +140,7 @@ internal fun existsFilter(field: FilterFields): DSLQuery = DSLQuery.of { queryBu
 internal fun transportProfileFilter(): DSLQuery = termFilter(FilterFields.TransportRelation, true)
 
 /**
- * Filters on a single dcat profile, added once per requested value so that several values narrow
- * the result the same way the theme and spatial filters do. Asking for [DEFAULT_DCAT_PROFILE] also
+ * Filters on a single dcat profile, asking for [DEFAULT_DCAT_PROFILE] also
  * matches datasets that have no profiles at all.
  */
 internal fun dcatProfileFilter(value: String): DSLQuery = when (value) {
