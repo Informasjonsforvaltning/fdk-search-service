@@ -170,6 +170,27 @@ Payload:
 }
 ```
 
+#### Filter datasets on dcat profile:
+
+Like the theme filters, several values narrow the result: the payload below returns only datasets
+described in accordance with both mobilityDCAT-AP and HVD-DCAT-AP-NO. Datasets harvested before the
+field existed have no value for it and are treated as `DCAT_AP_NO`.
+
+Payload:
+
+```
+{
+    "filters": {
+        "dcatProfiles": {
+            "value": [
+                "MOBILITY_DCAT_AP",
+                "HVD_DCAT_AP_NO"
+            ]
+        }
+    }
+}
+```
+
 ### Formatting code
 
 This project uses [ktlint](https://github.com/gantsign/ktlint-maven-plugin) to enforce a consistent code style.

@@ -3,10 +3,12 @@ package no.digdir.fdk.searchservice.integration
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.digdir.fdk.searchservice.data.TEST_DATASET_FILTERS
+import no.digdir.fdk.searchservice.data.TEST_DATASET_HIT_ALL_FIELDS
 import no.digdir.fdk.searchservice.model.SearchFilter
 import no.digdir.fdk.searchservice.model.SearchFilters
 import no.digdir.fdk.searchservice.model.SearchOperation
 import no.digdir.fdk.searchservice.model.SearchResult
+import no.digdir.fdk.searchservice.model.SearchType
 import no.digdir.fdk.searchservice.model.SortDirection
 import no.digdir.fdk.searchservice.model.SortField
 import no.digdir.fdk.searchservice.model.SortFieldEnum
@@ -361,6 +363,52 @@ class FilterTest : ApiTestContext() {
             val result = searchWithFilters(searchFilter.copy(uri = SearchFilter(uris)), allResourcesPath)
             Assertions.assertEquals(2, result.hits.size)
             Assertions.assertTrue(result.hits.map { it.uri }.containsAll(uris))
+        }
+    }
+
+    @Nested
+    inner class DcatProfiles {
+        @Test
+        fun `filter datasets on a single profile`() {
+            val result = searchWithFilters(searchFilter.copy(dcatProfiles = SearchFilter(listOf("MOBILITY_DCAT_AP"))))
+            Assertions.assertEquals(2, result.hits.size)
+            Assertions.assertTrue(result.hits.map { it.uri }.containsAll(listOf(TEST_DATASET_FILTERS.uri, "dataset.uri.2")))
+        }
+
+        @Test
+        fun `filter datasets on several profiles only matches datasets described by all of them`() {
+            val result =
+                searchWithFilters(searchFilter.copy(dcatProfiles = SearchFilter(listOf("MOBILITY_DCAT_AP", "HVD_DCAT_AP_NO"))))
+            Assertions.assertEquals(1, result.hits.size)
+            Assertions.assertEquals("dataset.uri.2", result.hits.first().uri)
+        }
+
+        @Test
+        fun `profiles that exclude each other give no hits when combined`() {
+            val result =
+                searchWithFilters(searchFilter.copy(dcatProfiles = SearchFilter(listOf("MOBILITY_DCAT_AP", "DCAT_AP_NO"))))
+            Assertions.assertEquals(0, result.hits.size)
+        }
+
+        @Test
+        fun `filter on the default profile also matches datasets without the field`() {
+            val result = searchWithFilters(searchFilter.copy(dcatProfiles = SearchFilter(listOf("DCAT_AP_NO"))))
+            Assertions.assertEquals(2, result.hits.size)
+            Assertions.assertTrue(result.hits.map { it.uri }.containsAll(listOf("Test uri 1001", TEST_DATASET_HIT_ALL_FIELDS.uri)))
+        }
+
+        @Test
+        fun `the default profile does not pull in other resource types without the field`() {
+            val result =
+                searchWithFilters(searchFilter.copy(dcatProfiles = SearchFilter(listOf("DCAT_AP_NO"))), allResourcesPath)
+            Assertions.assertNotEquals(0, result.hits.size)
+            Assertions.assertTrue(result.hits.all { it.searchType == SearchType.DATASET })
+        }
+
+        @Test
+        fun `filter on an unknown profile returns no hits`() {
+            val result = searchWithFilters(searchFilter.copy(dcatProfiles = SearchFilter(listOf("NOT_A_PROFILE"))))
+            Assertions.assertEquals(0, result.hits.size)
         }
     }
 

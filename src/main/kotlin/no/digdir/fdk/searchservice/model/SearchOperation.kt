@@ -25,6 +25,7 @@ data class SearchFilters(
     val openData: SearchFilter<Boolean>?,
     val accessRights: SearchFilter<String?>?,
     val dataTheme: SearchFilter<List<String>>?,
+    val dcatProfiles: SearchFilter<List<String>>?,
     val spatial: SearchFilter<List<String>>?,
     val provenance: SearchFilter<String>?,
     val losTheme: SearchFilter<List<String>>?,

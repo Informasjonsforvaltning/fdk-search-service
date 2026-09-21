@@ -26,4 +26,5 @@ data class Dataset(
     val specializedType: String?,
     val isAuthoritative: Boolean?,
     val isRelatedToTransportportal: Boolean?,
+    val dcatProfiles: List<String>?,
 )

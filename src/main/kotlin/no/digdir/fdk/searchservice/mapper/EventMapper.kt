@@ -29,6 +29,7 @@ fun Event.toSearchObject(id: String, timestamp: Long, deleted: Boolean = false) 
     isAuthoritative = null,
     isRelatedToTransportportal = false,
     additionalTitles = null,
+    dcatProfiles = null,
 )
 
 fun Event.getRelations(): Set<Relation> {

@@ -31,6 +31,7 @@ fun Dataset.toSearchObject(id: String, timestamp: Long, deleted: Boolean = false
     isAuthoritative = isAuthoritative,
     isRelatedToTransportportal = isRelatedToTransportportal,
     additionalTitles = null,
+    dcatProfiles = dcatProfiles?.toSet(),
 )
 
 fun Dataset.extractPrefixedFormats(): Set<String> {

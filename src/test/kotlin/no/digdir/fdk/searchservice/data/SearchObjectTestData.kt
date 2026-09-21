@@ -34,6 +34,7 @@ val TEST_NULL_SEARCH_OBJECT =
         isAuthoritative = null,
         isRelatedToTransportportal = null,
         additionalTitles = null,
+        dcatProfiles = null,
     )
 
 val TEST_SEARCH_OBJECT_AND_HIT_ALL_FIELDS =
@@ -190,4 +191,5 @@ val TEST_SEARCH_OBJECT_AND_HIT_ALL_FIELDS =
             "NO Test title",
             "EN Test title",
         ),
+        dcatProfiles = setOf("DCAT_AP_NO"),
     )

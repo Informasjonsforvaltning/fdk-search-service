@@ -35,12 +35,13 @@ class Aggregations : ApiTestContext() {
         Assertions.assertEquals(200, response["status"])
 
         val result: SearchResult = mapper.readValue(response["body"] as String)
-        Assertions.assertEquals(8, result.aggregations.size)
+        Assertions.assertEquals(9, result.aggregations.size)
         Assertions.assertTrue(
             result.aggregations.keys.containsAll(
                 listOf(
                     "accessRights",
                     "dataTheme",
+                    "dcatProfiles",
                     "format",
                     "losTheme",
                     "openData",
@@ -82,6 +83,20 @@ class Aggregations : ApiTestContext() {
 
         val result: SearchResult = mapper.readValue(response["body"] as String)
         Assertions.assertTrue(10 < (result.aggregations["orgPath"]?.size ?: 0))
+    }
+
+    @Test
+    fun `datasets without dcatProfiles are aggregated as the default profile`() {
+        val searchBody = mapper.writeValueAsString(SearchOperation())
+        val response = requestApi("/search/datasets", port, searchBody, HttpMethod.POST)
+        Assertions.assertEquals(200, response["status"])
+
+        val result: SearchResult = mapper.readValue(response["body"] as String)
+        val counts = result.aggregations["dcatProfiles"]?.associate { it.key to it.count }
+
+        Assertions.assertEquals(2, counts?.get("DCAT_AP_NO"))
+        Assertions.assertEquals(1, counts?.get("HVD_DCAT_AP_NO"))
+        Assertions.assertEquals(2, counts?.get("MOBILITY_DCAT_AP"))
     }
 
     @Test

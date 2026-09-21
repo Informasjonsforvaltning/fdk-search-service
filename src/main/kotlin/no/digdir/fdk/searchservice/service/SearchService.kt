@@ -122,11 +122,12 @@ class SearchService(private val elasticSearchOperations: ElasticsearchOperations
     }
 
     private fun NativeQueryBuilder.addAggregations(): NativeQueryBuilder {
-        addTermsAggregation(FilterFields.AccessRights, withMissingValue = true)
+        addTermsAggregation(FilterFields.AccessRights, missingValue = MISSING_VALUE_AGGREGATE)
         addTermsAggregation(FilterFields.DataTheme)
+        addTermsAggregation(FilterFields.DcatProfiles, missingValue = DEFAULT_DCAT_PROFILE)
         addTermsAggregation(FilterFields.Format)
         addTermsAggregation(FilterFields.LosTheme)
-        addTermsAggregation(FilterFields.OrgPath, withMissingValue = true)
+        addTermsAggregation(FilterFields.OrgPath, missingValue = MISSING_VALUE_AGGREGATE)
         addTermsAggregation(FilterFields.OpenData)
         addTermsAggregation(FilterFields.Provenance)
         addTermsAggregation(FilterFields.Spatial)
@@ -157,6 +158,7 @@ class SearchService(private val elasticSearchOperations: ElasticsearchOperations
         filters?.openData?.value?.let { queryFilters.add(termFilter(FilterFields.OpenData, it)) }
         filters?.accessRights?.value?.let { queryFilters.add(termFilter(FilterFields.AccessRights, it)) }
         filters?.dataTheme?.value?.forEach { queryFilters.add(termFilter(FilterFields.DataTheme, it)) }
+        filters?.dcatProfiles?.value?.forEach { queryFilters.add(dcatProfileFilter(it)) }
         filters?.provenance?.value?.let { queryFilters.add(termFilter(FilterFields.Provenance, it)) }
         filters?.spatial?.value?.forEach { queryFilters.add(termFilter(FilterFields.Spatial, it)) }
         filters?.losTheme?.value?.forEach { queryFilters.add(termFilter(FilterFields.LosTheme, it)) }
@@ -235,6 +237,7 @@ class SearchService(private val elasticSearchOperations: ElasticsearchOperations
     private fun Aggregate.toBucketCounts(aggregateName: String): List<BucketCount> = when (aggregateName) {
         FilterFields.AccessRights.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
         FilterFields.DataTheme.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
+        FilterFields.DcatProfiles.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
         FilterFields.Format.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
         FilterFields.LosTheme.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
         FilterFields.OrgPath.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
