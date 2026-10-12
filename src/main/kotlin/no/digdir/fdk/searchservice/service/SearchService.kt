@@ -55,11 +55,14 @@ class SearchService(private val elasticSearchOperations: ElasticsearchOperations
     private fun SearchOperation.toElasticQuery(searchTypes: List<SearchType>?): Query {
         val queryFields = fields ?: QueryFields()
         val pageable = pagination?.toPageable() ?: Pagination().toPageable()
+        val facets = facetFilterClauses(filters)
         val builder =
             NativeQuery
                 .builder()
                 .withPageable(pageable)
-                .addAggregations()
+                .addAggregations(facets)
+
+        facets.combined().takeUnless { it.isEmpty() }?.let { builder.withFilter(it.toBoolQuery()) }
 
         if (sort != null) builder.addSorting(sort)
 
@@ -80,7 +83,6 @@ class SearchService(private val elasticSearchOperations: ElasticsearchOperations
         profile: SearchProfile?,
     ) {
         val alwaysOn = alwaysOnFilters(filters, searchTypes, profile)
-        val facets = facetFilterClauses(filters)
 
         withQuery { queryBuilder ->
             queryBuilder.bool { boolBuilder ->
@@ -104,8 +106,7 @@ class SearchService(private val elasticSearchOperations: ElasticsearchOperations
                     }
                 }
                 boolBuilder.minimumShouldMatch("1")
-                boolBuilder.filter(alwaysOn + facets.values.flatMap { it.filters })
-                boolBuilder.mustNot(facets.values.flatMap { it.mustNots })
+                boolBuilder.filter(alwaysOn)
             }
         }
     }
@@ -116,26 +117,24 @@ class SearchService(private val elasticSearchOperations: ElasticsearchOperations
         profile: SearchProfile?,
     ) {
         val alwaysOn = alwaysOnFilters(filters, searchTypes, profile)
-        val facets = facetFilterClauses(filters)
 
         withQuery { queryBuilder ->
             queryBuilder.bool { boolBuilder ->
-                boolBuilder.filter(alwaysOn + facets.values.flatMap { it.filters })
-                boolBuilder.mustNot(facets.values.flatMap { it.mustNots })
+                boolBuilder.filter(alwaysOn)
             }
         }
     }
 
-    private fun NativeQueryBuilder.addAggregations(): NativeQueryBuilder {
-        addTermsAggregation(FilterFields.AccessRights, missingValue = MISSING_VALUE_AGGREGATE)
-        addTermsAggregation(FilterFields.DataTheme)
-        addTermsAggregation(FilterFields.DcatProfiles, missingValue = DEFAULT_DCAT_PROFILE)
-        addTermsAggregation(FilterFields.Format)
-        addTermsAggregation(FilterFields.LosTheme)
-        addTermsAggregation(FilterFields.OrgPath, missingValue = MISSING_VALUE_AGGREGATE)
-        addTermsAggregation(FilterFields.OpenData)
-        addTermsAggregation(FilterFields.Provenance)
-        addTermsAggregation(FilterFields.Spatial)
+    private fun NativeQueryBuilder.addAggregations(facets: Map<FilterFields, FacetFilterClause>): NativeQueryBuilder {
+        addFacetAggregation(FilterFields.AccessRights, facets, missingValue = MISSING_VALUE_AGGREGATE)
+        addFacetAggregation(FilterFields.DataTheme, facets)
+        addFacetAggregation(FilterFields.DcatProfiles, facets, missingValue = DEFAULT_DCAT_PROFILE)
+        addFacetAggregation(FilterFields.Format, facets)
+        addFacetAggregation(FilterFields.LosTheme, facets)
+        addFacetAggregation(FilterFields.OrgPath, facets, missingValue = MISSING_VALUE_AGGREGATE)
+        addFacetAggregation(FilterFields.OpenData, facets)
+        addFacetAggregation(FilterFields.Provenance, facets)
+        addFacetAggregation(FilterFields.Spatial, facets)
 
         return this
     }
@@ -201,17 +200,25 @@ class SearchService(private val elasticSearchOperations: ElasticsearchOperations
         )
     }
 
-    private fun Aggregate.toBucketCounts(aggregateName: String): List<BucketCount> = when (aggregateName) {
-        FilterFields.AccessRights.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
-        FilterFields.DataTheme.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
-        FilterFields.DcatProfiles.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
-        FilterFields.Format.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
-        FilterFields.LosTheme.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
-        FilterFields.OrgPath.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
-        FilterFields.OpenData.aggregationName() -> (_get() as LongTermsAggregate).toOpenDataCounts()
-        FilterFields.Provenance.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
-        FilterFields.Spatial.aggregationName() -> (_get() as StringTermsAggregate).toBucketCounts()
-        else -> emptyList()
+    private fun Aggregate.toBucketCounts(aggregateName: String): List<BucketCount> {
+        val termsAggregate = if (isFilter) {
+            filter().aggregations()[aggregateName] ?: return emptyList()
+        } else {
+            this
+        }
+
+        return when (aggregateName) {
+            FilterFields.AccessRights.aggregationName() -> (termsAggregate._get() as StringTermsAggregate).toBucketCounts()
+            FilterFields.DataTheme.aggregationName() -> (termsAggregate._get() as StringTermsAggregate).toBucketCounts()
+            FilterFields.DcatProfiles.aggregationName() -> (termsAggregate._get() as StringTermsAggregate).toBucketCounts()
+            FilterFields.Format.aggregationName() -> (termsAggregate._get() as StringTermsAggregate).toBucketCounts()
+            FilterFields.LosTheme.aggregationName() -> (termsAggregate._get() as StringTermsAggregate).toBucketCounts()
+            FilterFields.OrgPath.aggregationName() -> (termsAggregate._get() as StringTermsAggregate).toBucketCounts()
+            FilterFields.OpenData.aggregationName() -> (termsAggregate._get() as LongTermsAggregate).toOpenDataCounts()
+            FilterFields.Provenance.aggregationName() -> (termsAggregate._get() as StringTermsAggregate).toBucketCounts()
+            FilterFields.Spatial.aggregationName() -> (termsAggregate._get() as StringTermsAggregate).toBucketCounts()
+            else -> emptyList()
+        }
     }
 
     private fun AggregationsContainer<*>.toAggregationCounts(): Map<String, List<BucketCount>> {
