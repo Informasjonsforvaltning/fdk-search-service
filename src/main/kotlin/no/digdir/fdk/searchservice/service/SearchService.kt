@@ -157,17 +157,29 @@ class SearchService(private val elasticSearchOperations: ElasticsearchOperations
 
         filters?.openData?.value?.let { queryFilters.add(termFilter(FilterFields.OpenData, it)) }
         filters?.accessRights?.value?.let { queryFilters.add(termFilter(FilterFields.AccessRights, it)) }
-        filters?.dataTheme?.value?.forEach { queryFilters.add(termFilter(FilterFields.DataTheme, it)) }
-        filters?.dcatProfiles?.value?.forEach { queryFilters.add(dcatProfileFilter(it)) }
+        filters?.dataTheme?.value?.takeIf { it.isNotEmpty() }?.let {
+            queryFilters.add(termsFilter(FilterFields.DataTheme, it))
+        }
+        filters?.dcatProfiles?.value?.takeIf { it.isNotEmpty() }?.let { values ->
+            queryFilters.add(anyOfFilters(values.map { dcatProfileFilter(it) }))
+        }
         filters?.provenance?.value?.let { queryFilters.add(termFilter(FilterFields.Provenance, it)) }
-        filters?.spatial?.value?.forEach { queryFilters.add(termFilter(FilterFields.Spatial, it)) }
-        filters?.losTheme?.value?.forEach { queryFilters.add(termFilter(FilterFields.LosTheme, it)) }
+        filters?.spatial?.value?.takeIf { it.isNotEmpty() }?.let {
+            queryFilters.add(termsFilter(FilterFields.Spatial, it))
+        }
+        filters?.losTheme?.value?.takeIf { it.isNotEmpty() }?.let {
+            queryFilters.add(termsFilter(FilterFields.LosTheme, it))
+        }
         filters?.orgPath?.value?.let { queryFilters.add(termFilter(FilterFields.OrgPath, it)) }
-        filters?.formats?.value?.forEach { queryFilters.add(matchFilter(FilterFields.Format, it)) }
+        filters?.formats?.value?.takeIf { it.isNotEmpty() }?.let { values ->
+            queryFilters.add(anyOfFilters(values.map { matchFilter(FilterFields.Format, it) }))
+        }
         filters?.relations?.value?.let { queryFilters.add(termFilter(FilterFields.Relations, it)) }
         filters?.lastXDays?.value?.let { queryFilters.add(rangeFromDaysAgoFilter(FilterFields.FirstHarvested, it)) }
         filters?.lastXDaysModified?.value?.let { queryFilters.add(rangeFromDaysAgoFilter(FilterFields.Modified, it)) }
-        filters?.uri?.value?.let { queryFilters.add(termsFilter(FilterFields.Uri, it)) }
+        filters?.uri?.value?.takeIf { it.isNotEmpty() }?.let {
+            queryFilters.add(termsFilter(FilterFields.Uri, it))
+        }
 
         return queryFilters
     }

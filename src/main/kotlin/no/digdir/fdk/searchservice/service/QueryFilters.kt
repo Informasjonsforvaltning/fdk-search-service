@@ -119,6 +119,16 @@ internal fun termsFilter(field: FilterFields, values: List<String>): DSLQuery = 
     }
 }
 
+/**
+ * Combines [filters] with OR so that a document matches if any of them matches.
+ * Used for multiple selections within the same filter type.
+ */
+internal fun anyOfFilters(filters: List<DSLQuery>): DSLQuery = DSLQuery.of { queryBuilder ->
+    queryBuilder.bool { boolBuilder ->
+        boolBuilder.should(filters).minimumShouldMatch("1")
+    }
+}
+
 internal fun matchFilter(field: FilterFields, value: String): DSLQuery = DSLQuery.of { queryBuilder ->
     queryBuilder.match { matchBuilder ->
         matchBuilder.field(field.jsonPath()).query(FieldValue.of(value))
