@@ -2,6 +2,7 @@ package no.digdir.fdk.searchservice.service
 
 import co.elastic.clients.elasticsearch._types.FieldValue
 import co.elastic.clients.elasticsearch._types.aggregations.AggregationBuilders
+import no.digdir.fdk.searchservice.model.SearchFilters
 import no.digdir.fdk.searchservice.model.SearchProfile
 import no.digdir.fdk.searchservice.model.SearchType
 import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder
@@ -190,4 +191,85 @@ internal fun commonQueryFilters(searchTypes: List<SearchType>?, profile: SearchP
     if (profile == SearchProfile.TRANSPORT) queryFilters.add(transportProfileFilter())
 
     return queryFilters
+}
+
+/**
+ * A single facet's contribution to the query. [filters] go in bool.filter; [mustNots] go in
+ * bool.mustNot (used when a facet asks for the absence of a field).
+ */
+internal data class FacetFilterClause(val filters: List<DSLQuery> = emptyList(), val mustNots: List<DSLQuery> = emptyList())
+
+/**
+ * Filters that always apply to both hits and aggregations: common constraints plus non-faceted
+ * search filters (uri, relations, date ranges).
+ */
+internal fun alwaysOnFilters(filters: SearchFilters?, searchTypes: List<SearchType>?, profile: SearchProfile?): MutableList<DSLQuery> {
+    val queryFilters = commonQueryFilters(searchTypes, profile)
+
+    filters?.relations?.value?.let { queryFilters.add(termFilter(FilterFields.Relations, it)) }
+    filters?.lastXDays?.value?.let { queryFilters.add(rangeFromDaysAgoFilter(FilterFields.FirstHarvested, it)) }
+    filters?.lastXDaysModified?.value?.let { queryFilters.add(rangeFromDaysAgoFilter(FilterFields.Modified, it)) }
+    filters?.uri?.value?.takeIf { it.isNotEmpty() }?.let {
+        queryFilters.add(termsFilter(FilterFields.Uri, it))
+    }
+
+    return queryFilters
+}
+
+/**
+ * Faceted filter selections keyed by field. Used so each aggregation can later exclude its own
+ * facet while still applying the others.
+ */
+internal fun facetFilterClauses(filters: SearchFilters?): Map<FilterFields, FacetFilterClause> {
+    if (filters == null) return emptyMap()
+
+    val clauses = linkedMapOf<FilterFields, FacetFilterClause>()
+
+    filters.openData?.value?.let {
+        clauses[FilterFields.OpenData] = FacetFilterClause(filters = listOf(termFilter(FilterFields.OpenData, it)))
+    }
+
+    filters.accessRights?.let { accessRights ->
+        clauses[FilterFields.AccessRights] =
+            when (val value = accessRights.value) {
+                null -> FacetFilterClause(mustNots = listOf(existsFilter(FilterFields.AccessRights)))
+                else -> FacetFilterClause(filters = listOf(termFilter(FilterFields.AccessRights, value)))
+            }
+    }
+
+    filters.dataTheme?.value?.takeIf { it.isNotEmpty() }?.let {
+        clauses[FilterFields.DataTheme] = FacetFilterClause(filters = listOf(termsFilter(FilterFields.DataTheme, it)))
+    }
+
+    filters.dcatProfiles?.value?.takeIf { it.isNotEmpty() }?.let { values ->
+        clauses[FilterFields.DcatProfiles] =
+            FacetFilterClause(filters = listOf(anyOfFilters(values.map { dcatProfileFilter(it) })))
+    }
+
+    filters.provenance?.value?.let {
+        clauses[FilterFields.Provenance] = FacetFilterClause(filters = listOf(termFilter(FilterFields.Provenance, it)))
+    }
+
+    filters.spatial?.value?.takeIf { it.isNotEmpty() }?.let {
+        clauses[FilterFields.Spatial] = FacetFilterClause(filters = listOf(termsFilter(FilterFields.Spatial, it)))
+    }
+
+    filters.losTheme?.value?.takeIf { it.isNotEmpty() }?.let {
+        clauses[FilterFields.LosTheme] = FacetFilterClause(filters = listOf(termsFilter(FilterFields.LosTheme, it)))
+    }
+
+    filters.orgPath?.let { orgPath ->
+        clauses[FilterFields.OrgPath] =
+            when (val value = orgPath.value) {
+                null -> FacetFilterClause(mustNots = listOf(existsFilter(FilterFields.OrgPath)))
+                else -> FacetFilterClause(filters = listOf(termFilter(FilterFields.OrgPath, value)))
+            }
+    }
+
+    filters.formats?.value?.takeIf { it.isNotEmpty() }?.let { values ->
+        clauses[FilterFields.Format] =
+            FacetFilterClause(filters = listOf(anyOfFilters(values.map { matchFilter(FilterFields.Format, it) })))
+    }
+
+    return clauses
 }

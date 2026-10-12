@@ -35,7 +35,6 @@ import kotlin.math.ceil
 import kotlin.math.roundToLong
 import kotlin.time.measureTimedValue
 import kotlin.time.toJavaDuration
-import co.elastic.clients.elasticsearch._types.query_dsl.Query as DSLQuery
 
 @Component
 class SearchService(private val elasticSearchOperations: ElasticsearchOperations) {
@@ -80,6 +79,9 @@ class SearchService(private val elasticSearchOperations: ElasticsearchOperations
         searchTypes: List<SearchType>?,
         profile: SearchProfile?,
     ) {
+        val alwaysOn = alwaysOnFilters(filters, searchTypes, profile)
+        val facets = facetFilterClauses(filters)
+
         withQuery { queryBuilder ->
             queryBuilder.bool { boolBuilder ->
                 boolBuilder.should {
@@ -102,8 +104,8 @@ class SearchService(private val elasticSearchOperations: ElasticsearchOperations
                     }
                 }
                 boolBuilder.minimumShouldMatch("1")
-                boolBuilder.filter(createQueryFilters(filters, searchTypes, profile))
-                boolBuilder.mustNot(createNullFilters(filters))
+                boolBuilder.filter(alwaysOn + facets.values.flatMap { it.filters })
+                boolBuilder.mustNot(facets.values.flatMap { it.mustNots })
             }
         }
     }
@@ -113,10 +115,13 @@ class SearchService(private val elasticSearchOperations: ElasticsearchOperations
         searchTypes: List<SearchType>?,
         profile: SearchProfile?,
     ) {
+        val alwaysOn = alwaysOnFilters(filters, searchTypes, profile)
+        val facets = facetFilterClauses(filters)
+
         withQuery { queryBuilder ->
             queryBuilder.bool { boolBuilder ->
-                boolBuilder.filter(createQueryFilters(filters, searchTypes, profile))
-                boolBuilder.mustNot(createNullFilters(filters))
+                boolBuilder.filter(alwaysOn + facets.values.flatMap { it.filters })
+                boolBuilder.mustNot(facets.values.flatMap { it.mustNots })
             }
         }
     }
@@ -150,56 +155,6 @@ class SearchService(private val elasticSearchOperations: ElasticsearchOperations
     private fun SortField.sortDirection(): SortOrder = when (direction) {
         SortDirection.ASC -> SortOrder.Asc
         else -> SortOrder.Desc
-    }
-
-    private fun createQueryFilters(filters: SearchFilters?, searchTypes: List<SearchType>?, profile: SearchProfile?): List<DSLQuery> {
-        val queryFilters = commonQueryFilters(searchTypes, profile)
-
-        filters?.openData?.value?.let { queryFilters.add(termFilter(FilterFields.OpenData, it)) }
-        filters?.accessRights?.value?.let { queryFilters.add(termFilter(FilterFields.AccessRights, it)) }
-        filters?.dataTheme?.value?.takeIf { it.isNotEmpty() }?.let {
-            queryFilters.add(termsFilter(FilterFields.DataTheme, it))
-        }
-        filters?.dcatProfiles?.value?.takeIf { it.isNotEmpty() }?.let { values ->
-            queryFilters.add(anyOfFilters(values.map { dcatProfileFilter(it) }))
-        }
-        filters?.provenance?.value?.let { queryFilters.add(termFilter(FilterFields.Provenance, it)) }
-        filters?.spatial?.value?.takeIf { it.isNotEmpty() }?.let {
-            queryFilters.add(termsFilter(FilterFields.Spatial, it))
-        }
-        filters?.losTheme?.value?.takeIf { it.isNotEmpty() }?.let {
-            queryFilters.add(termsFilter(FilterFields.LosTheme, it))
-        }
-        filters?.orgPath?.value?.let { queryFilters.add(termFilter(FilterFields.OrgPath, it)) }
-        filters?.formats?.value?.takeIf { it.isNotEmpty() }?.let { values ->
-            queryFilters.add(anyOfFilters(values.map { matchFilter(FilterFields.Format, it) }))
-        }
-        filters?.relations?.value?.let { queryFilters.add(termFilter(FilterFields.Relations, it)) }
-        filters?.lastXDays?.value?.let { queryFilters.add(rangeFromDaysAgoFilter(FilterFields.FirstHarvested, it)) }
-        filters?.lastXDaysModified?.value?.let { queryFilters.add(rangeFromDaysAgoFilter(FilterFields.Modified, it)) }
-        filters?.uri?.value?.takeIf { it.isNotEmpty() }?.let {
-            queryFilters.add(termsFilter(FilterFields.Uri, it))
-        }
-
-        return queryFilters
-    }
-
-    /**
-     * Filters that ask for the *absence* of a field: when a filter is supplied with a `null`
-     * value, that's interpreted as "only match documents where this field is missing".
-     */
-    private fun createNullFilters(filters: SearchFilters?): List<DSLQuery> {
-        val queryFilters = mutableListOf<DSLQuery>()
-
-        if (filters?.accessRights != null && filters.accessRights.value == null) {
-            queryFilters.add(existsFilter(FilterFields.AccessRights))
-        }
-
-        if (filters?.orgPath != null && filters.orgPath.value == null) {
-            queryFilters.add(existsFilter(FilterFields.OrgPath))
-        }
-
-        return queryFilters
     }
 
     private fun QueryFields.matchPaths(titleBoost: Int): List<String> = listOf(
