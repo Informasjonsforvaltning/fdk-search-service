@@ -113,7 +113,7 @@ class FilterTest : ApiTestContext() {
             val validValues = listOf("ENVI", "REGI")
             val allThemesValid =
                 result.hits.all { dataset ->
-                    dataset.dataTheme?.map { it.code }?.containsAll(validValues) ?: false
+                    dataset.dataTheme?.map { it.code }?.any { it in validValues } ?: false
                 }
             Assertions.assertTrue(allThemesValid)
         }
@@ -165,11 +165,11 @@ class FilterTest : ApiTestContext() {
             Assertions.assertNotEquals(0, result.hits.size)
 
             val validValues = listOf("Norge", "Spania")
-            val allThemesValid =
+            val allSpatialValid =
                 result.hits.all { dataset ->
-                    dataset.spatial?.map { it.prefLabel?.nb }?.containsAll(validValues) ?: false
+                    dataset.spatial?.map { it.prefLabel?.nb }?.any { it in validValues } ?: false
                 }
-            Assertions.assertTrue(allThemesValid)
+            Assertions.assertTrue(allSpatialValid)
         }
 
         @Test
@@ -202,7 +202,7 @@ class FilterTest : ApiTestContext() {
 
             val allThemesValid =
                 result.hits.all { dataset ->
-                    dataset.losTheme?.flatMap { it.losPaths ?: emptySet() }?.containsAll(validValues) ?: false
+                    dataset.losTheme?.flatMap { it.losPaths ?: emptySet() }?.any { it in validValues } ?: false
                 }
             Assertions.assertTrue(allThemesValid)
         }
@@ -260,14 +260,17 @@ class FilterTest : ApiTestContext() {
     inner class FdkFormatPrefixed {
         @Test
         fun `filter datasets on list of formats`() {
+            val selectedFormats = listOf("MEDIA_TYPE tiff", "FILE_TYPE SHP")
             val result =
                 searchWithFilters(
-                    searchFilter.copy(formats = SearchFilter(value = listOf("MEDIA_TYPE tiff", "FILE_TYPE SHP"))),
+                    searchFilter.copy(formats = SearchFilter(value = selectedFormats)),
                 )
             Assertions.assertTrue(result.hits.isNotEmpty())
 
-            val validValues = listOf("MEDIA_TYPE tiff", "FILE_TYPE SHP", "UNKNOWN")
-            val allFormatsValid = result.hits.all { dataset -> dataset.fdkFormatPrefixed?.all { validValues.contains(it) } ?: false }
+            val allFormatsValid =
+                result.hits.all { dataset ->
+                    dataset.fdkFormatPrefixed?.any { it in selectedFormats } ?: false
+                }
             Assertions.assertTrue(allFormatsValid)
         }
 
@@ -376,18 +379,23 @@ class FilterTest : ApiTestContext() {
         }
 
         @Test
-        fun `filter datasets on several profiles only matches datasets described by all of them`() {
+        fun `filter datasets on several profiles matches datasets described by any of them`() {
             val result =
                 searchWithFilters(searchFilter.copy(dcatProfiles = SearchFilter(listOf("MOBILITY_DCAT_AP", "HVD_DCAT_AP_NO"))))
-            Assertions.assertEquals(1, result.hits.size)
-            Assertions.assertEquals("dataset.uri.2", result.hits.first().uri)
+            Assertions.assertEquals(2, result.hits.size)
+            Assertions.assertTrue(result.hits.map { it.uri }.containsAll(listOf(TEST_DATASET_FILTERS.uri, "dataset.uri.2")))
         }
 
         @Test
-        fun `profiles that exclude each other give no hits when combined`() {
+        fun `combining exclusive profiles matches datasets described by either`() {
             val result =
                 searchWithFilters(searchFilter.copy(dcatProfiles = SearchFilter(listOf("MOBILITY_DCAT_AP", "DCAT_AP_NO"))))
-            Assertions.assertEquals(0, result.hits.size)
+            Assertions.assertEquals(4, result.hits.size)
+            Assertions.assertTrue(
+                result.hits.map { it.uri }.containsAll(
+                    listOf(TEST_DATASET_FILTERS.uri, "dataset.uri.2", "Test uri 1001", TEST_DATASET_HIT_ALL_FIELDS.uri),
+                ),
+            )
         }
 
         @Test
