@@ -3,6 +3,7 @@ package no.digdir.fdk.searchservice.integration
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.digdir.fdk.searchservice.model.SearchFilter
+import no.digdir.fdk.searchservice.model.SearchFilters
 import no.digdir.fdk.searchservice.model.SearchOperation
 import no.digdir.fdk.searchservice.model.SearchResult
 import no.digdir.fdk.searchservice.utils.ApiTestContext
@@ -27,6 +28,14 @@ class Aggregations : ApiTestContext() {
     private val mapper = jacksonObjectMapper()
     private val searchFilter = createEmptySearchFilters()
     private val path = "/search"
+    private val datasetsPath = "/search/datasets"
+
+    private fun search(filters: SearchFilters? = null, path: String = this.path): SearchResult {
+        val searchBody = mapper.writeValueAsString(SearchOperation(filters = filters))
+        val response = requestApi(path, port, searchBody, HttpMethod.POST)
+        Assertions.assertEquals(200, response["status"])
+        return mapper.readValue(response["body"] as String)
+    }
 
     @Test
     fun `any search contains all aggregations`() {
@@ -54,44 +63,38 @@ class Aggregations : ApiTestContext() {
     }
 
     @Test
-    fun `filter openData = true only aggregates resources with openData = true`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(filters = searchFilter.copy(openData = SearchFilter(true))))
-        val response = requestApi(path, port, searchBody, HttpMethod.POST)
-        Assertions.assertEquals(200, response["status"])
+    fun `openData aggregation ignores its own filter while hits remain filtered`() {
+        val result = search(searchFilter.copy(openData = SearchFilter(true)))
 
-        val result: SearchResult = mapper.readValue(response["body"] as String)
-        Assertions.assertEquals(1, result.aggregations["openData"]?.size)
-        Assertions.assertEquals("true", result.aggregations["openData"]?.first()?.key)
+        Assertions.assertTrue(result.hits.isNotEmpty())
+        Assertions.assertTrue(result.hits.all { it.isOpenData == true })
+
+        val openDataKeys = result.aggregations["openData"]?.map { it.key }?.toSet()
+        Assertions.assertTrue(openDataKeys?.contains("true") == true)
+        Assertions.assertTrue((openDataKeys?.size ?: 0) > 1)
     }
 
     @Test
-    fun `filter accessRights = PUBLIC only aggregates resources with accessRights = PUBLIC`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(filters = searchFilter.copy(accessRights = SearchFilter("PUBLIC"))))
-        val response = requestApi(path, port, searchBody, HttpMethod.POST)
-        Assertions.assertEquals(200, response["status"])
+    fun `accessRights aggregation ignores its own filter while hits remain filtered`() {
+        val result = search(searchFilter.copy(accessRights = SearchFilter("PUBLIC")))
 
-        val result: SearchResult = mapper.readValue(response["body"] as String)
-        Assertions.assertEquals(1, result.aggregations["accessRights"]?.size)
-        Assertions.assertEquals("PUBLIC", result.aggregations["accessRights"]?.first()?.key)
+        Assertions.assertTrue(result.hits.isNotEmpty())
+        Assertions.assertTrue(result.hits.all { it.accessRights?.code?.contains("PUBLIC") == true })
+
+        val accessRightsKeys = result.aggregations["accessRights"]?.map { it.key }?.toSet()
+        Assertions.assertTrue(accessRightsKeys?.contains("PUBLIC") == true)
+        Assertions.assertTrue((accessRightsKeys?.size ?: 0) > 1)
     }
 
     @Test
     fun `aggregations can be larger than the default size 10`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation())
-        val response = requestApi(path, port, searchBody, HttpMethod.POST)
-        Assertions.assertEquals(200, response["status"])
-
-        val result: SearchResult = mapper.readValue(response["body"] as String)
+        val result = search()
         Assertions.assertTrue(10 < (result.aggregations["orgPath"]?.size ?: 0))
     }
 
     @Test
     fun `datasets without dcatProfiles are aggregated as the default profile`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation())
-        val response = requestApi("/search/datasets", port, searchBody, HttpMethod.POST)
-        Assertions.assertEquals(200, response["status"])
-
-        val result: SearchResult = mapper.readValue(response["body"] as String)
+        val result = search(path = datasetsPath)
         val counts = result.aggregations["dcatProfiles"]?.associate { it.key to it.count }
 
         Assertions.assertEquals(2, counts?.get("DCAT_AP_NO"))
@@ -100,24 +103,53 @@ class Aggregations : ApiTestContext() {
     }
 
     @Test
-    fun `objects missing accessRights are aggregated as null`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(filters = searchFilter.copy(accessRights = SearchFilter(null))))
-        val response = requestApi(path, port, searchBody, HttpMethod.POST)
-        Assertions.assertEquals(200, response["status"])
+    fun `accessRights aggregation ignores missing-field filter while hits remain filtered`() {
+        val result = search(searchFilter.copy(accessRights = SearchFilter(null)))
 
-        val result: SearchResult = mapper.readValue(response["body"] as String)
-        Assertions.assertEquals(1, result.aggregations["accessRights"]?.size)
-        Assertions.assertEquals("null", result.aggregations["accessRights"]?.first()?.key)
+        Assertions.assertTrue(result.hits.isNotEmpty())
+        Assertions.assertTrue(result.hits.all { it.accessRights == null })
+
+        val accessRightsKeys = result.aggregations["accessRights"]?.map { it.key }?.toSet()
+        Assertions.assertTrue(accessRightsKeys?.contains("null") == true)
+        Assertions.assertTrue((accessRightsKeys?.size ?: 0) > 1)
     }
 
     @Test
-    fun `objects missing orgPath are aggregated as null`() {
-        val searchBody = mapper.writeValueAsString(SearchOperation(filters = searchFilter.copy(orgPath = SearchFilter(null))))
-        val response = requestApi(path, port, searchBody, HttpMethod.POST)
-        Assertions.assertEquals(200, response["status"])
+    fun `orgPath aggregation ignores missing-field filter while hits remain filtered`() {
+        val result = search(searchFilter.copy(orgPath = SearchFilter(null)))
 
-        val result: SearchResult = mapper.readValue(response["body"] as String)
-        Assertions.assertEquals(1, result.aggregations["orgPath"]?.size)
-        Assertions.assertEquals("null", result.aggregations["orgPath"]?.first()?.key)
+        Assertions.assertTrue(result.hits.isNotEmpty())
+        Assertions.assertTrue(result.hits.all { it.organization?.orgPath == null })
+
+        val orgPathKeys = result.aggregations["orgPath"]?.map { it.key }?.toSet()
+        Assertions.assertTrue(orgPathKeys?.contains("null") == true)
+        Assertions.assertTrue((orgPathKeys?.size ?: 0) > 1)
+    }
+
+    @Test
+    fun `theme and org aggregations each exclude their own filter`() {
+        val result =
+            search(
+                searchFilter.copy(
+                    dataTheme = SearchFilter(listOf("ENVI")),
+                    orgPath = SearchFilter("/FYLKE"),
+                ),
+                datasetsPath,
+            )
+
+        Assertions.assertTrue(result.hits.isNotEmpty())
+        Assertions.assertTrue(
+            result.hits.all { hit ->
+                hit.dataTheme?.any { it.code == "ENVI" } == true &&
+                    hit.organization?.orgPath == "/FYLKE"
+            },
+        )
+
+        val themeKeys = result.aggregations["dataTheme"]?.map { it.key }?.toSet()
+        Assertions.assertTrue(themeKeys?.containsAll(listOf("ENVI", "REGI")) == true)
+
+        val orgKeys = result.aggregations["orgPath"]?.map { it.key }?.toSet()
+        Assertions.assertTrue(orgKeys?.contains("/FYLKE") == true)
+        Assertions.assertTrue(orgKeys?.any { it.startsWith("/STAT") } == true)
     }
 }

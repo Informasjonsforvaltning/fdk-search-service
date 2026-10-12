@@ -1,7 +1,7 @@
 package no.digdir.fdk.searchservice.service
 
 import co.elastic.clients.elasticsearch._types.FieldValue
-import co.elastic.clients.elasticsearch._types.aggregations.AggregationBuilders
+import co.elastic.clients.elasticsearch._types.aggregations.Aggregation
 import no.digdir.fdk.searchservice.model.SearchFilters
 import no.digdir.fdk.searchservice.model.SearchProfile
 import no.digdir.fdk.searchservice.model.SearchType
@@ -85,16 +85,27 @@ internal const val DEFAULT_DCAT_PROFILE = "DCAT_AP_NO"
 private const val MAX_AGGREGATION_BUCKETS = 15_000
 
 /**
- * Registers a terms aggregation for [field], collapsing the boilerplate that would otherwise be
- * repeated for every facet shown in the search response. Documents without a value for the field
- * are counted in the [missingValue] bucket when one is given, and left out otherwise.
+ * Registers a facet aggregation for [field]: an outer filter aggregation that applies every
+ * facet selection except [field]'s own, with a nested terms aggregation that produces the buckets.
+ * Documents without a value for the field are counted in the [missingValue] bucket when one is
+ * given, and left out otherwise.
  */
-internal fun NativeQueryBuilder.addTermsAggregation(field: FilterFields, missingValue: String? = null): NativeQueryBuilder {
+internal fun NativeQueryBuilder.addFacetAggregation(
+    field: FilterFields,
+    facets: Map<FilterFields, FacetFilterClause>,
+    missingValue: String? = null,
+): NativeQueryBuilder {
     withAggregation(
         field.aggregationName(),
-        AggregationBuilders.terms { builder ->
-            val sized = builder.field(field.jsonPath()).size(MAX_AGGREGATION_BUCKETS)
-            if (missingValue != null) sized.missing(missingValue) else sized
+        Aggregation.of { aggregationBuilder ->
+            aggregationBuilder
+                .filter(facets.excluding(field).toBoolQuery())
+                .aggregations(field.aggregationName()) { termsAggregationBuilder ->
+                    termsAggregationBuilder.terms { termsBuilder ->
+                        val sized = termsBuilder.field(field.jsonPath()).size(MAX_AGGREGATION_BUCKETS)
+                        if (missingValue != null) sized.missing(missingValue) else sized
+                    }
+                }
         },
     )
     return this
@@ -197,7 +208,30 @@ internal fun commonQueryFilters(searchTypes: List<SearchType>?, profile: SearchP
  * A single facet's contribution to the query. [filters] go in bool.filter; [mustNots] go in
  * bool.mustNot (used when a facet asks for the absence of a field).
  */
-internal data class FacetFilterClause(val filters: List<DSLQuery> = emptyList(), val mustNots: List<DSLQuery> = emptyList())
+internal data class FacetFilterClause(val filters: List<DSLQuery> = emptyList(), val mustNots: List<DSLQuery> = emptyList()) {
+    fun isEmpty(): Boolean = filters.isEmpty() && mustNots.isEmpty()
+
+    fun toBoolQuery(): DSLQuery = DSLQuery.of { queryBuilder ->
+        queryBuilder.bool { boolBuilder ->
+            if (filters.isNotEmpty()) boolBuilder.filter(filters)
+            if (mustNots.isNotEmpty()) boolBuilder.mustNot(mustNots)
+            boolBuilder
+        }
+    }
+}
+
+internal fun Map<FilterFields, FacetFilterClause>.excluding(field: FilterFields): FacetFilterClause {
+    val others = filterKeys { it != field }.values
+    return FacetFilterClause(
+        filters = others.flatMap { it.filters },
+        mustNots = others.flatMap { it.mustNots },
+    )
+}
+
+internal fun Map<FilterFields, FacetFilterClause>.combined(): FacetFilterClause = FacetFilterClause(
+    filters = values.flatMap { it.filters },
+    mustNots = values.flatMap { it.mustNots },
+)
 
 /**
  * Filters that always apply to both hits and aggregations: common constraints plus non-faceted
