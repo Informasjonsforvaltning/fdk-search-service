@@ -85,14 +85,14 @@ internal const val DEFAULT_DCAT_PROFILE = "DCAT_AP_NO"
 private const val MAX_AGGREGATION_BUCKETS = 15_000
 
 /**
- * Facet fields that share an exclusion group: each aggregation in the group ignores selections
- * for every field in the group (not only its own).
+ * Facet fields that are coupled in the UI: selections across the group are OR'd for hits, and
+ * each aggregation in the group ignores selections for every field in the group.
  */
-private val FACET_EXCLUSION_GROUPS: List<Set<FilterFields>> = listOf(
+private val COUPLED_FACETS: List<Set<FilterFields>> = listOf(
     setOf(FilterFields.OpenData, FilterFields.AccessRights),
 )
 
-internal fun FilterFields.aggregationExclusions(): Set<FilterFields> = FACET_EXCLUSION_GROUPS.firstOrNull { this in it } ?: setOf(this)
+internal fun FilterFields.aggregationExclusions(): Set<FilterFields> = COUPLED_FACETS.firstOrNull { this in it } ?: setOf(this)
 
 /**
  * Registers a facet aggregation for [field]: an outer filter aggregation that applies every
@@ -109,7 +109,7 @@ internal fun NativeQueryBuilder.addFacetAggregation(
         field.aggregationName(),
         Aggregation.of { aggregationBuilder ->
             aggregationBuilder
-                .filter(facets.excluding(field.aggregationExclusions()).toBoolQuery())
+                .filter(facets.excluding(field.aggregationExclusions()).toFilterQuery())
                 .aggregations(field.aggregationName()) { termsAggregationBuilder ->
                     termsAggregationBuilder.terms { termsBuilder ->
                         val sized = termsBuilder.field(field.jsonPath()).size(MAX_AGGREGATION_BUCKETS)
@@ -270,18 +270,45 @@ internal data class FacetFilterClause(val filters: List<DSLQuery> = emptyList(),
     }
 }
 
-internal fun Map<FilterFields, FacetFilterClause>.excluding(fields: Set<FilterFields>): FacetFilterClause {
-    val others = filterKeys { it !in fields }.values
-    return FacetFilterClause(
-        filters = others.flatMap { it.filters },
-        mustNots = others.flatMap { it.mustNots },
-    )
+internal fun Map<FilterFields, FacetFilterClause>.excluding(fields: Set<FilterFields>): Map<FilterFields, FacetFilterClause> =
+    filterKeys { it !in fields }
+
+/**
+ * Combines facet clauses into one filter query: selections within a [COUPLED_FACETS] group are
+ * OR'd; groups and uncoupled facets are AND'd.
+ */
+internal fun Map<FilterFields, FacetFilterClause>.toFilterQuery(): DSLQuery {
+    val remaining = toMutableMap()
+    val andParts = mutableListOf<DSLQuery>()
+
+    for (group in COUPLED_FACETS) {
+        val groupQueries =
+            group
+                .mapNotNull { remaining.remove(it) }
+                .filter { !it.isEmpty() }
+                .map { it.toBoolQuery() }
+        when {
+            groupQueries.size > 1 -> andParts.add(anyOfFilters(groupQueries))
+            groupQueries.size == 1 -> andParts.add(groupQueries.first())
+        }
+    }
+
+    remaining.values.filter { !it.isEmpty() }.mapTo(andParts) { it.toBoolQuery() }
+
+    return when {
+        andParts.isEmpty() ->
+            DSLQuery.of { queryBuilder -> queryBuilder.bool { it } }
+
+        andParts.size == 1 -> andParts.first()
+
+        else ->
+            DSLQuery.of { queryBuilder ->
+                queryBuilder.bool { boolBuilder -> boolBuilder.filter(andParts) }
+            }
+    }
 }
 
-internal fun Map<FilterFields, FacetFilterClause>.combined(): FacetFilterClause = FacetFilterClause(
-    filters = values.flatMap { it.filters },
-    mustNots = values.flatMap { it.mustNots },
-)
+internal fun Map<FilterFields, FacetFilterClause>.isEmptyFacets(): Boolean = values.all { it.isEmpty() }
 
 /**
  * Filters that always apply to both hits and aggregations: common constraints plus non-faceted
