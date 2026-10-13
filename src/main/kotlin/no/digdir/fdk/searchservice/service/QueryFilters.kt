@@ -264,11 +264,15 @@ internal fun facetFilterClauses(filters: SearchFilters?): Map<FilterFields, Face
     }
 
     filters.accessRights?.let { accessRights ->
-        clauses[FilterFields.AccessRights] =
-            when (val value = accessRights.value) {
-                null -> FacetFilterClause(mustNots = listOf(existsFilter(FilterFields.AccessRights)))
-                else -> FacetFilterClause(filters = listOf(termFilter(FilterFields.AccessRights, value)))
+        when (val value = accessRights.value) {
+            null -> clauses[FilterFields.AccessRights] =
+                FacetFilterClause(mustNots = listOf(existsFilter(FilterFields.AccessRights)))
+
+            else -> value.takeIf { it.isNotEmpty() }?.let {
+                clauses[FilterFields.AccessRights] =
+                    FacetFilterClause(filters = listOf(termsFilter(FilterFields.AccessRights, it)))
             }
+        }
     }
 
     filters.dataTheme?.value?.takeIf { it.isNotEmpty() }?.let {
@@ -280,8 +284,8 @@ internal fun facetFilterClauses(filters: SearchFilters?): Map<FilterFields, Face
             FacetFilterClause(filters = listOf(anyOfFilters(values.map { dcatProfileFilter(it) })))
     }
 
-    filters.provenance?.value?.let {
-        clauses[FilterFields.Provenance] = FacetFilterClause(filters = listOf(termFilter(FilterFields.Provenance, it)))
+    filters.provenance?.value?.takeIf { it.isNotEmpty() }?.let {
+        clauses[FilterFields.Provenance] = FacetFilterClause(filters = listOf(termsFilter(FilterFields.Provenance, it)))
     }
 
     filters.spatial?.value?.takeIf { it.isNotEmpty() }?.let {
@@ -293,11 +297,15 @@ internal fun facetFilterClauses(filters: SearchFilters?): Map<FilterFields, Face
     }
 
     filters.orgPath?.let { orgPath ->
-        clauses[FilterFields.OrgPath] =
-            when (val value = orgPath.value) {
-                null -> FacetFilterClause(mustNots = listOf(existsFilter(FilterFields.OrgPath)))
-                else -> FacetFilterClause(filters = listOf(termFilter(FilterFields.OrgPath, value)))
+        when (val value = orgPath.value) {
+            null -> clauses[FilterFields.OrgPath] =
+                FacetFilterClause(mustNots = listOf(existsFilter(FilterFields.OrgPath)))
+
+            else -> value.takeIf { it.isNotEmpty() }?.let {
+                clauses[FilterFields.OrgPath] =
+                    FacetFilterClause(filters = listOf(termsFilter(FilterFields.OrgPath, it)))
             }
+        }
     }
 
     filters.formats?.value?.takeIf { it.isNotEmpty() }?.let { values ->

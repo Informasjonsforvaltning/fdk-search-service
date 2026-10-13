@@ -76,7 +76,7 @@ class Aggregations : ApiTestContext() {
 
     @Test
     fun `accessRights aggregation ignores its own filter while hits remain filtered`() {
-        val result = search(searchFilter.copy(accessRights = SearchFilter("PUBLIC")))
+        val result = search(searchFilter.copy(accessRights = SearchFilter(listOf("PUBLIC"))))
 
         Assertions.assertTrue(result.hits.isNotEmpty())
         Assertions.assertTrue(result.hits.all { it.accessRights?.code?.contains("PUBLIC") == true })
@@ -132,7 +132,7 @@ class Aggregations : ApiTestContext() {
             search(
                 searchFilter.copy(
                     dataTheme = SearchFilter(listOf("ENVI")),
-                    orgPath = SearchFilter("/FYLKE"),
+                    orgPath = SearchFilter(listOf("/FYLKE")),
                 ),
                 datasetsPath,
             )

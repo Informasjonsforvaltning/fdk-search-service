@@ -23,13 +23,13 @@ class QueryFields(
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class SearchFilters(
     val openData: SearchFilter<Boolean>?,
-    val accessRights: SearchFilter<String?>?,
+    val accessRights: SearchFilter<List<String>?>?,
     val dataTheme: SearchFilter<List<String>>?,
     val dcatProfiles: SearchFilter<List<String>>?,
     val spatial: SearchFilter<List<String>>?,
-    val provenance: SearchFilter<String>?,
+    val provenance: SearchFilter<List<String>>?,
     val losTheme: SearchFilter<List<String>>?,
-    val orgPath: SearchFilter<String?>?,
+    val orgPath: SearchFilter<List<String>?>?,
     val formats: SearchFilter<List<String>>?,
     val relations: SearchFilter<String>?,
     val lastXDays: SearchFilter<Int>?,

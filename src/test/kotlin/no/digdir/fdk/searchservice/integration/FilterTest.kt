@@ -75,7 +75,7 @@ class FilterTest : ApiTestContext() {
     inner class AccessRight {
         @Test
         fun `filter datasets on accessRight = 'PUBLIC'`() {
-            val result = searchWithFilters(searchFilter.copy(accessRights = SearchFilter("PUBLIC")))
+            val result = searchWithFilters(searchFilter.copy(accessRights = SearchFilter(listOf("PUBLIC"))))
             Assertions.assertNotEquals(0, result.hits.size)
 
             for (dataset in result.hits) {
@@ -85,7 +85,7 @@ class FilterTest : ApiTestContext() {
 
         @Test
         fun `filter datasets on non valid accessRight returns empty list`() {
-            val result = searchWithFilters(searchFilter.copy(accessRights = SearchFilter("")))
+            val result = searchWithFilters(searchFilter.copy(accessRights = SearchFilter(listOf(""))))
             Assertions.assertEquals(0, result.hits.size)
         }
     }
@@ -129,7 +129,7 @@ class FilterTest : ApiTestContext() {
     inner class Provenance {
         @Test
         fun `filter datasets on provenance = 'BRUKER'`() {
-            val result = searchWithFilters(searchFilter.copy(provenance = SearchFilter("BRUKER")))
+            val result = searchWithFilters(searchFilter.copy(provenance = SearchFilter(listOf("BRUKER"))))
             Assertions.assertNotEquals(0, result.hits.size)
 
             for (dataset in result.hits) {
@@ -139,7 +139,7 @@ class FilterTest : ApiTestContext() {
 
         @Test
         fun `filter datasets on non valid provenance = '1234' should return nothing`() {
-            val result = searchWithFilters(searchFilter.copy(provenance = SearchFilter("1234")))
+            val result = searchWithFilters(searchFilter.copy(provenance = SearchFilter(listOf("1234"))))
             Assertions.assertEquals(0, result.hits.size)
         }
     }
@@ -232,7 +232,7 @@ class FilterTest : ApiTestContext() {
     inner class OrgPath {
         @Test
         fun `filter datasets on orgPath = 'FYLKE'`() {
-            val result = searchWithFilters(searchFilter.copy(orgPath = SearchFilter("/FYLKE")))
+            val result = searchWithFilters(searchFilter.copy(orgPath = SearchFilter(listOf("/FYLKE"))))
             Assertions.assertNotEquals(0, result.hits.size)
 
             for (dataset in result.hits) {
@@ -242,13 +242,13 @@ class FilterTest : ApiTestContext() {
 
         @Test
         fun `filter datasets on non-existing orgPath = '1234' should return nothing`() {
-            val result = searchWithFilters(searchFilter.copy(orgPath = SearchFilter(value = "/1234")))
+            val result = searchWithFilters(searchFilter.copy(orgPath = SearchFilter(value = listOf("/1234"))))
             Assertions.assertEquals(0, result.hits.size)
         }
 
         @Test
         fun `filtering datasets by parent category should include hits from subcategories`() {
-            val result = searchWithFilters(searchFilter.copy(orgPath = SearchFilter("/STAT")))
+            val result = searchWithFilters(searchFilter.copy(orgPath = SearchFilter(listOf("/STAT"))))
             Assertions.assertNotEquals(0, result.hits.size)
 
             val allThemesValid = result.hits.all { dataset -> dataset.organization?.orgPath?.startsWith("/STAT") ?: false }
