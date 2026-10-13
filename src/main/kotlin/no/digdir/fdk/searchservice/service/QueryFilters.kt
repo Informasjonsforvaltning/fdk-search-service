@@ -159,6 +159,46 @@ internal fun existsFilter(field: FilterFields): DSLQuery = DSLQuery.of { queryBu
     queryBuilder.exists { existsBuilder -> existsBuilder.field(field.jsonPath()) }
 }
 
+/** Documents where [field] is absent — used when the client selects the aggregation missing bucket. */
+internal fun missingFieldFilter(field: FilterFields): DSLQuery = DSLQuery.of { queryBuilder ->
+    queryBuilder.bool { boolBuilder ->
+        boolBuilder.mustNot(listOf(existsFilter(field)))
+    }
+}
+
+/**
+ * Builds a facet clause from a list that may include [MISSING_VALUE_AGGREGATE] (`"null"`) to mean
+ * "field is missing", OR'd with any concrete values.
+ *
+ * A whole-filter `value: null` is handled by callers as an alias for missing-only.
+ */
+internal fun valuesOrMissingClause(field: FilterFields, values: List<String>): FacetFilterClause? {
+    val includeMissing = values.contains(MISSING_VALUE_AGGREGATE)
+    val concreteValues = values.filter { it != MISSING_VALUE_AGGREGATE }
+
+    return when {
+        includeMissing && concreteValues.isEmpty() ->
+            FacetFilterClause(mustNots = listOf(existsFilter(field)))
+
+        !includeMissing && concreteValues.isNotEmpty() ->
+            FacetFilterClause(filters = listOf(termsFilter(field, concreteValues)))
+
+        includeMissing && concreteValues.isNotEmpty() ->
+            FacetFilterClause(
+                filters = listOf(
+                    anyOfFilters(
+                        listOf(
+                            termsFilter(field, concreteValues),
+                            missingFieldFilter(field),
+                        ),
+                    ),
+                ),
+            )
+
+        else -> null
+    }
+}
+
 internal fun transportProfileFilter(): DSLQuery = termFilter(FilterFields.TransportRelation, true)
 
 /**
@@ -268,9 +308,8 @@ internal fun facetFilterClauses(filters: SearchFilters?): Map<FilterFields, Face
             null -> clauses[FilterFields.AccessRights] =
                 FacetFilterClause(mustNots = listOf(existsFilter(FilterFields.AccessRights)))
 
-            else -> value.takeIf { it.isNotEmpty() }?.let {
-                clauses[FilterFields.AccessRights] =
-                    FacetFilterClause(filters = listOf(termsFilter(FilterFields.AccessRights, it)))
+            else -> valuesOrMissingClause(FilterFields.AccessRights, value)?.let {
+                clauses[FilterFields.AccessRights] = it
             }
         }
     }
@@ -301,9 +340,8 @@ internal fun facetFilterClauses(filters: SearchFilters?): Map<FilterFields, Face
             null -> clauses[FilterFields.OrgPath] =
                 FacetFilterClause(mustNots = listOf(existsFilter(FilterFields.OrgPath)))
 
-            else -> value.takeIf { it.isNotEmpty() }?.let {
-                clauses[FilterFields.OrgPath] =
-                    FacetFilterClause(filters = listOf(termsFilter(FilterFields.OrgPath, it)))
+            else -> valuesOrMissingClause(FilterFields.OrgPath, value)?.let {
+                clauses[FilterFields.OrgPath] = it
             }
         }
     }

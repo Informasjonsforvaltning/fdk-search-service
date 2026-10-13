@@ -88,6 +88,39 @@ class FilterTest : ApiTestContext() {
             val result = searchWithFilters(searchFilter.copy(accessRights = SearchFilter(listOf(""))))
             Assertions.assertEquals(0, result.hits.size)
         }
+
+        @Test
+        fun `filter datasets on multiple accessRights matches any selected value`() {
+            val validValues = listOf("PUBLIC", "accessRights > code")
+            val result = searchWithFilters(searchFilter.copy(accessRights = SearchFilter(validValues)))
+            Assertions.assertTrue(result.hits.isNotEmpty())
+            Assertions.assertTrue(
+                result.hits.all { dataset -> dataset.accessRights?.code in validValues },
+            )
+        }
+
+        @Test
+        fun `filter on accessRights null matches missing field`() {
+            val result =
+                searchWithFilters(searchFilter.copy(accessRights = SearchFilter(listOf("null"))), allResourcesPath)
+            Assertions.assertTrue(result.hits.isNotEmpty())
+            Assertions.assertTrue(result.hits.all { it.accessRights == null })
+        }
+
+        @Test
+        fun `filter on accessRights PUBLIC or null matches either`() {
+            val result =
+                searchWithFilters(
+                    searchFilter.copy(accessRights = SearchFilter(listOf("PUBLIC", "null"))),
+                    allResourcesPath,
+                )
+            Assertions.assertTrue(result.hits.isNotEmpty())
+            Assertions.assertTrue(
+                result.hits.all { it.accessRights?.code == "PUBLIC" || it.accessRights == null },
+            )
+            Assertions.assertTrue(result.hits.any { it.accessRights?.code == "PUBLIC" })
+            Assertions.assertTrue(result.hits.any { it.accessRights == null })
+        }
     }
 
     @Nested
@@ -141,6 +174,16 @@ class FilterTest : ApiTestContext() {
         fun `filter datasets on non valid provenance = '1234' should return nothing`() {
             val result = searchWithFilters(searchFilter.copy(provenance = SearchFilter(listOf("1234"))))
             Assertions.assertEquals(0, result.hits.size)
+        }
+
+        @Test
+        fun `filter datasets on multiple provenances matches any selected value`() {
+            val validValues = listOf("BRUKER", "Test provenance > code")
+            val result = searchWithFilters(searchFilter.copy(provenance = SearchFilter(validValues)))
+            Assertions.assertTrue(result.hits.isNotEmpty())
+            Assertions.assertTrue(
+                result.hits.all { dataset -> dataset.provenance?.code in validValues },
+            )
         }
     }
 
@@ -253,6 +296,41 @@ class FilterTest : ApiTestContext() {
 
             val allThemesValid = result.hits.all { dataset -> dataset.organization?.orgPath?.startsWith("/STAT") ?: false }
             Assertions.assertTrue(allThemesValid)
+        }
+
+        @Test
+        fun `filter datasets on multiple orgPaths matches any selected value`() {
+            val validValues = listOf("/FYLKE", "/STAT/272417858")
+            val result = searchWithFilters(searchFilter.copy(orgPath = SearchFilter(validValues)))
+            Assertions.assertTrue(result.hits.isNotEmpty())
+            Assertions.assertTrue(
+                result.hits.all { dataset -> dataset.organization?.orgPath in validValues },
+            )
+        }
+
+        @Test
+        fun `filter on orgPath null matches missing field`() {
+            val result =
+                searchWithFilters(searchFilter.copy(orgPath = SearchFilter(listOf("null"))), allResourcesPath)
+            Assertions.assertTrue(result.hits.isNotEmpty())
+            Assertions.assertTrue(result.hits.all { it.organization?.orgPath == null })
+        }
+
+        @Test
+        fun `filter on orgPath FYLKE or null matches either`() {
+            val result =
+                searchWithFilters(
+                    searchFilter.copy(orgPath = SearchFilter(listOf("/FYLKE", "null"))),
+                    allResourcesPath,
+                )
+            Assertions.assertTrue(result.hits.isNotEmpty())
+            Assertions.assertTrue(
+                result.hits.all {
+                    it.organization?.orgPath == "/FYLKE" || it.organization?.orgPath == null
+                },
+            )
+            Assertions.assertTrue(result.hits.any { it.organization?.orgPath == "/FYLKE" })
+            Assertions.assertTrue(result.hits.any { it.organization?.orgPath == null })
         }
     }
 

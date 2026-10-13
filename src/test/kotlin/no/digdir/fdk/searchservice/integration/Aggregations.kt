@@ -104,7 +104,7 @@ class Aggregations : ApiTestContext() {
 
     @Test
     fun `accessRights aggregation ignores missing-field filter while hits remain filtered`() {
-        val result = search(searchFilter.copy(accessRights = SearchFilter(null)))
+        val result = search(searchFilter.copy(accessRights = SearchFilter(listOf("null"))))
 
         Assertions.assertTrue(result.hits.isNotEmpty())
         Assertions.assertTrue(result.hits.all { it.accessRights == null })
@@ -116,7 +116,7 @@ class Aggregations : ApiTestContext() {
 
     @Test
     fun `orgPath aggregation ignores missing-field filter while hits remain filtered`() {
-        val result = search(searchFilter.copy(orgPath = SearchFilter(null)))
+        val result = search(searchFilter.copy(orgPath = SearchFilter(listOf("null"))))
 
         Assertions.assertTrue(result.hits.isNotEmpty())
         Assertions.assertTrue(result.hits.all { it.organization?.orgPath == null })
