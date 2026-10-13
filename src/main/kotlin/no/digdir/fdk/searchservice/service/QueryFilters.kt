@@ -85,10 +85,20 @@ internal const val DEFAULT_DCAT_PROFILE = "DCAT_AP_NO"
 private const val MAX_AGGREGATION_BUCKETS = 15_000
 
 /**
+ * Facet fields that share an exclusion group: each aggregation in the group ignores selections
+ * for every field in the group (not only its own).
+ */
+private val FACET_EXCLUSION_GROUPS: List<Set<FilterFields>> = listOf(
+    setOf(FilterFields.OpenData, FilterFields.AccessRights),
+)
+
+internal fun FilterFields.aggregationExclusions(): Set<FilterFields> = FACET_EXCLUSION_GROUPS.firstOrNull { this in it } ?: setOf(this)
+
+/**
  * Registers a facet aggregation for [field]: an outer filter aggregation that applies every
- * facet selection except [field]'s own, with a nested terms aggregation that produces the buckets.
- * Documents without a value for the field are counted in the [missingValue] bucket when one is
- * given, and left out otherwise.
+ * facet selection except those in [FilterFields.aggregationExclusions], with a nested terms
+ * aggregation that produces the buckets. Documents without a value for the field are counted in
+ * the [missingValue] bucket when one is given, and left out otherwise.
  */
 internal fun NativeQueryBuilder.addFacetAggregation(
     field: FilterFields,
@@ -99,7 +109,7 @@ internal fun NativeQueryBuilder.addFacetAggregation(
         field.aggregationName(),
         Aggregation.of { aggregationBuilder ->
             aggregationBuilder
-                .filter(facets.excluding(field).toBoolQuery())
+                .filter(facets.excluding(field.aggregationExclusions()).toBoolQuery())
                 .aggregations(field.aggregationName()) { termsAggregationBuilder ->
                     termsAggregationBuilder.terms { termsBuilder ->
                         val sized = termsBuilder.field(field.jsonPath()).size(MAX_AGGREGATION_BUCKETS)
@@ -260,8 +270,8 @@ internal data class FacetFilterClause(val filters: List<DSLQuery> = emptyList(),
     }
 }
 
-internal fun Map<FilterFields, FacetFilterClause>.excluding(field: FilterFields): FacetFilterClause {
-    val others = filterKeys { it != field }.values
+internal fun Map<FilterFields, FacetFilterClause>.excluding(fields: Set<FilterFields>): FacetFilterClause {
+    val others = filterKeys { it !in fields }.values
     return FacetFilterClause(
         filters = others.flatMap { it.filters },
         mustNots = others.flatMap { it.mustNots },

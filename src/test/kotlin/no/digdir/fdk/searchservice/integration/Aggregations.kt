@@ -152,4 +152,28 @@ class Aggregations : ApiTestContext() {
         Assertions.assertTrue(orgKeys?.contains("/FYLKE") == true)
         Assertions.assertTrue(orgKeys?.any { it.startsWith("/STAT") } == true)
     }
+
+    @Test
+    fun `openData and accessRights aggregations exclude each other`() {
+        val result =
+            search(
+                searchFilter.copy(
+                    openData = SearchFilter(true),
+                    accessRights = SearchFilter(listOf("PUBLIC")),
+                ),
+            )
+
+        Assertions.assertTrue(result.hits.isNotEmpty())
+        Assertions.assertTrue(
+            result.hits.all { it.isOpenData == true && it.accessRights?.code?.contains("PUBLIC") == true },
+        )
+
+        val openDataKeys = result.aggregations["openData"]?.map { it.key }?.toSet()
+        Assertions.assertTrue(openDataKeys?.contains("true") == true)
+        Assertions.assertTrue((openDataKeys?.size ?: 0) > 1)
+
+        val accessRightsKeys = result.aggregations["accessRights"]?.map { it.key }?.toSet()
+        Assertions.assertTrue(accessRightsKeys?.contains("PUBLIC") == true)
+        Assertions.assertTrue((accessRightsKeys?.size ?: 0) > 1)
+    }
 }
