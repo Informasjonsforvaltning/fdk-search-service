@@ -69,6 +69,27 @@ class FilterTest : ApiTestContext() {
                 Assertions.assertTrue(dataset.isOpenData == false)
             }
         }
+
+        @Test
+        fun `openData and accessRights are OR'd with each other`() {
+            val result =
+                searchWithFilters(
+                    searchFilter.copy(
+                        openData = SearchFilter(true),
+                        accessRights = SearchFilter(listOf("PUBLIC")),
+                    ),
+                    allResourcesPath,
+                )
+            Assertions.assertTrue(result.hits.isNotEmpty())
+            Assertions.assertTrue(
+                result.hits.all { it.isOpenData == true || it.accessRights?.code?.contains("PUBLIC") == true },
+            )
+            val matchingBoth =
+                result.hits.count {
+                    it.isOpenData == true && it.accessRights?.code?.contains("PUBLIC") == true
+                }
+            Assertions.assertTrue(result.hits.size > matchingBoth)
+        }
     }
 
     @Nested

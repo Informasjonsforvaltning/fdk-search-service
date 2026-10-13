@@ -165,8 +165,10 @@ class Aggregations : ApiTestContext() {
 
         Assertions.assertTrue(result.hits.isNotEmpty())
         Assertions.assertTrue(
-            result.hits.all { it.isOpenData == true && it.accessRights?.code?.contains("PUBLIC") == true },
+            result.hits.all { it.isOpenData == true || it.accessRights?.code?.contains("PUBLIC") == true },
         )
+        Assertions.assertTrue(result.hits.any { it.isOpenData == true })
+        Assertions.assertTrue(result.hits.any { it.accessRights?.code?.contains("PUBLIC") == true })
 
         val openDataKeys = result.aggregations["openData"]?.map { it.key }?.toSet()
         Assertions.assertTrue(openDataKeys?.contains("true") == true)

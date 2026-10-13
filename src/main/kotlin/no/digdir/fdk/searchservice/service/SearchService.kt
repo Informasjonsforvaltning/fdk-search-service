@@ -62,7 +62,7 @@ class SearchService(private val elasticSearchOperations: ElasticsearchOperations
                 .withPageable(pageable)
                 .addAggregations(facets)
 
-        facets.combined().takeUnless { it.isEmpty() }?.let { builder.withFilter(it.toBoolQuery()) }
+        if (!facets.isEmptyFacets()) builder.withFilter(facets.toFilterQuery())
 
         if (sort != null) builder.addSorting(sort)
 
