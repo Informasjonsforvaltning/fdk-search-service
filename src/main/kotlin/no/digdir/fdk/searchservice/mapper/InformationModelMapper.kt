@@ -34,19 +34,19 @@ fun InformationModel.toSearchObject(id: String, timestamp: Long, deleted: Boolea
 fun InformationModel.getRelations(): Set<Relation> {
     val relations: MutableSet<Relation> = mutableSetOf()
 
-    hasPart?.let {
-        relations.add(Relation(uri = hasPart, type = RelationType.HAS_PART))
+    (hasPartList ?: listOfNotNull(hasPart)).forEach {
+        relations.add(Relation(uri = it, type = RelationType.HAS_PART))
     }
 
-    isPartOf?.let {
-        relations.add(Relation(uri = isPartOf, type = RelationType.IS_PART_OF))
+    (isPartOfList ?: listOfNotNull(isPartOf)).forEach {
+        relations.add(Relation(uri = it, type = RelationType.IS_PART_OF))
     }
 
-    isReplacedBy?.let {
-        relations.add(Relation(uri = isReplacedBy, type = RelationType.IS_REPLACED_BY))
+    (isReplacedByList ?: listOfNotNull(isReplacedBy)).forEach {
+        relations.add(Relation(uri = it, type = RelationType.IS_REPLACED_BY))
     }
 
-    replaces?.let {
+    (replacesList ?: listOfNotNull(replaces)).forEach {
         relations.add(Relation(uri = it, type = RelationType.REPLACES))
     }
 
