@@ -5,6 +5,7 @@ import no.digdir.fdk.searchservice.data.DATASERVICE_WITH_RELATIONS
 import no.digdir.fdk.searchservice.data.DATASET_WITH_RELATIONS
 import no.digdir.fdk.searchservice.data.EVENT_WITH_RELATIONS
 import no.digdir.fdk.searchservice.data.INFORMATION_MODEL_WITH_RELATIONS
+import no.digdir.fdk.searchservice.data.INFORMATION_MODEL_WITH_RELATION_LISTS
 import no.digdir.fdk.searchservice.data.SERVICE_WITH_RELATIONS
 import no.digdir.fdk.searchservice.mapper.getRelations
 import no.digdir.fdk.searchservice.model.Relation
@@ -30,6 +31,14 @@ class RelationsMappingTest {
         assertEquals(
             expectedInformationModelRelations.sortedBy { it.uri },
             INFORMATION_MODEL_WITH_RELATIONS.getRelations().sortedBy { it.uri },
+        )
+    }
+
+    @Test
+    fun `information model relation lists to searchObject relations`() {
+        assertEquals(
+            expectedInformationModelRelationLists.sortedBy { it.uri },
+            INFORMATION_MODEL_WITH_RELATION_LISTS.getRelations().sortedBy { it.uri },
         )
     }
 
@@ -80,6 +89,19 @@ val expectedInformationModelRelations =
         Relation(uri = "hasPart_uri", type = RelationType.HAS_PART),
         Relation(uri = "isReplacedBy_uri", type = RelationType.IS_REPLACED_BY),
         Relation(uri = "isPartOf_uri", type = RelationType.IS_PART_OF),
+        Relation(uri = "subjects_uri", type = RelationType.SUBJECT),
+    )
+
+val expectedInformationModelRelationLists =
+    listOf(
+        Relation(uri = "replaces_uri_1", type = RelationType.REPLACES),
+        Relation(uri = "replaces_uri_2", type = RelationType.REPLACES),
+        Relation(uri = "hasPart_uri_1", type = RelationType.HAS_PART),
+        Relation(uri = "hasPart_uri_2", type = RelationType.HAS_PART),
+        Relation(uri = "isReplacedBy_uri_1", type = RelationType.IS_REPLACED_BY),
+        Relation(uri = "isReplacedBy_uri_2", type = RelationType.IS_REPLACED_BY),
+        Relation(uri = "isPartOf_uri_1", type = RelationType.IS_PART_OF),
+        Relation(uri = "isPartOf_uri_2", type = RelationType.IS_PART_OF),
         Relation(uri = "subjects_uri", type = RelationType.SUBJECT),
     )
 

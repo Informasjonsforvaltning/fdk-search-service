@@ -26,6 +26,10 @@ val TEST_NULL_INFORMATION_MODEL =
         hasPart = null,
         isReplacedBy = null,
         isPartOf = null,
+        replacesList = null,
+        hasPartList = null,
+        isReplacedByList = null,
+        isPartOfList = null,
         subjects = null,
     )
 
@@ -167,5 +171,14 @@ val INFORMATION_MODEL_WITH_RELATIONS =
         hasPart = "hasPart_uri",
         isReplacedBy = "isReplacedBy_uri",
         isPartOf = "isPartOf_uri",
+        subjects = listOf("subjects_uri"),
+    )
+
+val INFORMATION_MODEL_WITH_RELATION_LISTS =
+    TEST_NULL_INFORMATION_MODEL.copy(
+        replacesList = listOf("replaces_uri_1", "replaces_uri_2"),
+        hasPartList = listOf("hasPart_uri_1", "hasPart_uri_2"),
+        isReplacedByList = listOf("isReplacedBy_uri_1", "isReplacedBy_uri_2"),
+        isPartOfList = listOf("isPartOf_uri_1", "isPartOf_uri_2"),
         subjects = listOf("subjects_uri"),
     )
