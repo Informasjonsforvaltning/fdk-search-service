@@ -41,6 +41,8 @@ spring:
       compression-type: snappy
     listener:
       ack-mode: manual_immediate
+      # Keep retrying instead of stopping the listeners for good on an auth failure.
+      auth-exception-retry-interval: 30s
 springdoc.api-docs.version: openapi_3_0
 application:
   cors:
