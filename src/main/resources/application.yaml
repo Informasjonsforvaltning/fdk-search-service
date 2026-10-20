@@ -24,6 +24,9 @@ spring:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     properties:
       schema.registry.url: ${KAFKA_SCHEMA_REGISTRY:http://localhost:8081}
+      security.protocol: ${KAFKA_SECURITY_PROTOCOL:PLAINTEXT}
+      sasl.mechanism: ${KAFKA_SASL_MECHANISM:SCRAM-SHA-512}
+      sasl.jaas.config: ${KAFKA_SASL_JAAS_CONFIG:}
       specific.avro.reader: false
       auto.register.schemas: false
       use.latest.version: true
@@ -38,6 +41,8 @@ spring:
       compression-type: snappy
     listener:
       ack-mode: manual_immediate
+      # Keep retrying instead of stopping the listeners for good on an auth failure.
+      auth-exception-retry-interval: 30s
 springdoc.api-docs.version: openapi_3_0
 application:
   cors:
