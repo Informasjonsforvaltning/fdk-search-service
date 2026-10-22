@@ -211,27 +211,43 @@ class FilterTest : ApiTestContext() {
     @Nested
     inner class Spatial {
         @Test
-        fun `filter datasets on one spatial, spatial = 'Norge'`() {
-            val result = searchWithFilters(searchFilter.copy(spatial = SearchFilter(listOf("Norge"))))
+        fun `filter datasets on one spatial`() {
+            val result = searchWithFilters(
+                searchFilter.copy(
+                    spatial = SearchFilter(listOf("https://data.geonorge.no/administrativeEnheter/nasjon/id/173163")),
+                ),
+            )
             Assertions.assertNotEquals(0, result.hits.size)
 
-            val validValues = listOf("Norge")
+            val validValues = listOf("https://data.geonorge.no/administrativeEnheter/nasjon/id/173163")
             val allThemesValid =
                 result.hits.all { dataset ->
-                    dataset.spatial?.map { it.prefLabel?.nb }?.containsAll(validValues) ?: false
+                    dataset.spatial?.map { it.uri }?.containsAll(validValues) ?: false
                 }
             Assertions.assertTrue(allThemesValid)
         }
 
         @Test
-        fun `filter datasets on multiple spatial, spatial = 'Norge,Spania'`() {
-            val result = searchWithFilters(searchFilter.copy(spatial = SearchFilter(listOf("Norge", "Spania"))))
+        fun `filter datasets on multiple spatial`() {
+            val result = searchWithFilters(
+                searchFilter.copy(
+                    spatial = SearchFilter(
+                        listOf(
+                            "https://data.geonorge.no/administrativeEnheter/nasjon/id/173163",
+                            "http://sws.geonames.org/2510769/",
+                        ),
+                    ),
+                ),
+            )
             Assertions.assertNotEquals(0, result.hits.size)
 
-            val validValues = listOf("Norge", "Spania")
+            val validValues = listOf(
+                "https://data.geonorge.no/administrativeEnheter/nasjon/id/173163",
+                "http://sws.geonames.org/2510769/",
+            )
             val allSpatialValid =
                 result.hits.all { dataset ->
-                    dataset.spatial?.map { it.prefLabel?.nb }?.any { it in validValues } ?: false
+                    dataset.spatial?.map { it.uri }?.any { it in validValues } ?: false
                 }
             Assertions.assertTrue(allSpatialValid)
         }
@@ -243,14 +259,18 @@ class FilterTest : ApiTestContext() {
         }
 
         @Test
-        fun `filter datasets on one spatial with space, spatial = 'Sogn og fjordane'`() {
-            val result = searchWithFilters(searchFilter.copy(spatial = SearchFilter(listOf("Sogn og fjordane"))))
+        fun `filter datasets on one spatial with path segments`() {
+            val result = searchWithFilters(
+                searchFilter.copy(
+                    spatial = SearchFilter(listOf("https://data.geonorge.no/administrativeEnheter/fylke/id/1421")),
+                ),
+            )
             Assertions.assertNotEquals(0, result.hits.size)
 
-            val validValues = listOf("Sogn og fjordane")
+            val validValues = listOf("https://data.geonorge.no/administrativeEnheter/fylke/id/1421")
             val allThemesValid =
                 result.hits.all { dataset ->
-                    dataset.spatial?.map { it.prefLabel?.nb }?.containsAll(validValues) ?: false
+                    dataset.spatial?.map { it.uri }?.containsAll(validValues) ?: false
                 }
             Assertions.assertTrue(allThemesValid)
         }

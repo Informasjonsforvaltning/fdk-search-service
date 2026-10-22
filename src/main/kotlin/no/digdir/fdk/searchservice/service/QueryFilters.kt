@@ -48,7 +48,7 @@ internal fun FilterFields.jsonPath(): String = when (this) {
     FilterFields.Provenance -> "provenance.code.keyword"
     FilterFields.Relations -> "relations.uri.keyword"
     FilterFields.SearchType -> "searchType.keyword"
-    FilterFields.Spatial -> "spatial.prefLabel.nb.keyword"
+    FilterFields.Spatial -> "spatial.uri.keyword"
     FilterFields.Uri -> "uri.keyword"
     FilterFields.TransportRelation -> "isRelatedToTransportportal"
 }
