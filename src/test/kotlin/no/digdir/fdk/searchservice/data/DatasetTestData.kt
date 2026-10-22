@@ -219,7 +219,7 @@ val TEST_DATASET_FILTERS =
         spatial =
         listOf(
             ReferenceDataCode(
-                uri = "spatial > uri",
+                uri = "https://data.geonorge.no/administrativeEnheter/nasjon/id/173163",
                 code = "123789",
                 prefLabel =
                 LocalizedStrings(
@@ -230,12 +230,12 @@ val TEST_DATASET_FILTERS =
                 ),
             ),
             ReferenceDataCode(
-                uri = "spatial > uri",
+                uri = "http://sws.geonames.org/2510769/",
                 code = "123456",
                 prefLabel = LocalizedStrings(nb = "Spania", null, null, null),
             ),
             ReferenceDataCode(
-                uri = "spatial > uri",
+                uri = "https://data.geonorge.no/administrativeEnheter/fylke/id/1421",
                 code = "56789",
                 prefLabel = LocalizedStrings(nb = "Sogn og fjordane", null, null, null),
             ),
