@@ -2,6 +2,9 @@ package no.digdir.fdk.searchservice.integration
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import no.digdir.fdk.searchservice.data.EU_HVD_DATASET_TYPE
+import no.digdir.fdk.searchservice.data.NATIONAL_BASIC_DATA_TYPE
+import no.digdir.fdk.searchservice.data.NATIONAL_HVD_TYPE
 import no.digdir.fdk.searchservice.model.SearchFilter
 import no.digdir.fdk.searchservice.model.SearchFilters
 import no.digdir.fdk.searchservice.model.SearchOperation
@@ -44,13 +47,14 @@ class Aggregations : ApiTestContext() {
         Assertions.assertEquals(200, response["status"])
 
         val result: SearchResult = mapper.readValue(response["body"] as String)
-        Assertions.assertEquals(9, result.aggregations.size)
+        Assertions.assertEquals(10, result.aggregations.size)
         Assertions.assertTrue(
             result.aggregations.keys.containsAll(
                 listOf(
                     "accessRights",
                     "dataTheme",
                     "dcatProfiles",
+                    "dctType",
                     "format",
                     "losTheme",
                     "openData",
@@ -100,6 +104,17 @@ class Aggregations : ApiTestContext() {
         Assertions.assertEquals(2, counts?.get("DCAT_AP_NO"))
         Assertions.assertEquals(1, counts?.get("HVD_DCAT_AP_NO"))
         Assertions.assertEquals(2, counts?.get("MOBILITY_DCAT_AP"))
+    }
+
+    @Test
+    fun `dctType is aggregated on dataset type uri`() {
+        val result = search(path = datasetsPath)
+        val counts = result.aggregations["dctType"]?.associate { it.key to it.count }
+
+        Assertions.assertEquals(
+            mapOf(EU_HVD_DATASET_TYPE to 1L, NATIONAL_BASIC_DATA_TYPE to 1L, NATIONAL_HVD_TYPE to 1L),
+            counts,
+        )
     }
 
     @Test

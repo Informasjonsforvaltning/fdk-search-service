@@ -40,6 +40,7 @@ val TEST_NULL_DATASET =
         isAuthoritative = null,
         isRelatedToTransportportal = null,
         dcatProfiles = null,
+        dctType = null,
     )
 
 val TEST_DATASET_HIT_ALL_FIELDS =
@@ -270,6 +271,11 @@ val TEST_DATASET_FILTERS =
             ),
         ),
         dcatProfiles = listOf("MOBILITY_DCAT_AP"),
+        dctType =
+        listOf(
+            ReferenceDataCode(uri = EU_HVD_DATASET_TYPE, code = "HVD", prefLabel = null),
+            ReferenceDataCode(uri = NATIONAL_BASIC_DATA_TYPE, code = "national-basic-data", prefLabel = null),
+        ),
     )
 
 val TEST_DATASET_HIT_IS_OPEN =
@@ -278,7 +284,12 @@ val TEST_DATASET_HIT_IS_OPEN =
         isOpenData = true,
         conformsTo = listOf(ObjectWithURI(uri = TEST_DATASET_FILTERS.uri)),
         dcatProfiles = listOf("MOBILITY_DCAT_AP", "HVD_DCAT_AP_NO"),
+        dctType = listOf(ReferenceDataCode(uri = NATIONAL_HVD_TYPE, code = "national-hvd", prefLabel = null)),
     )
+
+const val EU_HVD_DATASET_TYPE = "http://publications.europa.eu/resource/authority/dataset-type/HVD"
+const val NATIONAL_HVD_TYPE = "https://data.norge.no/vocabulary/high-value-dataset-type#national-hvd"
+const val NATIONAL_BASIC_DATA_TYPE = "https://data.norge.no/vocabulary/high-value-dataset-type#national-basic-data"
 
 val basePath = "http://purl.org/dc/terms"
 val DATASET_WITH_RELATIONS =

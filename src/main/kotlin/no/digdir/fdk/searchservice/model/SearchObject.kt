@@ -46,6 +46,7 @@ data class SearchObject(
     @field:JsonProperty("isRelatedToTransportportal")
     val isRelatedToTransportportal: Boolean?,
     val dcatProfiles: Set<String>?,
+    val dctType: Set<ReferenceDataCode>?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)

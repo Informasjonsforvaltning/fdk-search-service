@@ -1,5 +1,7 @@
 package no.digdir.fdk.searchservice.unit
 
+import no.digdir.fdk.searchservice.data.EU_HVD_DATASET_TYPE
+import no.digdir.fdk.searchservice.data.NATIONAL_BASIC_DATA_TYPE
 import no.digdir.fdk.searchservice.data.TEST_CONCEPT_HIT_ALL_FIELDS
 import no.digdir.fdk.searchservice.data.TEST_DATASET_FILTERS
 import no.digdir.fdk.searchservice.data.TEST_DATASET_HIT_ALL_FIELDS
@@ -24,6 +26,14 @@ class MappingTest {
         assertEquals(
             setOf("MOBILITY_DCAT_AP"),
             TEST_DATASET_FILTERS.toSearchObject(id = "1234", timestamp = 1727765537686).dcatProfiles,
+        )
+    }
+
+    @Test
+    fun `dctType from the parsed dataset is kept in the search object`() {
+        assertEquals(
+            setOf(EU_HVD_DATASET_TYPE, NATIONAL_BASIC_DATA_TYPE),
+            TEST_DATASET_FILTERS.toSearchObject(id = "1234", timestamp = 1727765537686).dctType?.map { it.uri }?.toSet(),
         )
     }
 

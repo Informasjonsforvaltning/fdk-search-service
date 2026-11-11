@@ -191,6 +191,25 @@ Payload:
 }
 ```
 
+#### Filter datasets on dataset type:
+
+Values are dataset type URIs, e.g. from the EU dataset type vocabulary. A dataset matching any of
+the given types is a hit.
+
+Payload:
+
+```
+{
+    "filters": {
+        "dctType": {
+            "value": [
+                "http://publications.europa.eu/resource/authority/dataset-type/HVD"
+            ]
+        }
+    }
+}
+```
+
 ### Formatting code
 
 This project uses [ktlint](https://github.com/gantsign/ktlint-maven-plugin) to enforce a consistent code style.
