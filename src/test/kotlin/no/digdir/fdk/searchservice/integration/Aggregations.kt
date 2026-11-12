@@ -54,7 +54,7 @@ class Aggregations : ApiTestContext() {
                     "accessRights",
                     "dataTheme",
                     "dcatProfiles",
-                    "dctType",
+                    "datasetType",
                     "format",
                     "losTheme",
                     "openData",
@@ -107,9 +107,9 @@ class Aggregations : ApiTestContext() {
     }
 
     @Test
-    fun `dctType is aggregated on dataset type uri`() {
+    fun `datasetType is aggregated on dataset type uri`() {
         val result = search(path = datasetsPath)
-        val counts = result.aggregations["dctType"]?.associate { it.key to it.count }
+        val counts = result.aggregations["datasetType"]?.associate { it.key to it.count }
 
         Assertions.assertEquals(
             mapOf(EU_HVD_DATASET_TYPE to 1L, NATIONAL_BASIC_DATA_TYPE to 1L, NATIONAL_HVD_TYPE to 1L),

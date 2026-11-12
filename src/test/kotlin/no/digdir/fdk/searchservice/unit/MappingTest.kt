@@ -30,10 +30,10 @@ class MappingTest {
     }
 
     @Test
-    fun `dctType from the parsed dataset is kept in the search object`() {
+    fun `dctType from the parsed dataset is mapped to datasetType`() {
         assertEquals(
             setOf(EU_HVD_DATASET_TYPE, NATIONAL_BASIC_DATA_TYPE),
-            TEST_DATASET_FILTERS.toSearchObject(id = "1234", timestamp = 1727765537686).dctType?.map { it.uri }?.toSet(),
+            TEST_DATASET_FILTERS.toSearchObject(id = "1234", timestamp = 1727765537686).datasetType?.map { it.uri }?.toSet(),
         )
     }
 

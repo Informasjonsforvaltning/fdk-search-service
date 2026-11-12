@@ -30,7 +30,7 @@ fun DataService.toSearchObject(id: String, timestamp: Long, deleted: Boolean = f
     isRelatedToTransportportal = false,
     additionalTitles = null,
     dcatProfiles = null,
-    dctType = null,
+    datasetType = null,
 )
 
 fun DataService.extractPrefixedFormats(): Set<String> {

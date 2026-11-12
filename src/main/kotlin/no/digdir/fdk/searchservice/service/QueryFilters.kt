@@ -17,7 +17,7 @@ internal enum class FilterFields {
     AccessRights,
     DataTheme,
     DcatProfiles,
-    DctType,
+    DatasetType,
     Deleted,
     FirstHarvested,
     Modified,
@@ -38,7 +38,7 @@ internal fun FilterFields.jsonPath(): String = when (this) {
     FilterFields.AccessRights -> "accessRights.code.keyword"
     FilterFields.DataTheme -> "dataTheme.code.keyword"
     FilterFields.DcatProfiles -> "dcatProfiles.keyword"
-    FilterFields.DctType -> "dctType.uri.keyword"
+    FilterFields.DatasetType -> "datasetType.uri.keyword"
     FilterFields.Deleted -> "metadata.deleted"
     FilterFields.FirstHarvested -> "metadata.firstHarvested"
     FilterFields.Modified -> "metadata.modified"
@@ -59,7 +59,7 @@ internal fun FilterFields.aggregationName(): String = when (this) {
     FilterFields.AccessRights -> "accessRights"
     FilterFields.DataTheme -> "dataTheme"
     FilterFields.DcatProfiles -> "dcatProfiles"
-    FilterFields.DctType -> "dctType"
+    FilterFields.DatasetType -> "datasetType"
     FilterFields.Deleted -> "deleted"
     FilterFields.FirstHarvested -> "firstHarvested"
     FilterFields.Modified -> "modified"
@@ -363,8 +363,8 @@ internal fun facetFilterClauses(filters: SearchFilters?): Map<FilterFields, Face
             FacetFilterClause(filters = listOf(anyOfFilters(values.map { dcatProfileFilter(it) })))
     }
 
-    filters.dctType?.value?.takeIf { it.isNotEmpty() }?.let {
-        clauses[FilterFields.DctType] = FacetFilterClause(filters = listOf(termsFilter(FilterFields.DctType, it)))
+    filters.datasetType?.value?.takeIf { it.isNotEmpty() }?.let {
+        clauses[FilterFields.DatasetType] = FacetFilterClause(filters = listOf(termsFilter(FilterFields.DatasetType, it)))
     }
 
     filters.provenance?.value?.takeIf { it.isNotEmpty() }?.let {

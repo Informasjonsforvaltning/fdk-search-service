@@ -201,7 +201,7 @@ Payload:
 ```
 {
     "filters": {
-        "dctType": {
+        "datasetType": {
             "value": [
                 "http://publications.europa.eu/resource/authority/dataset-type/HVD"
             ]
