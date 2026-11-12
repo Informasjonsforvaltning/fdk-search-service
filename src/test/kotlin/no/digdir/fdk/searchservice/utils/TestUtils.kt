@@ -58,6 +58,7 @@ fun createEmptySearchFilters(): SearchFilters = SearchFilters(
     accessRights = null,
     dataTheme = null,
     dcatProfiles = null,
+    datasetType = null,
     spatial = null,
     provenance = null,
     losTheme = null,

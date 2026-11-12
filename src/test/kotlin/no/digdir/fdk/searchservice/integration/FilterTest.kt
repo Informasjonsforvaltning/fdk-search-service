@@ -2,6 +2,8 @@ package no.digdir.fdk.searchservice.integration
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import no.digdir.fdk.searchservice.data.NATIONAL_BASIC_DATA_TYPE
+import no.digdir.fdk.searchservice.data.NATIONAL_HVD_TYPE
 import no.digdir.fdk.searchservice.data.TEST_DATASET_FILTERS
 import no.digdir.fdk.searchservice.data.TEST_DATASET_HIT_ALL_FIELDS
 import no.digdir.fdk.searchservice.model.SearchFilter
@@ -535,6 +537,30 @@ class FilterTest : ApiTestContext() {
         @Test
         fun `filter on an unknown profile returns no hits`() {
             val result = searchWithFilters(searchFilter.copy(dcatProfiles = SearchFilter(listOf("NOT_A_PROFILE"))))
+            Assertions.assertEquals(0, result.hits.size)
+        }
+    }
+
+    @Nested
+    inner class DatasetType {
+        @Test
+        fun `filter datasets on a single dataset type`() {
+            val result = searchWithFilters(searchFilter.copy(datasetType = SearchFilter(listOf(NATIONAL_HVD_TYPE))))
+            Assertions.assertEquals(1, result.hits.size)
+            Assertions.assertEquals("dataset.uri.2", result.hits.first().uri)
+        }
+
+        @Test
+        fun `filter datasets on several dataset types matches datasets of any of them`() {
+            val result =
+                searchWithFilters(searchFilter.copy(datasetType = SearchFilter(listOf(NATIONAL_HVD_TYPE, NATIONAL_BASIC_DATA_TYPE))))
+            Assertions.assertEquals(2, result.hits.size)
+            Assertions.assertTrue(result.hits.map { it.uri }.containsAll(listOf(TEST_DATASET_FILTERS.uri, "dataset.uri.2")))
+        }
+
+        @Test
+        fun `filter on an unknown dataset type returns no hits`() {
+            val result = searchWithFilters(searchFilter.copy(datasetType = SearchFilter(listOf("https://example.com/unknown"))))
             Assertions.assertEquals(0, result.hits.size)
         }
     }
