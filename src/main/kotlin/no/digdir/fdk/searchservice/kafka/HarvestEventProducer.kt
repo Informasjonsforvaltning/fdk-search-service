@@ -45,6 +45,7 @@ class HarvestEventProducer(private val kafkaTemplate: KafkaTemplate<String, Harv
                 .setRemovedResourcesCount(null)
                 .setRemoveAll(null)
                 .setForced(false)
+                .setForcedFdkIds(null)
                 .build()
 
         try {
